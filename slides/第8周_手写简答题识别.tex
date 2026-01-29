@@ -1,0 +1,288 @@
+\documentclass[aspectratio=169, 12pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    backgroundcolor=\color{gray!10}
+}
+
+\title[手写简答题识别]{第8周：手写简答题识别}
+\subtitle{能看懂学生写的答案吗？}
+\author{计算机视觉课程组}
+\institute{通选课}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{课程概览}
+    \tableofcontents
+\end{frame}
+
+\section{手写识别概述}
+
+\begin{frame}{手写识别的挑战}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{印刷文字：}
+        \begin{itemize}
+            \item 字体统一
+            \item 字形稳定
+            \item 间距规范
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{手写文字：}
+        \begin{itemize}
+            \item 每人不同
+            \item 形状变化大
+            \item 间距随意
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{主要难点：}
+    \begin{enumerate}
+        \item 字形差异大
+        \item 连笔问题
+        \item 倾斜旋转
+        \item 图像质量
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{手写识别技术发展}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{阶段} & \textbf{技术} & \textbf{准确率} \\
+            \midrule
+            传统方法 & 特征工程 + SVM/HMM & 60-70\% \\
+            CNN时代 & LeNet, AlexNet & 80-85\% \\
+            RNN+Attention & RNN+Attention & 90-92\% \\
+            Transformer & \textbf{TrOCR, Donut} & \textbf{95\%+} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{当前最佳：} TrOCR（Microsoft）
+\end{frame}
+
+\begin{frame}{主流手写识别工具}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{4cm}lp{3cm}}
+            \toprule
+            \textbf{工具} & \textbf{优点} & \textbf{缺点} & \textbf{适用} \\
+            \midrule
+            TrOCR & 准确率最高 & 速度慢 & 高精度 \\
+            PaddleOCR & 速度快 & 手写略弱 & 实时 \\
+            Tesseract & 免费 & 中文差 & 英文 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{推荐：}
+    \begin{itemize}
+        \item 高精度需求 $\to$ TrOCR
+        \item 实时应用 $\to$ PaddleOCR
+    \end{itemize}
+\end{frame}
+
+\section{PaddleOCR手写识别}
+
+\begin{frame}[fragile]{PaddleOCR手写配置}
+    \begin{lstlisting}
+from paddleocr import PaddleOCR
+
+# 初始化手写识别OCR
+ocr_handwrite = PaddleOCR(
+    use_angle_cls=True,    # 启用方向分类
+    lang='ch',             # 中文
+    show_log=False
+)
+
+# 识别
+result = ocr_handwrite.ocr('handwriting.jpg', cls=True)
+
+# 打印结果
+for line in result:
+    text = line[1][0]
+    confidence = line[1][1]
+    print(f"{text} ({confidence:.4f})")
+    \end{lstlisting}
+
+    \textbf{注意：} PaddleOCR默认已支持手写识别
+\end{frame}
+
+\section{TrOCR高精度识别}
+
+\begin{frame}{TrOCR简介}
+    \textbf{TrOCR：} Transformer-based OCR
+
+    \begin{itemize}
+        \item 开发者：Microsoft
+        \item 架构：ViT (图像编码器) + GPT-2 (文本解码器)
+        \item 优势：端到端训练，准确率最高
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{模型：}
+    \begin{itemize}
+        \item trocr-base-handwritten
+        \item trocr-large-handwritten
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{TrOCR使用}
+    \begin{lstlisting}
+# 安装
+pip install transformers torch pillow
+
+# 使用
+from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+from PIL import Image
+
+# 加载模型
+processor = TrOCRProcessor.from_pretrained(
+    'microsoft/trocr-base-handwritten'
+)
+model = VisionEncoderDecoderModel.from_pretrained(
+    'microsoft/trocr-base-handwritten'
+)
+
+# 识别
+image = Image.open('handwriting.jpg')
+pixel_values = processor(images=image, return_tensors="pt").pixel_values
+generated_ids = model.generate(pixel_values)
+text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+    \end{lstlisting}
+\end{frame}
+
+\section{图像预处理优化}
+
+\begin{frame}[fragile]{手写图像预处理}
+    \begin{lstlisting}
+def preprocess_handwriting(image):
+    """手写图像预处理"""
+    # 转灰度
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # 去噪
+    denoised = cv2.fastNlMeansDenoising(gray)
+
+    # 对比度增强
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(denoised)
+
+    # 二值化
+    _, binary = cv2.threshold(
+        enhanced, 0, 255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    return binary
+    \end{lstlisting}
+
+    \textbf{关键：} 手写图像需要更强的预处理！
+\end{frame}
+
+\section{思考题}
+
+\begin{frame}{课堂思考题}
+    \begin{block}{问题1：手写识别挑战}
+        \begin{itemize}
+            \item 为什么手写识别比印刷识别难？
+            \item 连笔字如何处理？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：模型选择}
+        \begin{itemize}
+            \item 什么时候用PaddleOCR？什么时候用TrOCR？
+            \item 如何平衡准确率和速度？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{课后作业}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目}
+        实现简答题手写识别模块
+    \end{block}
+
+    \textbf{要求：}
+    \begin{enumerate}
+        \item 使用PaddleOCR或TrOCR识别手写文字
+        \item 实现图像预处理优化
+        \item 识别手写答案内容
+        \item 分析识别准确率
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    \textbf{评分标准：}
+    \begin{itemize}
+        \item 模型配置：25分
+        \item 预处理优化：25分
+        \item 识别效果：30分
+        \item 分析报告：20分
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第9周：系统架构与分组开发}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{把所有模块组合起来}
+
+        \vspace{0.3cm}
+
+        你将学会：
+        \begin{itemize}
+            \item 系统架构设计
+            \item 模块集成方法
+            \item 团队协作开发
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{课程设计开始！}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+    \end{center}
+\end{frame}
+
+\end{document}

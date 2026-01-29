@@ -1,0 +1,285 @@
+\documentclass[aspectratio=169, 12pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    backgroundcolor=\color{gray!10}
+}
+
+\title[选择题识别（填涂检测）]{第5周：选择题识别（填涂检测）}
+\subtitle{怎么知道选了A还是B？}
+\author{计算机视觉课程组}
+\institute{通选课}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{课程概览}
+    \tableofcontents
+\end{frame}
+
+\section{OMR原理}
+
+\begin{frame}{什么是OMR？}
+    \begin{block}{OMR：Optical Mark Recognition}
+        光学标记识别 —— 通过检测填涂区域来识别答案
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \textbf{核心思想：} 填涂区域与空白区域的\textbf{像素密度差异}
+
+    \begin{center}
+        \begin{tikzpicture}
+            \shade[ball color=black] (0,0) circle (0.5cm);
+            \node at (0,-1) {填涂 $\to$ 密度高};
+            \shade[ball color=white, draw=black] (3,0) circle (0.5cm);
+            \node at (3,-1) {空白 $\to$ 密度低};
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{识别流程}
+    \begin{enumerate}
+        \item \textbf{定位选项区域}：找到每个选项的位置
+        \item \textbf{提取选项图像}：裁剪出单个选项区域
+        \item \textbf{二值化处理}：转换为黑白图像
+        \item \textbf{统计像素密度}：计算深色像素占比
+        \item \textbf{阈值判断}：密度超过阈值则认为已填涂
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, fill=blue!10] (1) {定位};
+            \node[draw, fill=yellow!10, right of=1] (2) {提取};
+            \node[draw, fill=green!10, right of=2] (3) {二值化};
+            \node[draw, fill=red!10, right of=3] (4) {统计};
+            \node[draw, fill=purple!10, right of=4] (5) {判断};
+
+            \draw[->] (1) -- (2);
+            \draw[->] (2) -- (3);
+            \draw[->] (3) -- (4);
+            \draw[->] (4) -- (5);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\section{选项区域定位}
+
+\begin{frame}{定位方法}
+    \textbf{方法1：固定位置法}（简单但不灵活）
+    \begin{itemize}
+        \item 适合标准答题卡
+        \item 预先定义选项坐标
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{方法2：轮廓检测法}（推荐）
+    \begin{itemize}
+        \item 通过连通域分析找到气泡
+        \item 根据面积、形状筛选
+        \item 自动适应不同版面
+    \end{itemize}
+\end{frame}
+
+\section{填涂检测核心算法}
+
+\begin{frame}{像素密度统计}
+    \textbf{方法：非零像素计数}
+
+    \begin{lstlisting}
+def calculate_density(option_roi, threshold=127):
+    """计算填涂密度"""
+    # 二值化（反色：填涂变白）
+    _, binary = cv2.threshold(
+        option_roi, threshold, 255,
+        cv2.THRESH_BINARY_INV
+    )
+
+    # 统计白色像素
+    non_zero = cv2.countNonZero(binary)
+
+    # 计算密度
+    total = option_roi.shape[0] * option_roi.shape[1]
+    density = non_zero / total
+
+    return density
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{阈值确定}
+    \textbf{固定阈值法：}
+    \begin{itemize}
+        \item 经验值：0.2 - 0.4
+        \item 简单但不适应不同场景
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{自适应阈值法：}
+    \begin{itemize}
+        \item 基于所有选项的密度分布
+        \item 使用Otsu思想确定最佳阈值
+        \item 推荐使用
+    \end{itemize}
+\end{frame}
+
+\section{单选题识别}
+
+\begin{frame}[fragile]{单选题识别}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def recognize_single_choice(question_img, option_positions):
+    """识别单道选择题"""
+    densities = []
+
+    # 计算每个选项的密度
+    for (x, y, w, h) in option_positions:
+        roi = question_img[y:y+h, x:x+w]
+        density = calculate_density(roi)
+        densities.append(density)
+
+    # 自适应确定阈值
+    threshold = np.mean(densities)
+
+    # 找到密度最高的选项
+    max_density = max(densities)
+
+    if max_density >= threshold:
+        answer_idx = densities.index(max_density)
+        return chr(ord('A') + answer_idx)
+
+    return None  # 未填涂
+    \end{lstlisting}
+\end{frame}
+
+\section{完整实现}
+
+\begin{frame}[fragile]{选择题识别器}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+class ChoiceRecognizer:
+    def __init__(self, threshold=0.3):
+        self.threshold = threshold
+        self.option_labels = ['A', 'B', 'C', 'D']
+
+    def recognize_all(self, image, question_groups):
+        """识别所有选择题"""
+        results = []
+
+        for i, option_positions in enumerate(question_groups):
+            # 计算密度
+            densities = [self.calculate_density(
+                image[y:y+h, x:x+w])
+                for x, y, w, h in option_positions
+            ]
+
+            # 找到填涂的选项
+            if max(densities) >= self.threshold:
+                idx = densities.index(max(densities))
+                answer = self.option_labels[idx]
+            else:
+                answer = None
+
+            results.append({'question': i+1, 'answer': answer})
+
+        return results
+    \end{lstlisting}
+\end{frame}
+
+\section{思考题}
+
+\begin{frame}{课堂思考题}
+    \begin{block}{问题1：OMR原理}
+        \begin{itemize}
+            \item 为什么通过像素密度就能判断填涂？
+            \item 如果铅笔填涂很轻，密度会怎样变化？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：阈值选择}
+        \begin{itemize}
+            \item 固定阈值有什么缺点？
+            \item 如何自动确定最佳阈值？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{课后作业}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目}
+        实现选择题填涂识别模块
+    \end{block}
+
+    \textbf{要求：}
+    \begin{enumerate}
+        \item 实现选项区域定位
+        \item 实现填涂密度计算
+        \item 识别单选题答案
+        \item 可视化标注识别结果
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    \textbf{评分标准：}
+    \begin{itemize}
+        \item 选项定位：25分
+        \item 密度计算：25分
+        \item 答案识别：30分
+        \item 可视化：10分
+        \item 代码质量：10分
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第6周：判断题识别（符号匹配）}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{怎么看到是$\checkmark$还是$\times$？}
+
+        \vspace{0.3cm}
+
+        你将学会：
+        \begin{itemize}
+            \item 形状特征提取
+            \item 轮廓形状分析
+            \item 符号匹配识别
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+    \end{center}
+\end{frame}
+
+\end{document}

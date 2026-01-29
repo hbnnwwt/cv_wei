@@ -1,0 +1,626 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\title{\textbf{\large 第8周教案：手写简答题识别}}
+\author{计算机视觉课程组}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabular}{|l|p{12cm}|}
+\hline
+\textbf{周次} & 第8周 \\
+\hline
+\textbf{主题} & 手写简答题识别 \\
+\hline
+\textbf{学时} & 3学时（160分钟） \\
+\hline
+\textbf{故事问题} & 能看懂学生写的答案吗？ \\
+\hline
+\textbf{OBE目标} & A3-特征识别：能识别手写文字 \\
+\hline
+\textbf{项目贡献} & 实现简答题手写识别模块 \\
+\hline
+\end{tabular}
+
+\section{教学目标}
+
+\begin{enumerate}
+\item \textbf{知识目标}：
+    \begin{itemize}
+    \item 理解手写识别的挑战
+    \item 了解端到端手写识别模型
+    \item 掌握TrOCR/PaddleOCR手写识别
+    \end{itemize}
+
+\item \textbf{能力目标}：
+    \begin{itemize}
+    \item 能够使用手写识别API
+    \item 能够处理手写识别结果
+    \item 能够优化识别准确率
+    \end{itemize}
+
+\item \textbf{素养目标}：
+    \begin{itemize}
+    \item 理解手写识别在实际应用中的价值
+    \item 了解AI技术的局限性
+    \end{itemize}
+\end{enumerate}
+
+\section{教学重点与难点}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{教学重点}]
+\begin{itemize}
+\item 手写识别的挑战与特点
+\item TrOCR/PaddleOCR手写模型使用
+\item 识别结果后处理
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{教学难点}]
+\begin{itemize}
+\item 手写字迹形变处理
+\item 低质量图像识别
+\end{itemize}
+\end{tcolorbox}
+
+\section{教学过程设计}
+
+\subsection{环节一：手写识别概述（40分钟）}
+
+\subsubsection{1.1 手写识别的挑战（15分钟）}
+
+\textbf{为什么手写识别比印刷识别难？}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+\textbf{因素} & \textbf{印刷文字} & \textbf{手写文字} \\
+\hline
+字体规范 & 统一标准字体 & 每人不同 \\
+\hline
+字形稳定 & 字形固定 & 形状变化大 \\
+\hline
+间距规范 & 固定间距 & 随意 \\
+\hline
+倾斜角度 & 水平排列 & 可能倾斜 \\
+\hline
+连笔情况 & 无连笔 & 常见连笔 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{手写识别的难点：}
+\begin{enumerate}
+\item \textbf{字形差异大}：不同人的书写风格完全不同
+\item \textbf{连笔问题}：字与字可能连在一起
+\item \textbf{倾斜旋转}：书写方向可能不正
+\item \textbf{涂改修改}：可能有涂改痕迹
+\item \textbf{图像质量}：拍照可能有模糊、阴影
+\end{enumerate}
+
+\subsubsection{1.2 手写识别技术发展（15分钟）}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{6cm}|p{5cm}|}
+\hline
+\textbf{阶段} & \textbf{技术} & \textbf{准确率} \\
+\hline
+传统方法 & 特征工程 + SVM/HMM & 60-70\% \\
+\hline
+CNN时代 & LeNet, AlexNet等CNN & 80-85\% \\
+\hline
+RNN+Attention & RNN+Attention机制 & 90-92\% \\
+\hline
+Transformer & TrOCR, Donut & 95\%+ \\
+\hline
+\textbf{当前} & \textbf{端到端大模型} & \textbf{95\%+} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{1.3 主流手写识别工具（10分钟）}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{4cm}|p{4cm}|p{3cm}|}
+\hline
+\textbf{工具} & \textbf{优点} & \textbf{缺点} & \textbf{适用} \\
+\hline
+TrOCR & 准确率最高 & 速度慢，需GPU & 高精度场景 \\
+\hline
+PaddleOCR & 速度快，中文好 & 手写略弱于TrOCR & 实时应用 \\
+\hline
+Tesseract & 免费开源 & 中文手写差 & 英文手写 \\
+\hline
+EasyOCR & 多语言 & 中文一般 & 多语言混合 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{环节二：PaddleOCR手写识别（40分钟）}
+
+\subsubsection{2.1 手写模型配置（10分钟）}
+
+\begin{lstlisting}
+from paddleocr import PaddleOCR
+
+# PaddleOCR支持手写识别
+# 使用中文模型时，默认已包含手写识别能力
+
+# 初始化手写识别OCR
+ocr_handwrite = PaddleOCR(
+    use_angle_cls=True,    # 启用方向分类（手写文字可能有倾斜）
+    lang='ch',             # 中文
+    det_model_dir=None,    # 使用默认检测模型
+    rec_model_dir=None,    # 使用默认识别模型
+    use_gpu=False,         # 是否使用GPU
+    show_log=False
+)
+
+# 识别手写文字
+result = ocr_handwrite.ocr('handwriting.jpg', cls=True)
+
+# 打印结果
+for line in result:
+    text = line[1][0]
+    confidence = line[1][1]
+    print(f"文字: {text}, 置信度: {confidence:.4f}")
+\end{lstlisting}
+
+\subsubsection{2.2 手写图像预处理（15分钟）}
+
+\textbf{手写图像的特殊处理：}
+
+\begin{lstlisting}
+import cv2
+import numpy as np
+
+def preprocess_handwriting(image):
+    """
+    手写图像预处理
+
+    参数:
+        image: 输入图像
+
+    返回:
+        预处理后的图像
+    """
+    # 转灰度
+    if len(image.shape) == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image.copy()
+
+    # 去噪（手写可能有不规则噪声）
+    denoised = cv2.fastNlMeansDenoising(gray, None, 10, 7, 21)
+
+    # 对比度增强（手写可能对比度不足）
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(denoised)
+
+    # 二值化
+    _, binary = cv2.threshold(
+        enhanced, 0, 255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    # 形态学操作（去除小噪点）
+    kernel = np.ones((2, 2), np.uint8)
+    cleaned = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+
+    return cleaned
+
+# 使用
+img = cv2.imread('handwriting.jpg')
+processed = preprocess_handwriting(img)
+cv2.imwrite('handwriting_processed.jpg', processed)
+
+# 使用处理后的图像进行识别
+result = ocr_handwrite.ocr('handwriting_processed.jpg', cls=True)
+\end{lstlisting}
+
+\subsubsection{2.3 手写数字识别（15分钟）}
+
+\textbf{简答题常涉及数字答案：}
+
+\begin{lstlisting}
+def recognize_handwritten_digits(image_path):
+    """
+    识别手写数字
+
+    适用于填空题、简答题中的数字答案
+    """
+    ocr = PaddleOCR(use_angle_cls=True, lang='ch', show_log=False)
+
+    # 预处理
+    img = cv2.imread(image_path)
+    processed = preprocess_handwriting(img)
+
+    # 识别
+    result = ocr.ocr(processed, cls=True)
+
+    # 提取数字
+    import re
+    digits = []
+
+    for line in result:
+        if line is None:
+            continue
+        text = line[1][0]
+        confidence = line[1][1]
+
+        # 提取所有数字
+        found_digits = re.findall(r'\d+\.?\d*', text)
+        digits.extend(found_digits)
+
+    return digits
+
+# 使用
+digits = recognize_handwritten_digits('handwriting_answer.jpg')
+print(f"识别到的数字: {digits}")
+\end{lstlisting}
+
+\subsection{环节三：TrOCR高精度识别（40分钟）}
+
+\subsubsection{3.1 TrOCR简介（10分钟）}
+
+\textbf{TrOCR：** Transformer-based Optical Character Recognition}
+
+\begin{itemize}
+\item \textbf{开发者：** Microsoft
+\item \textbf{架构：** ViT (图像编码器) + GPT-2 (文本解码器)
+\item \textbf{优势：** 端到端训练，准确率最高
+\item \textbf{模型：**
+    \begin{itemize}
+    \item trocr-base-handwritten
+    \item trocr-large-handwritten
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{3.2 安装和使用（20分钟）}
+
+\begin{lstlisting}
+# 安装transformers和torch
+pip install transformers torch pillow
+
+# 安装加速库（可选）
+pip install accelerate
+
+# 使用TrOCR
+from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+
+# 加载模型
+processor = TrOCRProcessor.from_pretrained('microsoft/trocr-base-handwritten')
+model = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-base-handwritten')
+
+# 读取图像
+from PIL import Image
+image = Image.open('handwriting.jpg').convert("RGB")
+
+# 预处理
+pixel_values = processor(images=image, return_tensors="pt").pixel_values
+
+# 生成文本
+generated_ids = model.generate(pixel_values)
+generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
+print(f"识别结果: {generated_text}")
+\end{lstlisting}
+
+\textbf{批量处理：}
+
+\begin{lstlisting}
+def recognize_handwrite_trocr(image_paths):
+    """
+    使用TrOCR批量识别手写图像
+
+    参数:
+        image_paths: 图像路径列表
+
+    返回:
+        识别结果列表
+    """
+    # 加载模型
+    processor = TrOCRProcessor.from_pretrained('microsoft/trocr-base-handwritten')
+    model = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-base-handwritten')
+
+    results = []
+
+    for image_path in image_paths:
+        # 读取图像
+        image = Image.open(image_path).convert("RGB")
+
+        # 预处理
+        pixel_values = processor(images=image, return_tensors="pt").pixel_values
+
+        # 生成
+        generated_ids = model.generate(pixel_values)
+        generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
+        results.append({
+            'image': image_path,
+            'text': generated_text
+        })
+
+    return results
+
+# 使用
+image_paths = ['handwriting_1.jpg', 'handwriting_2.jpg']
+results = recognize_handwrite_trocr(image_paths)
+
+for r in results:
+    print(f"{r['image']}: {r['text']}")
+\end{lstlisting}
+
+\subsubsection{3.3 TrOCR优化（10分钟）}
+
+\begin{lstlisting}
+# 使用更大的模型（更高精度，但速度更慢）
+processor_large = TrOCRProcessor.from_pretrained('microsoft/trocr-large-handwritten')
+model_large = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-large-handwritten')
+
+# 调整生成参数
+generated_ids = model.generate(
+    pixel_values,
+    max_length=50,          # 最大生成长度
+    min_length=1,           # 最小生成长度
+    num_beams=5,            # beam search大小（越大越准确）
+    temperature=1.0,        # 温度参数
+    top_k=50,               # top-k采样
+    top_p=0.95,             # top-p采样
+    repetition_penalty=1.0  # 重复惩罚
+)
+\end{lstlisting}
+
+\subsection{环节四：简答题识别完整流程（30分钟）}
+
+\subsubsection{4.1 定位简答区域（10分钟）}
+
+\begin{lstlisting}
+def locate_essay_area(image, ocr_result):
+    """
+    定位简答题答题区域
+
+    策略: 找到"简答"关键词后的空白区域
+    """
+    # 查找"简答"关键词
+    for i, line in enumerate(ocr_result):
+        if line is None:
+            continue
+
+        text = line[1][0]
+        if '简答' in text or '回答' in text:
+            # 获取该文字框的底部坐标
+            boxes = line[0]
+            bottom_y = int(np.mean([box[1] for box in boxes]))
+
+            return bottom_y
+
+    # 如果没找到，返回图像下半部分
+    height = image.shape[0]
+    return height // 2
+\end{lstlisting}
+
+\subsubsection{4.2 手写文字行分割（10分钟）}
+
+\begin{lstlisting}
+def segment_handwriting_lines(binary_image):
+    """
+    分割手写文字行
+
+    参数:
+        binary_image: 二值图像
+
+    返回:
+        文字行图像列表
+    """
+    # 水平投影
+    h_proj = np.sum(binary_image == 0, axis=1)
+
+    # 找到行间分隔（投影值低于阈值）
+    threshold = np.mean(h_proj) * 0.3
+    lines = []
+    in_line = False
+    line_start = 0
+
+    for i, value in enumerate(h_proj):
+        if value > threshold and not in_line:
+            in_line = True
+            line_start = i
+        elif value <= threshold and in_line:
+            in_line = False
+            line_end = i
+            lines.append((line_start, line_end))
+
+    # 提取每行图像
+    line_images = []
+    for start, end in lines:
+        if end - start > 10:  # 过滤太短的行
+            line_img = binary_image[start:end, :]
+            line_images.append(line_img)
+
+    return line_images
+\end{lstlisting}
+
+\subsubsection{4.3 完整简答题识别（10分钟）}
+
+\begin{lstlisting}
+class EssayRecognizer:
+    """简答题识别器"""
+
+    def __init__(self, method='paddle'):
+        """
+        初始化
+
+        参数:
+            method: 识别方法 ('paddle' 或 'trocr')
+        """
+        self.method = method
+
+        if method == 'paddle':
+            self.ocr = PaddleOCR(use_angle_cls=True, lang='ch', show_log=False)
+        elif method == 'trocr':
+            from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+            self.processor = TrOCRProcessor.from_pretrained('microsoft/trocr-base-handwritten')
+            self.model = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-base-handwritten')
+
+    def preprocess(self, image):
+        """预处理"""
+        return preprocess_handwriting(image)
+
+    def recognize(self, image):
+        """
+        识别简答题答案
+
+        参数:
+            image: 简答题区域图像
+
+        返回:
+            识别的文字
+        """
+        processed = self.preprocess(image)
+
+        if self.method == 'paddle':
+            result = self.ocr.ocr(processed, cls=True)
+
+            text_lines = []
+            for line in result:
+                if line is not None:
+                    text = line[1][0]
+                    confidence = line[1][1]
+                    if confidence > 0.5:
+                        text_lines.append(text)
+
+            return '\n'.join(text_lines)
+
+        elif self.method == 'trocr':
+            from PIL import Image
+            img_pil = Image.fromarray(processed).convert("RGB")
+
+            pixel_values = self.processor(images=img_pil, return_tensors="pt").pixel_values
+            generated_ids = self.model.generate(pixel_values)
+            generated_text = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
+            return generated_text
+
+# 使用
+recognizer = EssayRecognizer(method='paddle')
+answer = recognizer.recognize(essay_image)
+print(f"简答答案: {answer}")
+\end{lstlisting}
+
+\subsection{环节五：实验（10分钟）}
+
+\begin{lstlisting}
+# 完整示例：识别试卷中的简答题
+from paddleocr import PaddleOCR
+import cv2
+
+def recognize_essay_questions(image_path):
+    """识别试卷中的所有简答题"""
+    # 初始化
+    ocr = PaddleOCR(use_angle_cls=True, lang='ch', show_log=False)
+    essay_recognizer = EssayRecognizer(method='paddle')
+
+    # 读取图像
+    img = cv2.imread(image_path)
+
+    # 定位简答区域
+    ocr_result = ocr.ocr(img, cls=True)
+    essay_y = locate_essay_area(img, ocr_result)
+
+    # 裁剪简答区域
+    height, width = img.shape[:2]
+    essay_area = img[essay_y:height, 0:width]
+
+    # 识别
+    answer = essay_recognizer.recognize(essay_area)
+
+    print(f"简答题答案:\n{answer}")
+
+    return answer
+
+# 使用
+recognize_essay_questions('exam_with_essay.jpg')
+\end{lstlisting}
+
+\section{课后作业}
+
+\subsection{作业内容}
+
+\textbf{题目：** 实现简答题手写识别模块}
+
+\textbf{要求：}
+\begin{enumerate}
+\item 使用PaddleOCR或TrOCR识别手写文字
+\item 实现图像预处理优化
+\item 识别手写答案内容
+\item 分析识别准确率
+\end{enumerate}
+
+\subsection{评分标准}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|p{2cm}|}
+\hline
+\textbf{评分项} & \textbf{标准} & \textbf{分值} \\
+\hline
+模型配置 & 正确配置和使用识别模型 & 25分 \\
+\hline
+预处理 & 实现有效的预处理优化 & 25分 \\
+\hline
+识别效果 & 能识别出手写文字 & 30分 \\
+\hline
+分析报告 & 分析识别结果和准确率 & 20分 \\
+\hline
+\textbf{合计} & & \textbf{100分} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{教学反思}
+
+\subsection{重点提醒}
+
+\begin{itemize}
+\item 手写识别准确率受字迹质量影响大
+\item 实际应用中可能需要人工校对
+\item 下周开始课程设计，整合所有模块
+\end{itemize}
+
+\subsection{课程设计预告}
+
+从下周开始的三周，学生将分组开发完整的自动阅卷系统，整合选择题、判断题、简答题三种题型的识别模块。
+
+\end{document}

@@ -1,0 +1,473 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\title{\textbf{\large 第1周教案：计算机视觉导论与图像基础}}
+\author{计算机视觉课程组}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+% ============================================================================
+% 基本信息
+% ============================================================================
+\section{基本信息}
+
+\begin{tabular}{|l|p{12cm}|}
+\hline
+\textbf{周次} & 第1周 \\
+\hline
+\textbf{主题} & 计算机视觉导论与图像基础 \\
+\hline
+\textbf{学时} & 3学时（160分钟） \\
+\hline
+\textbf{故事问题} & 机器是怎么“看见”试卷的？ \\
+\hline
+\textbf{OBE目标} & A1-图像处理：能对图像进行读取、显示、保存操作 \\
+\hline
+\end{tabular}
+
+\section{教学目标}
+
+\begin{enumerate}
+\item \textbf{知识目标}：
+    \begin{itemize}
+    \item 理解计算机视觉的定义与应用领域
+    \item 掌握图像的数字表示方法（像素、RGB、灰度图）
+    \end{itemize}
+
+\item \textbf{能力目标}：
+    \begin{itemize}
+    \item 能够使用OpenCV读取、显示、保存图像
+    \item 能够访问和修改图像的像素值
+    \item 能够实现基础的图像滤镜效果
+    \end{itemize}
+
+\item \textbf{素养目标}：
+    \begin{itemize}
+    \item 建立对计算机视觉课程的兴趣和期待
+    \item 理解从图像到数字的转换思维
+    \end{itemize}
+\end{enumerate}
+
+\section{教学重点与难点}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{教学重点}]
+\begin{itemize}
+\item 图像的数字表示：像素与RGB色彩空间
+\item OpenCV基础操作：imread、imshow、imwrite
+\item 图像数据结构：numpy数组
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{教学难点}]
+\begin{itemize}
+\item RGB通道的理解与分离
+\item 图像数组索引与切片操作
+\end{itemize}
+\end{tcolorbox}
+
+% ============================================================================
+% 教学过程
+% ============================================================================
+\section{教学过程设计}
+
+\subsection{环节一：课程导论（40分钟）}
+
+\subsubsection{1.1 什么是计算机视觉？（10分钟）}
+
+\textbf{引入问题：}
+\begin{itemize}
+\item 人眼是如何看到东西的？
+\item 机器能不能像人一样“看见”世界？
+\end{itemize}
+
+\textbf{CV定义：}
+\begin{quote}
+    计算机视觉是一门研究如何使机器“看”的科学，指用摄影机和电脑代替人眼对目标进行识别、跟踪和测量等机器视觉，并进一步做图形处理。
+\end{quote}
+
+\subsubsection{1.2 CV应用案例展示（20分钟）}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{领域} & \textbf{应用案例} \\
+\hline
+安防监控 & 人脸识别、行为分析、异常检测 \\
+\hline
+自动驾驶 & 车道检测、障碍物识别、交通标志识别 \\
+\hline
+医疗影像 & 肿瘤检测、病灶定位、影像辅助诊断 \\
+\hline
+工业检测 & 缺陷检测、尺寸测量、质量分拣 \\
+\hline
+\textbf{教育领域} & \textbf{自动阅卷系统、作业批改} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{演示：} 播放CV应用短视频，展示人脸识别、自动驾驶等实际应用
+
+\subsubsection{1.3 课程介绍（10分钟）}
+
+\textbf{课程目标：} 造一个能改卷子的AI助教
+
+\textbf{课程路线图：}
+\begin{enumerate}
+\item 装上眼睛 —— 图像基础
+\item 学会识别 —— 三种题型（选择、判断、简答）
+\item 成为助教 —— 完整阅卷系统
+\end{enumerate}
+
+\subsection{环节二：图像的数字表示（50分钟）}
+
+\subsubsection{2.1 图像是什么？（10分钟）}
+
+\textbf{物理图像 $\to$ 数字图像}
+
+\begin{itemize}
+\item 物理图像：连续的光信号分布
+\item 数字图像：离散的像素点阵
+\end{itemize}
+
+\textbf{类比：} 像马赛克拼图，每个小格子就是一个像素
+
+\subsubsection{2.2 像素与分辨率（10分钟）}
+
+\textbf{概念：}
+\begin{itemize}
+\item 像素（Pixel）：图像的最小单位
+\item 分辨率：图像的尺寸（宽$\times$高）
+    \begin{itemize}
+    \item 例：1920$\times$1080 表示宽1920像素，高1080像素
+    \end{itemize}
+\end{itemize}
+
+\textbf{互动问题：} 手机拍照的像素越高越好吗？
+
+\subsubsection{2.3 RGB色彩空间（20分钟）}
+
+\textbf{三原色原理：}
+\begin{itemize}
+\item R（Red）：红色通道
+\item G（Green）：绿色通道
+\item B（Blue）：蓝色通道
+\end{itemize}
+
+\textbf{数值范围：} 0-255（8位无符号整数）
+\begin{itemize}
+\item 0 = 最暗
+\item 255 = 最亮
+\end{itemize}
+
+\textbf{混合示例：}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+R & G & B & 颜色 \\
+\hline
+255 & 0 & 0 & 红色 \\
+\hline
+0 & 255 & 0 & 绿色 \\
+\hline
+0 & 0 & 255 & 蓝色 \\
+\hline
+255 & 255 & 255 & 白色 \\
+\hline
+0 & 0 & 0 & 黑色 \\
+\hline
+255 & 255 & 0 & 黄色 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{灰度图：} 单通道图像，0=黑，255=白
+
+\subsubsection{2.4 Jupyter实验：查看图像数据（10分钟）}
+
+\begin{lstlisting}[caption=查看图像基本信息]
+import cv2
+import numpy as np
+
+# 读取图像
+img = cv2.imread('test.jpg')
+
+# 查看图像信息
+print(f"图像尺寸: {img.shape}")  # (height, width, channels)
+print(f"数据类型: {img.dtype}")  # uint8
+print(f"总像素数: {img.size}")
+
+# 访问单个像素
+pixel = img[100, 100]  # [B, G, R]
+print(f"像素值: {pixel}")
+\end{lstlisting}
+
+\subsection{环节三：OpenCV入门（40分钟）}
+
+\subsubsection{3.1 OpenCV简介（5分钟）}
+
+\begin{itemize}
+\item 全称：Open Source Computer Vision Library
+\item 特点：开源、跨平台、功能强大
+\item 语言支持：C++、Python、Java等
+\end{itemize}
+
+\subsubsection{3.2 环境搭建（10分钟）}
+
+\textbf{安装OpenCV：}
+\begin{lstlisting}
+pip install opencv-python
+pip install opencv-python-headless  # 无GUI环境
+pip install numpy matplotlib
+\end{lstlisting}
+
+\textbf{Jupyter环境配置：}
+\begin{lstlisting}
+# 在Jupyter中显示图像
+import cv2
+import matplotlib.pyplot as plt
+
+# OpenCV读取的是BGR格式，需要转换为RGB
+img = cv2.imread('test.jpg')
+img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+plt.imshow(img_rgb)
+plt.axis('off')
+plt.show()
+\end{lstlisting}
+
+\subsubsection{3.3 基础操作（25分钟）}
+
+\textbf{1. 读取图像（10分钟）：}
+\begin{lstlisting}
+# 读取彩色图像
+img_color = cv2.imread('test.jpg', cv2.IMREAD_COLOR)
+
+# 读取灰度图像
+img_gray = cv2.imread('test.jpg', cv2.IMREAD_GRAYSCALE)
+
+# 读取原始图像（包含alpha通道）
+img_alpha = cv2.imread('test.png', cv2.IMREAD_UNCHANGED)
+\end{lstlisting}
+
+\textbf{2. 显示图像（10分钟）：}
+\begin{lstlisting}
+# 方法1：使用cv2.imshow（本地运行）
+cv2.imshow('Image', img)
+cv2.waitKey(0)  # 等待按键
+cv2.destroyAllWindows()
+
+# 方法2：使用matplotlib（Jupyter推荐）
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.subplot(1, 2, 1)
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+plt.title('Color Image')
+
+plt.subplot(1, 2, 2)
+plt.imshow(img_gray, cmap='gray')
+plt.title('Gray Image')
+plt.show()
+\end{lstlisting}
+
+\textbf{3. 保存图像（5分钟）：}
+\begin{lstlisting}
+# 保存图像
+cv2.imwrite('output.jpg', img)
+cv2.imwrite('output.png', img)  # PNG格式支持透明通道
+\end{lstlisting}
+
+\subsection{环节四：动手实验——给试卷加滤镜（30分钟）}
+
+\subsubsection{4.1 任务说明（5分钟）}
+
+\textbf{任务目标：}
+\begin{enumerate}
+\item 读取一张试卷图片
+\item 实现3种滤镜效果
+\item 保存并展示结果
+\end{enumerate}
+
+\subsubsection{4.2 滤镜实现（20分钟）}
+
+\textbf{滤镜1：灰度化}
+\begin{lstlisting}
+def to_gray(image):
+    """将图像转换为灰度图"""
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+\end{lstlisting}
+
+\textbf{滤镜2：反色效果}
+\begin{lstlisting}
+def invert_color(image):
+    """反色效果：255 - 原值"""
+    return 255 - image
+\end{lstlisting}
+
+\textbf{滤镜3：亮度调整}
+\begin{lstlisting}
+def adjust_brightness(image, value=50):
+    """调整亮度：加上固定值"""
+    # 确保值在0-255范围内
+    new_image = image.astype(int) + value
+    new_image = np.clip(new_image, 0, 255).astype(uint8)
+    return new_image
+\end{lstlisting}
+
+\textbf{完整示例：}
+\begin{lstlisting}
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 读取试卷图像
+img = cv2.imread('exam_paper.jpg')
+
+# 应用滤镜
+gray = to_gray(img)
+inverted = invert_color(img)
+bright = adjust_brightness(img, 50)
+
+# 展示结果
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+
+axes[0, 0].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+axes[0, 0].set_title('原图')
+axes[0, 0].axis('off')
+
+axes[0, 1].imshow(gray, cmap='gray')
+axes[0, 1].set_title('灰度图')
+axes[0, 1].axis('off')
+
+axes[1, 0].imshow(cv2.cvtColor(inverted, cv2.COLOR_BGR2RGB))
+axes[1, 0].set_title('反色')
+axes[1, 0].axis('off')
+
+axes[1, 1].imshow(cv2.cvtColor(bright, cv2.COLOR_BGR2RGB))
+axes[1, 1].set_title('提亮')
+axes[1, 1].axis('off')
+
+plt.tight_layout()
+plt.savefig('filter_results.png', dpi=150)
+plt.show()
+\end{lstlisting}
+
+\subsubsection{4.3 学生练习（5分钟）}
+
+\textbf{练习任务：}
+\begin{enumerate}
+\item 修改亮度调整的值，观察效果变化
+\item 尝试实现"变暗"滤镜
+\end{enumerate}
+
+% ============================================================================
+% 课后作业
+% ============================================================================
+\section{课后作业}
+
+\subsection{作业内容}
+
+\textbf{题目：} 用OpenCV实现3种图像滤镜效果
+
+\textbf{项目关联：} 图像滤镜是自动阅卷系统中预处理的基础。例如：灰度化可以简化后续处理，反色可以增强某些特征，对比度调整可以提高识别准确率。通过本作业，学生将为后续的图像预处理模块打下基础。
+
+\textbf{要求：}
+\begin{enumerate}
+\item 必须包含：灰度化、反色
+\item 自选一种：亮度调整、对比度调整、模糊等
+\item 提交：代码 + 处理前后对比图
+\end{enumerate}
+
+\subsection{评分标准}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|p{2cm}|}
+\hline
+\textbf{评分项} & \textbf{标准} & \textbf{分值} \\
+\hline
+代码正确性 & 能正常运行无错误 & 30分 \\
+\hline
+滤镜实现 & 实现3种滤镜，效果明显 & 40分 \\
+\hline
+代码规范 & 有注释、结构清晰 & 15分 \\
+\hline
+结果展示 & 对比图清晰可见 & 15分 \\
+\hline
+\textbf{合计} & & \textbf{100分} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{提交方式}
+
+\begin{itemize}
+\item 截止时间：下周上课前
+\item 提交格式：学号\_姓名\_week1.zip
+\item 包含内容：Python代码文件 + 结果图片
+\end{itemize}
+
+% ============================================================================
+% 教学反思
+% ============================================================================
+\section{教学反思与改进}
+
+\subsection{预期问题}
+
+\begin{enumerate}
+\item \textbf{环境问题：} 学生可能安装OpenCV失败
+    \begin{itemize}
+    \item 应对：提供详细安装文档和常见问题FAQ
+    \item 备用：准备在线运行环境（如Google Colab）
+    \end{itemize}
+
+\item \textbf{编程基础差异：} 部分学生Python基础薄弱
+    \begin{itemize}
+    \item 应对：提供完整可运行代码，学生只需修改参数
+    \item 准备：Python基础速查手册
+    \end{itemize}
+
+\item \textbf{时间控制：} 实验环节可能超时
+    \begin{itemize}
+    \item 应对：控制演示时间，确保学生有足够动手时间
+    \item 预留：课后答疑时间
+    \end{itemize}
+\end{enumerate}
+
+\subsection{改进记录}
+
+\begin{itemize}
+\item[$\square$] 学生反馈收集
+\item[$\square$] 作业完成情况统计
+\item[$\square$] 下周教案调整
+\end{itemize}
+
+\end{document}

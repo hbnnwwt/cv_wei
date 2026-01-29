@@ -1,0 +1,310 @@
+\documentclass[aspectratio=169, 12pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    backgroundcolor=\color{gray!10}
+}
+
+\title[OCR基础与文字识别]{第7周：OCR基础与文字识别}
+\subtitle{怎么让机器"阅读"文字？}
+\author{计算机视觉课程组}
+\institute{通选课}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{课程概览}
+    \tableofcontents
+\end{frame}
+
+\section{OCR技术概述}
+
+\begin{frame}{什么是OCR？}
+    \begin{block}{OCR：Optical Character Recognition}
+        光学字符识别 —— 将图像中的文字转换为计算机可编辑的文本
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{应用场景：}
+    \begin{itemize}
+        \item 文档数字化
+        \item 车牌识别
+        \item 证件识别
+        \item \textbf{试卷文字识别}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{OCR技术发展}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{阶段} & \textbf{技术} & \textbf{准确率} \\
+            \midrule
+            传统方法 & 模板匹配、特征提取 & 60-70\% \\
+            机器学习 & SVM、HMM & 80-85\% \\
+            深度学习 & CNN、RNN & 90-92\% \\
+            Transformer & TrOCR、Donut & 95\%+ \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{当前：} 端到端大模型时代
+\end{frame}
+
+\begin{frame}{主流OCR工具对比}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{4cm}lp{3cm}}
+            \toprule
+            \textbf{工具} & \textbf{优点} & \textbf{缺点} & \textbf{适用} \\
+            \midrule
+            Tesseract & 开源免费 & 中文准确率一般 & 英文文档 \\
+            PaddleOCR & 中文准确率高 & 需要下载模型 & \textbf{中文场景} \\
+            EasyOCR & 多语言支持 & 速度较慢 & 多语言混合 \\
+            TrOCR & 准确率最高 & 资源占用大 & 高精度场景 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{本课程推荐：} PaddleOCR（中文友好、易用）
+\end{frame}
+
+\section{PaddleOCR快速上手}
+
+\begin{frame}[fragile]{PaddleOCR安装}
+    \begin{lstlisting}
+# 安装PaddlePaddle
+pip install paddlepaddle
+
+# 安装PaddleOCR
+pip install paddleocr
+
+# 安装其他依赖
+pip install opencv-python pillow
+    \end{lstlisting}
+
+    \begin{alertblock}{注意}
+        \begin{itemize}
+            \item 首次使用会自动下载模型
+            \item 需要联网
+            \item 首次运行较慢
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{基础使用}
+    \begin{lstlisting}
+from paddleocr import PaddleOCR
+
+# 初始化OCR
+ocr = PaddleOCR(use_angle_cls=True, lang='ch')
+
+# 识别图像
+result = ocr.ocr('exam_paper.jpg', cls=True)
+
+# 打印结果
+for line in result:
+    text = line[1][0]      # 文字内容
+    confidence = line[1][1]  # 置信度
+    print(f"{text} ({confidence:.4f})")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{结果格式}
+    \textbf{返回格式：}
+    \begin{verbatim}
+[
+  [
+    [[x1,y1], [x2,y2], [x3,y3], [x4,y4]],  # 文字框坐标
+    ('文字内容', 0.98)                        # 文字+置信度
+  ],
+  ...
+]
+    \end{verbatim}
+
+    \vspace{0.2cm}
+
+    \textbf{字段说明：}
+    \begin{itemize}
+        \item 坐标：文字框的四个角点
+        \item 文字内容：识别出的文本
+        \item 置信度：0-1之间，越接近1越准确
+    \end{itemize}
+\end{frame}
+
+\section{试卷文字识别实战}
+
+\begin{frame}[fragile]{识别试卷标题}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def extract_title(ocr_result):
+    """提取试卷标题"""
+    boxes_with_height = []
+
+    for line in ocr_result:
+        text = line[1][0]
+        boxes = line[0]
+
+        # 计算字号（高度）
+        h = np.linalg.norm(np.array(boxes[0]) - np.array(boxes[3]))
+        boxes_with_height.append((text, h, boxes))
+
+    # 按高度排序，取最大的作为标题
+    boxes_with_height.sort(key=lambda x: x[1], reverse=True)
+    title = ' '.join([t[0] for t in boxes_with_height[:3]])
+
+    return title
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{识别题号}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import re
+
+def extract_question_numbers(ocr_result):
+    """提取题号"""
+    questions = []
+
+    for line in ocr_result:
+        text = line[1][0]
+
+        # 匹配题号模式
+        patterns = [
+            r'^(\d+)[.、．]',      # 1. 1、1．
+            r'^[（(](\d+)[)）]',   # （1）
+            r'^第?(\d+)题'        # 第1题
+        ]
+
+        for pattern in patterns:
+            match = re.match(pattern, text.strip())
+            if match:
+                num = int(match.group(1))
+                questions.append(num)
+                break
+
+    return questions
+    \end{lstlisting}
+\end{frame}
+
+\section{OCR优化}
+
+\begin{frame}{图像预处理优化}
+    \textbf{专门的OCR预处理：}
+    \begin{lstlisting}
+def preprocess_for_ocr(image):
+    """OCR优化预处理"""
+    # 转灰度
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # 去噪
+    denoised = cv2.fastNlMeansDenoising(gray)
+
+    # 二值化
+    _, binary = cv2.threshold(
+        denoised, 0, 255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    return binary
+    \end{lstlisting}
+
+    \textbf{关键：} 图像质量直接影响OCR效果！
+\end{frame}
+
+\section{思考题}
+
+\begin{frame}{课堂思考题}
+    \begin{block}{问题1：OCR技术}
+        \begin{itemize}
+            \item 为什么深度学习让OCR准确率大幅提升？
+            \item Tesseract和PaddleOCR各有什么优势？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：文字识别}
+        \begin{itemize}
+            \item OCR识别结果中"confidence"是什么意思？
+            \item 如何处理OCR识别错误的文字？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{课后作业}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目}
+        用OCR识别试卷中的印刷文字
+    \end{block}
+
+    \textbf{要求：}
+    \begin{enumerate}
+        \item 安装配置PaddleOCR
+        \item 识别试卷标题和题号
+        \item 提取所有文字内容
+        \item 可视化标注识别结果
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    \textbf{评分标准：}
+    \begin{itemize}
+        \item 环境配置：20分
+        \item 识别效果：40分
+        \item 信息提取：25分
+        \item 可视化：15分
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第8周：手写简答题识别}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{能看懂学生写的答案吗？}
+
+        \vspace{0.3cm}
+
+        你将学会：
+        \begin{itemize}
+            \item 手写识别的挑战
+            \item TrOCR/PaddleOCR手写模型
+            \item 手写文字识别
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+    \end{center}
+\end{frame}
+
+\end{document}

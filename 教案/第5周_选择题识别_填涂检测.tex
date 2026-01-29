@@ -1,0 +1,609 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\title{\textbf{\large 第5周教案：选择题识别（填涂检测）}}
+\author{计算机视觉课程组}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabular}{|l|p{12cm}|}
+\hline
+\textbf{周次} & 第5周 \\
+\hline
+\textbf{主题} & 选择题识别（填涂检测） \\
+\hline
+\textbf{学时} & 3学时（160分钟） \\
+\hline
+\textbf{故事问题} & 怎么知道选了A还是B？ \\
+\hline
+\textbf{OBE目标} & A3-特征识别：能识别填涂答案 \\
+\hline
+\textbf{项目贡献} & 实现选择题自动识别模块 \\
+\hline
+\end{tabular}
+
+\section{教学目标}
+
+\begin{enumerate}
+\item \textbf{知识目标}：
+    \begin{itemize}
+    \item 理解OMR（光学标记识别）原理
+    \item 掌握像素密度统计方法
+    \item 了解多选项处理策略
+    \end{itemize}
+
+\item \textbf{能力目标}：
+    \begin{itemize}
+    \item 能够定位填涂选项位置
+    \item 能够判断选项是否被填涂
+    \item 能够识别单选和多选题型
+    \end{itemize}
+
+\item \textbf{素养目标}：
+    \begin{itemize}
+    \item 理解阈值对识别结果的影响
+    \item 培养参数调优的实验能力
+    \end{itemize}
+\end{enumerate}
+
+\section{教学重点与难点}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{教学重点}]
+\begin{itemize}
+\item OMR原理：基于像素密度的填涂检测
+\item 选项区域定位与分割
+\item 填涂判断与答案识别
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{教学难点}]
+\begin{itemize}
+\item 阈值选择（区分填涂与未填涂）
+\item 多选题识别
+\end{itemize}
+\end{tcolorbox}
+
+\section{教学过程设计}
+
+\subsection{环节一：OMR原理介绍（30分钟）}
+
+\subsubsection{1.1 什么是OMR？（10分钟）}
+
+\textbf{定义：** Optical Mark Recognition，光学标记识别}
+
+\textbf{应用场景：**
+\begin{itemize}
+\item 标准化考试答题卡
+\item 问卷调查
+\item 彩票选号
+\end{itemize}
+
+\textbf{核心思想：** 填涂区域与空白区域的像素密度差异}
+
+\begin{center}
+填涂区域 $\to$ 深色像素多 $\to$ 密度高 \\
+空白区域 $\to$ 浅色像素多 $\to$ 密度低
+\end{center}
+
+\subsubsection{1.2 填涂识别流程（10分钟）}
+
+\begin{enumerate}
+\item \textbf{定位选项区域}：找到每个选项的位置
+\item \textbf{提取选项图像}：裁剪出单个选项区域
+\item \textbf{二值化处理}：转换为黑白图像
+\item \textbf{统计像素密度}：计算深色像素占比
+\item \textbf{阈值判断}：密度超过阈值则认为已填涂
+\end{enumerate}
+
+\subsubsection{1.3 数据准备（10分钟）}
+
+\textbf{标准答题卡格式：**
+\begin{itemize}
+\item 选项排列：横向或纵向
+\item 选项数量：通常4个（A/B/C/D）
+\item 选项间距：固定距离
+\item 选项尺寸：固定大小
+\end{itemize}
+
+\textbf{示例答题卡：}
+
+\begin{verbatim}
+题目1: [A] [B] [C] [D]
+题目2: [A] [B] [C] [D]
+题目3: [A] [B] [C] [D]
+\end{verbatim}
+
+\subsection{环节二：选项区域定位（30分钟）}
+
+\subsubsection{2.1 固定位置法（10分钟）}
+
+\textbf{适用场景：** 标准答题卡，位置固定}
+
+\begin{lstlisting}
+# 假设选项位置固定，预先定义
+OPTION_SIZE = 30  # 选项大小（像素）
+OPTION_SPACING = 50  # 选项间距（像素）
+START_X = 100  # 起始X坐标
+START_Y = 200  # 起始Y坐标
+
+def get_option_positions(num_questions=10, num_options=4):
+    """
+    获取所有选项的位置（固定格式）
+
+    参数:
+        num_questions: 题目数量
+        num_options: 每题选项数量
+
+    返回:
+        选项位置列表 [[(x1,y1,w1,h1), (x2,y2,w2,h2), ...], ...]
+    """
+    positions = []
+    for q in range(num_questions):
+        question_options = []
+        for o in range(num_options):
+            x = START_X + o * OPTION_SPACING
+            y = START_Y + q * OPTION_SPACING
+            question_options.append((x, y, OPTION_SIZE, OPTION_SIZE))
+        positions.append(question_options)
+
+    return positions
+\end{lstlisting}
+
+\subsubsection{2.2 基于轮廓的定位（20分钟）}
+
+\textbf{适用场景：** 选项位置不完全固定}
+
+\begin{lstlisting}
+def find_option_bubbles(binary_image, min_area=100, max_area=1000):
+    """
+    通过连通域分析找到选项气泡
+
+    参数:
+        binary_image: 二值图像
+        min_area: 最小面积
+        max_area: 最大面积
+
+    返回:
+        选项区域列表 [(x, y, w, h), ...]
+    """
+    # 连通域分析
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+        binary_image
+    )
+
+    bubbles = []
+    for i in range(1, num_labels):
+        area = stats[i, cv2.CC_STAT_AREA]
+
+        # 面积筛选
+        if min_area <= area <= max_area:
+            # 获取边界矩形
+            x = stats[i, cv2.CC_STAT_LEFT]
+            y = stats[i, cv2.CC_STAT_TOP]
+            w = stats[i, cv2.CC_STAT_WIDTH]
+            h = stats[i, cv2.CC_STAT_HEIGHT]
+
+            # 长宽比筛选（气泡通常接近圆形）
+            aspect_ratio = float(w) / h if h > 0 else 0
+            if 0.5 < aspect_ratio < 2.0:
+                bubbles.append((x, y, w, h))
+
+    return bubbles
+
+def group_bubbles_by_question(bubbles, questions=10, options=4):
+    """
+    将气泡按题目分组
+
+    参数:
+        bubbles: 所有气泡位置
+        questions: 题目数量
+        options: 每题选项数
+
+    返回:
+        分组后的气泡位置
+    """
+    # 按Y坐标排序（题目顺序）
+    bubbles_sorted = sorted(bubbles, key=lambda b: b[1])
+
+    # 简单分组：假设每题的气泡Y坐标相近
+    groups = []
+    for i in range(questions):
+        group = bubbles_sorted[i*options : (i+1)*options]
+        # 每组内按X坐标排序（A/B/C/D顺序）
+        group = sorted(group, key=lambda b: b[0])
+        groups.append(group)
+
+    return groups
+\end{lstlisting}
+
+\subsection{环节三：填涂检测核心算法（50分钟）}
+
+\subsubsection{3.1 像素密度统计（20分钟）}
+
+\textbf{方法1：非零像素计数}
+
+\begin{lstlisting}
+def calculate_density_1(option_roi, threshold=127):
+    """
+    方法1：统计非零像素数量
+
+    参数:
+        option_roi: 选项区域图像（灰度图）
+        threshold: 二值化阈值
+
+    返回:
+        填涂密度（0-1之间）
+    """
+    # 二值化（反色：填涂变白，空白变黑）
+    _, binary = cv2.threshold(
+        option_roi,
+        threshold,
+        255,
+        cv2.THRESH_BINARY_INV
+    )
+
+    # 统计非零像素（白色像素）
+    non_zero = cv2.countNonZero(binary)
+
+    # 计算密度
+    total_pixels = binary.shape[0] * binary.shape[1]
+    density = float(non_zero) / total_pixels
+
+    return density
+\end{lstlisting}
+
+\textbf{方法2：像素均值}
+
+\begin{lstlisting}
+def calculate_density_2(option_roi):
+    """
+    方法2：计算像素均值
+
+    参数:
+        option_roi: 选项区域图像（灰度图）
+
+    返回:
+        填涂密度（0-1之间）
+    """
+    # 填涂区域像素值低（接近0）
+    # 空白区域像素值高（接近255）
+
+    # 计算均值
+    mean_value = cv2.mean(option_roi)[0]
+
+    # 转换为密度（填涂越多，均值越低）
+    density = 1.0 - (mean_value / 255.0)
+
+    return density
+\end{lstlisting}
+
+\textbf{方法3：中心区域统计（更鲁棒）}
+
+\begin{lstlisting}
+def calculate_density_3(option_roi, center_ratio=0.6):
+    """
+    方法3：只统计中心区域（边缘可能不整齐）
+
+    参数:
+        option_roi: 选项区域图像
+        center_ratio: 中心区域比例
+
+    返回:
+        填涂密度
+    """
+    h, w = option_roi.shape
+
+    # 计算中心区域
+    margin_h = int(h * (1 - center_ratio) / 2)
+    margin_w = int(w * (1 - center_ratio) / 2)
+
+    center = option_roi[margin_h:h-margin_h, margin_w:w-margin_w]
+
+    # 统计中心区域
+    _, binary = cv2.threshold(center, 127, 255, cv2.THRESH_BINARY_INV)
+    non_zero = cv2.countNonZero(binary)
+    total_pixels = center.shape[0] * center.shape[1]
+
+    density = float(non_zero) / total_pixels
+
+    return density
+\end{lstlisting}
+
+\subsubsection{3.2 阈值确定（15分钟）}
+
+\textbf{固定阈值法：**
+
+\begin{lstlisting}
+def is_filled_fixed(density, threshold=0.3):
+    """
+    固定阈值判断
+
+    参数:
+        density: 填涂密度
+        threshold: 阈值（通常0.2-0.4）
+
+    返回:
+        是否填涂
+    """
+    return density >= threshold
+\end{lstlisting}
+
+\textbf{自适应阈值法：**
+
+\begin{lstlisting}
+def determine_adaptive_threshold(densities):
+    """
+    自适应确定阈值（基于所有选项的密度分布）
+
+    参数:
+        densities: 所有选项的密度列表
+
+    返回:
+        最佳阈值
+    """
+    densities = np.array(densities)
+
+    # 方法1：使用均值
+    threshold = np.mean(densities)
+
+    # 方法2：使用大津法思想
+    # 找到密度分布的"谷底"
+    hist, bins = np.histogram(densities, bins=50)
+    # 找到直方图的最低点作为阈值
+    threshold = bins[np.argmin(hist) + 1]
+
+    return threshold
+\end{lstlisting}
+
+\subsubsection{3.3 单选题识别（15分钟）}
+
+\begin{lstlisting}
+def recognize_single_choice(question_image, option_positions):
+    """
+    识别单选题答案
+
+    参数:
+        question_image: 题目区域图像
+        option_positions: 选项位置列表 [(x,y,w,h), ...]
+
+    返回:
+        答案（'A', 'B', 'C', 'D' 或 None）
+    """
+    densities = []
+
+    # 计算每个选项的密度
+    for i, (x, y, w, h) in enumerate(option_positions):
+        roi = question_image[y:y+h, x:x+w]
+        density = calculate_density_1(roi)
+        densities.append(density)
+
+    # 自适应确定阈值
+    threshold = determine_adaptive_threshold(densities)
+
+    # 找到密度最高的选项
+    max_density = max(densities)
+
+    # 只有最高密度超过阈值才认为有效
+    if max_density >= threshold:
+        answer_idx = densities.index(max_density)
+        return chr(ord('A') + answer_idx)
+
+    return None  # 未填涂
+\end{lstlisting}
+
+\subsection{环节四：完整选择题识别模块（30分钟）}
+
+\begin{lstlisting}
+class ChoiceRecognizer:
+    """选择题识别器"""
+
+    def __init__(self, threshold=0.3):
+        """
+        初始化
+
+        参数:
+            threshold: 填涂判断阈值
+        """
+        self.threshold = threshold
+        self.option_labels = ['A', 'B', 'C', 'D']
+
+    def preprocess(self, image):
+        """预处理图像"""
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        blur = cv2.GaussianBlur(gray, (5, 5), 0)
+        return blur
+
+    def calculate_density(self, roi):
+        """计算填涂密度"""
+        _, binary = cv2.threshold(roi, 127, 255, cv2.THRESH_BINARY_INV)
+        non_zero = cv2.countNonZero(binary)
+        total = roi.shape[0] * roi.shape[1]
+        return float(non_zero) / total
+
+    def recognize_question(self, question_img, option_positions):
+        """
+        识别单道选择题
+
+        参数:
+            question_img: 题目图像
+            option_positions: 选项位置列表
+
+        返回:
+            (答案, 密度列表)
+        """
+        densities = []
+        filled_options = []
+
+        for x, y, w, h in option_positions:
+            roi = question_img[y:y+h, x:x+w]
+            density = self.calculate_density(roi)
+            densities.append(density)
+
+            if density >= self.threshold:
+                filled_options.append(self.option_labels[len(filled_options)])
+
+        # 单选题：只能有一个选项
+        if len(filled_options) == 1:
+            return filled_options[0], densities
+        elif len(filled_options) > 1:
+            # 多选，取密度最高的
+            max_idx = densities.index(max(densities))
+            return self.option_labels[max_idx], densities
+        else:
+            return None, densities
+
+    def recognize_all(self, image, question_groups):
+        """
+        识别所有选择题
+
+        参数:
+            image: 完整答题卡图像
+            question_groups: 所有题目的选项位置分组
+
+        返回:
+            答案列表
+        """
+        processed = self.preprocess(image)
+        answers = []
+
+        for i, option_positions in enumerate(question_groups):
+            answer, densities = self.recognize_question(processed, option_positions)
+            answers.append({
+                'question': i + 1,
+                'answer': answer,
+                'densities': densities
+            })
+
+        return answers
+
+    def visualize(self, image, answers, question_groups):
+        """可视化识别结果"""
+        result = image.copy()
+
+        for i, (ans, positions) in enumerate(zip(answers, question_groups)):
+            for j, (x, y, w, h) in enumerate(positions):
+                label = chr(ord('A') + j)
+
+                # 判断是否填涂
+                if ans['answer'] == label:
+                    color = (0, 255, 0)  # 绿：正确答案
+                    thickness = 3
+                else:
+                    color = (0, 0, 255)  # 红：未填涂
+                    thickness = 1
+
+                cv2.rectangle(result, (x, y), (x+w, y+h), color, thickness)
+
+                # 标签
+                cv2.putText(
+                    result, label, (x, y-5),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1
+                )
+
+        return result
+\end{lstlisting}
+
+\subsection{环节五：实验与测试（20分钟）}
+
+\begin{lstlisting}
+# 使用示例
+import cv2
+
+# 读取答题卡图像
+image = cv2.imread('answer_sheet.jpg')
+
+# 创建识别器
+recognizer = ChoiceRecognizer(threshold=0.3)
+
+# 定义选项位置（实际需要自动检测）
+# 这里简化为固定位置
+option_groups = get_option_positions(num_questions=10, num_options=4)
+
+# 识别所有答案
+answers = recognizer.recognize_all(image, option_groups)
+
+# 打印结果
+for ans in answers:
+    print(f"题目{ans['question']}: {ans['answer']}")
+
+# 可视化
+result = recognizer.visualize(image, answers, option_groups)
+cv2.imwrite('result.jpg', result)
+\end{lstlisting}
+
+\section{课后作业}
+
+\subsection{作业内容}
+
+\textbf{题目：** 实现选择题填涂识别模块}
+
+\textbf{要求：**
+\begin{enumerate}
+\item 实现选项区域定位（固定或自动）
+\item 实现填涂密度计算
+\item 识别单选题答案
+\item 可视化标注识别结果
+\end{enumerate}
+
+\subsection{评分标准}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|p{2cm}|}
+\hline
+\textbf{评分项} & \textbf{标准} & \textbf{分值} \\
+\hline
+选项定位 & 准确定位所有选项区域 & 25分 \\
+\hline
+密度计算 & 正确计算填涂密度 & 25分 \\
+\hline
+答案识别 & 正确识别填涂答案 & 30分 \\
+\hline
+可视化 & 清晰标注识别结果 & 10分 \\
+\hline
+代码质量 & 结构清晰，有注释 & 10分 \\
+\hline
+\textbf{合计} & & \textbf{100分} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{教学反思}
+
+\subsection{重点提醒}
+
+\begin{itemize}
+\item 阈值选择是关键，需要根据实际答题卡调整
+\item 中心区域统计比全区域统计更鲁棒
+\item 下周将学习判断题识别，技术类似但关注形状特征
+\end{itemize}
+
+\end{document}

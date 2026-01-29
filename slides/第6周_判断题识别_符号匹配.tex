@@ -1,0 +1,282 @@
+\documentclass[aspectratio=169, 12pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{amssymb}
+
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    backgroundcolor=\color{gray!10}
+}
+
+\title[判断题识别（符号匹配）]{第6周：判断题识别（符号匹配）}
+\subtitle{怎么看到是$\checkmark$还是$\times$？}
+\author{计算机视觉课程组}
+\institute{通选课}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{课程概览}
+    \tableofcontents
+\end{frame}
+
+\section{判断题识别概述}
+
+\begin{frame}{判断题的特点}
+    \textbf{常见符号：}
+    \begin{itemize}
+        \item $\checkmark$（正确/对）
+        \item $\times$（错误/错）
+        \item $\sqrt{}$（正确）
+        \item $\bigcirc$（正确）
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{与选择题的区别：}
+    \begin{itemize}
+        \item 选择题：关注\textbf{填涂密度}
+        \item 判断题：关注\textbf{符号形状}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{识别方案}
+    \textbf{方案1：轮廓特征法}
+    \begin{itemize}
+        \item 提取符号轮廓
+        \item 计算形状特征
+        \item 根据特征判断符号类型
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{方案2：模板匹配法}
+    \begin{itemize}
+        \item 准备标准符号模板
+        \item 与模板进行匹配
+        \item 选择最佳匹配结果
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{推荐：先尝试特征法，效果不好再用模板法}
+\end{frame}
+
+\section{轮廓特征提取}
+
+\begin{frame}{基础轮廓特征}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{5cm}l}
+            \toprule
+            \textbf{特征} & \textbf{说明} & \textbf{OpenCV函数} \\
+            \midrule
+            面积 & 轮廓所围区域大小 & cv2.contourArea() \\
+            周长 & 轮廓长度 & cv2.arcLength() \\
+            长宽比 & 宽度/高度 & boundingRect \\
+            占空比 & 面积/边界矩形面积 & area / (w*h) \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{高级形状特征}
+    \textbf{1. 圆度（Circularity）}
+    $$C = \frac{4\pi \times Area}{Perimeter^2}$$
+
+    \begin{itemize}
+        \item 圆形：接近1
+        \item $\checkmark$：较低（开口形状）
+        \item $\times$：更低（两线交叉）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{2. 凸性（Convexity）}
+    $$Convexity = \frac{Area}{ConvexHullArea}$$
+
+    \begin{itemize}
+        \item $\bigcirc$（凸）：接近1
+        \item $\checkmark$（凹）：小于1
+    \end{itemize}
+\end{frame}
+
+\section{基于特征的分类}
+
+\begin{frame}[fragile]{特征提取与分类}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def extract_features(contour):
+    """提取轮廓特征"""
+    features = {}
+
+    # 基础特征
+    features['area'] = cv2.contourArea(contour)
+    features['perimeter'] = cv2.arcLength(contour, True)
+
+    # 形状特征
+    features['circularity'] = 4 * np.pi * features['area'] / (features['perimeter'] ** 2)
+
+    # 凸性
+    hull = cv2.convexHull(contour)
+    hull_area = cv2.contourArea(hull)
+    features['convexity'] = features['area'] / hull_area if hull_area > 0 else 0
+
+    return features
+
+def classify_symbol(features):
+    """根据特征分类"""
+    if features['circularity'] > 0.8:
+        return 'circle'  # ○
+    elif features['convexity'] < 0.8:
+        return 'check'   # ✓
+    else:
+        return 'cross'   # ×
+    \end{lstlisting}
+\end{frame}
+
+\section{模板匹配法}
+
+\begin{frame}{模板匹配原理}
+    \textbf{思想：} 在图像中滑动模板，计算相似度
+
+    \vspace{0.3cm}
+
+    \textbf{相似度度量：}
+    \begin{itemize}
+        \item TM\_CCOEFF\_NORMED：归一化相关系数
+        \item 1 = 完美匹配
+        \item -1 = 完全不匹配
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw] (template) {模板};
+            \node[draw, right=2cm of template] (image) {图像};
+            \node[below=0.5cm of template] (slide) {滑动};
+            \node[below=0.5cm of image] (match) {匹配};
+
+            \draw[->, dashed] (template) -- (image);
+            \draw[->] (slide) -- (match);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{模板匹配实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def match_template(roi, templates, threshold=0.7):
+    """模板匹配"""
+    best_match = None
+    best_value = -float('inf')
+
+    for symbol_type, template in templates.items():
+        # 调整大小
+        if template.shape != roi.shape:
+            template = cv2.resize(template, (roi.shape[1], roi.shape[0]))
+
+        # 模板匹配
+        result = cv2.matchTemplate(roi, template, cv2.TM_CCOEFF_NORMED)
+        match_value = result[0, 0]
+
+        if match_value > best_value:
+            best_value = match_value
+            best_match = symbol_type
+
+    return best_match if best_value >= threshold else 'unknown'
+    \end{lstlisting}
+\end{frame}
+
+\section{思考题}
+
+\begin{frame}{课堂思考题}
+    \begin{block}{问题1：形状特征}
+        \begin{itemize}
+            \item 如何区分$\checkmark$和$\times$的形状？
+            \item 凸性为什么能判断凹凸形状？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：模板匹配}
+        \begin{itemize}
+            \item 模板匹配适用于什么场景？
+            \item 如果手写符号形变严重，怎么办？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{课后作业}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目}
+        实现判断题符号识别模块
+    \end{block}
+
+    \textbf{要求：}
+    \begin{enumerate}
+        \item 实现轮廓特征提取
+        \item 实现基于规则的分类器
+        \item 识别$\checkmark$和$\times$符号
+        \item 可视化标注识别结果
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    \textbf{评分标准：}
+    \begin{itemize}
+        \item 特征提取：30分
+        \item 分类实现：35分
+        \item 识别效果：25分
+        \item 可视化：10分
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第7周：OCR基础与文字识别}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{怎么让机器"阅读"文字？}
+
+        \vspace{0.3cm}
+
+        你将学会：
+        \begin{itemize}
+            \item OCR技术原理
+            \item PaddleOCR使用
+            \item 印刷文字识别
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+    \end{center}
+\end{frame}
+
+\end{document}

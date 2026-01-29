@@ -1,0 +1,31 @@
+# LaTeX编译生成的中间文件
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.vrb
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# 常见LaTeX临时文件
+*.bbl
+*.blg
+*.idx
+*.ilg
+*.ind
+*.lof
+*.lot
+*.brf
+
+ # 文档系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# 备份文件
+*_backup.*
+*~*

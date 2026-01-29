@@ -1,0 +1,341 @@
+\documentclass[aspectratio=169, 12pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    backgroundcolor=\color{gray!10}
+}
+
+\title[AI辅助编程工具实战]{第2周：AI辅助编程工具实战}
+\subtitle{怎么让AI帮我写代码？}
+\author{计算机视觉课程组}
+\institute{通选课}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{课程概览}
+    \tableofcontents
+\end{frame}
+
+\section{为什么需要AI辅助编程}
+
+\begin{frame}{传统编程的痛点}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{alertblock}{常见问题}
+            \begin{itemize}
+                \item API参数复杂，记不住
+                \item 报错信息看不懂
+                \item 算法原理理解困难
+                \item 编程基础薄弱
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{AI辅助的优势}
+            \begin{itemize}
+                \item 快速生成代码框架
+                \item 解释错误原因
+                \item 提供优化建议
+                \item 降低学习门槛
+            \end{itemize}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\section{主流AI工具对比}
+
+\begin{frame}{主流AI编程工具}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{5cm}l}
+            \toprule
+            \textbf{工具} & \textbf{特点} & \textbf{适用场景} \\
+            \midrule
+            ChatGPT & 对话能力强，代码生成准确 & 学习、调试、解释 \\
+            Claude & 代码分析深入，长文本处理好 & 代码审查、架构设计 \\
+            GitHub Copilot & IDE集成，实时补全 & 日常编码 \\
+            通义千问 & 中文友好，国内可用 & 中文问题咨询 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{选择建议：}
+    \begin{itemize}
+        \item 学习理解：ChatGPT/Claude
+        \item 实时编码：GitHub Copilot/Cursor
+        \item 国内使用：通义千问/DeepSeek
+    \end{itemize}
+\end{frame}
+
+\section{Prompt工程实战}
+
+\begin{frame}{什么是Prompt？}
+    \begin{block}{定义}
+        Prompt是给AI的指令或提示词
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{好Prompt的标准：}
+    \begin{enumerate}
+        \item \textbf{具体明确}：不说模糊的话
+        \item \textbf{有上下文}：提供足够的背景信息
+        \item \textbf{有约束}：明确输出格式要求
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw, rounded corners, fill=blue!10] (vague) {模糊："帮我写代码"};
+            \node[draw, rounded corners, fill=green!10, right=2cm of vague] (clear) {具体："用OpenCV实现人脸检测"};
+            \draw[->, thick] (vague) -- node[above]{\textcolor{red}{不要}} (clear);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{CV领域专用Prompt模板}
+    \textbf{模板1：代码生成}
+    \begin{exampleblock}{}
+        请用Python和OpenCV实现以下功能：\\
+        功能描述：[详细描述要实现的功能]\\
+        输入：[描述输入数据格式]\\
+        输出：[描述期望的输出格式]\\
+        要求：
+        \begin{itemize}
+            \item 使用OpenCV库
+            \item 代码有详细注释
+            \item 包含使用示例
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{CV领域专用Prompt模板（续）}
+    \textbf{模板2：代码解释}
+    \begin{exampleblock}{}
+        请解释以下OpenCV代码的含义：\\
+        代码：[粘贴代码]\\
+        要求：
+        \begin{itemize}
+            \item 逐行解释代码功能
+            \item 说明关键参数的作用
+            \item 指出可能的错误用法
+        \end{itemize}
+    \end{exampleblock}
+
+    \vspace{0.2cm}
+
+    \textbf{模板3：调试求助}
+    \begin{exampleblock}{}
+        我的OpenCV代码运行出错，请帮我分析：\\
+        代码：[粘贴代码]\\
+        错误信息：[粘贴报错信息]\\
+        预期行为：[描述期望的结果]
+    \end{exampleblock}
+\end{frame}
+
+\section{实战：人脸检测}
+
+\begin{frame}[fragile]{实战任务：用AI辅助实现人脸检测}
+    \textbf{Prompt示例：}
+    \begin{verbatim}
+请用Python和OpenCV实现一个人脸检测程序：
+功能：从图片中检测所有人脸，并用矩形框标注
+输入：图片文件路径
+输出：标注了人脸框的图片
+要求：
+- 使用OpenCV的Haar级联分类器
+- 在每个人脸周围绘制绿色矩形框
+- 显示检测到的人脸数量
+- 代码有详细中文注释
+    \end{verbatim}
+
+    \vspace{0.2cm}
+
+    \textbf{预期输出：完整的可运行代码}
+\end{frame}
+
+\begin{frame}[fragile]{AI生成的代码示例}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+
+def detect_faces(image_path):
+    """检测图像中的人脸并标注"""
+    # 加载预训练模型
+    face_cascade = cv2.CascadeClassifier(
+        cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+    )
+
+    # 读取图像
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # 检测人脸
+    faces = face_cascade.detectMultiScale(
+        gray, scaleFactor=1.1, minNeighbors=5
+    )
+
+    # 绘制检测框
+    for (x, y, w, h) in faces:
+        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+    print(f"检测到 {len(faces)} 个人脸")
+    return img
+
+result = detect_faces('test.jpg')
+    \end{lstlisting}
+\end{frame}
+
+\section{代码调试技巧}
+
+\begin{frame}{AI辅助调试流程}
+    \begin{enumerate}
+        \item \textbf{复制错误信息}
+            \begin{itemize}
+                \item 完整复制报错的traceback
+                \item 注意错误类型和行号
+            \end{itemize}
+
+        \item \textbf{准备上下文}
+            \begin{itemize}
+                \item 粘贴相关代码片段
+                \item 说明输入数据
+            \end{itemize}
+
+        \item \textbf{向AI提问}
+            \begin{itemize}
+                \item 使用模板化Prompt
+                \item 明确预期vs实际行为
+            \end{itemize}
+
+        \item \textbf{验证解决方案}
+            \begin{itemize}
+                \item 不要盲目信任AI
+                \item 理解修改原理
+                \item 测试修改效果
+            \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{常见错误案例}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{错误} & \textbf{原因} & \textbf{AI建议} \\
+            \midrule
+            img = None & 图片路径不存在 & 检查路径，用os.path.exists验证 \\
+            \midrule
+            颜色异常 & OpenCV是BGR，matplotlib是RGB & 用cv2.cvtColor转换 \\
+            \midrule
+            数据溢出 & uint8范围是0-255 & 用np.clip或cv2.add \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\section{思考题}
+
+\begin{frame}{课堂思考题}
+    \begin{block}{问题1：AI工具的使用}
+        \begin{itemize}
+            \item 在什么情况下适合使用AI辅助编程？
+            \item AI生成的代码一定正确吗？如何验证？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：Prompt工程}
+        \begin{itemize}
+            \item 什么样的Prompt是好的Prompt？
+            \item 如何向AI描述一个模糊的错误信息？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{课后作业}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目}
+        用AI辅助实现答题卡边界检测程序
+    \end{block}
+
+    \textbf{项目关联：} 这是自动阅卷系统的第一步 —— 定位答题卡在图像中的位置
+
+    \textbf{要求：}
+    \begin{enumerate}
+        \item 用Prompt向AI询问答题卡边界检测的实现方法
+        \item 记录完整的AI对话过程（至少3轮交互）
+        \item 运行并测试代码（可使用试卷图片）
+        \item 撰写反思报告
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    \textbf{提交内容：}
+    \begin{itemize}
+        \item AI对话记录（截图或复制文本）
+        \item 最终代码
+        \item 测试结果图片（标注出检测到的边界）
+        \item 反思报告
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第3周：图像预处理与增强}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{试卷拍照模糊怎么办？}
+
+        \vspace{0.3cm}
+
+        你将学会：
+        \begin{itemize}
+            \item 图像去噪（高斯/中值滤波）
+            \item 图像二值化
+            \item 透视矫正
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+
+        \vspace{1cm}
+
+        \Large 有问题随时交流
+    \end{center}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,551 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\title{\textbf{\large 第3周教案：图像预处理与增强}}
+\author{计算机视觉课程组}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabular}{|l|p{12cm}|}
+\hline
+\textbf{周次} & 第3周 \\
+\hline
+\textbf{主题} & 图像预处理与增强 \\
+\hline
+\textbf{学时} & 3学时（160分钟） \\
+\hline
+\textbf{故事问题} & 试卷拍照模糊怎么办？ \\
+\hline
+\textbf{OBE目标} & A1-图像处理：能对图像进行去噪、二值化、矫正操作 \\
+\hline
+\textbf{项目贡献} & 为所有题型识别提供清晰、规范的输入图像 \\
+\hline
+\end{tabular}
+
+\section{教学目标}
+
+\begin{enumerate}
+\item \textbf{知识目标}：
+    \begin{itemize}
+    \item 理解图像噪声的类型与来源
+    \item 掌握图像滤波的基本原理
+    \item 理解二值化与阈值分割的原理
+    \end{itemize}
+
+\item \textbf{能力目标}：
+    \begin{itemize}
+    \item 能够实现图像去噪（高斯/中值滤波）
+    \item 能够实现图像二值化
+    \item 能够进行透视矫正
+    \end{itemize}
+
+\item \textbf{素养目标}：
+    \begin{itemize}
+    \item 理解预处理对后续识别的重要性
+    \item 培养参数调优的实验思维
+    \end{itemize}
+\end{enumerate}
+
+\section{教学重点与难点}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{教学重点}]
+\begin{itemize}
+\item 图像滤波：高斯滤波、中值滤波
+\item 图像二值化：全局阈值、自适应阈值
+\item 透视变换：四点变换矫正
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{教学难点}]
+\begin{itemize}
+\item 阈值的选择与优化
+\item 透视变换矩阵的理解
+\end{itemize}
+\end{tcolorbox}
+
+\section{教学过程设计}
+
+\subsection{环节一：图像预处理概述（10分钟）}
+
+\subsubsection{1.1 为什么需要预处理？（5分钟）}
+
+\textbf{现实问题：}
+\begin{itemize}
+\item 拍摄角度不正
+\item 光照不均匀
+\item 纸张有折痕
+\item 背景有杂物
+\end{itemize}
+
+\textbf{预处理的目标：}
+\begin{enumerate}
+\item 去除噪声干扰
+\item 增强目标特征
+\item 规范图像格式
+\item 提升识别准确率
+\end{enumerate}
+
+\subsubsection{1.2 预处理流水线（5分钟）}
+
+\begin{center}
+原图 $\to$ 去噪 $\to$ 二值化 $\to$ 矫正 $\to$ 增强输出
+\end{center}
+
+\subsection{环节二：图像去噪（40分钟）}
+
+\subsubsection{2.1 噪声类型（10分钟）}
+
+\textbf{常见噪声类型：}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{6cm}|p{4cm}|}
+\hline
+\textbf{噪声类型} & \textbf{特征} & \textbf{典型场景} \\
+\hline
+高斯噪声 & 随机分布的亮度变化 & 传感器噪声、低光拍摄 \\
+\hline
+椒盐噪声 & 随机的黑点或白点 & 传输错误、老化的传感器 \\
+\hline
+周期噪声 & 规则的干扰条纹 & 电气干扰 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{2.2 滤波方法（20分钟）}
+
+\textbf{1. 高斯滤波（Gaussian Blur）}
+
+\begin{itemize}
+\item 原理：用高斯分布权重进行卷积
+\item 适合：高斯噪声、自然去噪
+\end{itemize}
+
+\begin{lstlisting}
+import cv2
+import numpy as np
+
+# 高斯滤波
+# 参数：(图像, 核大小, 标准差)
+blur = cv2.GaussianBlur(img, (5, 5), 0)
+
+# 核大小必须是正奇数：3, 5, 7, 9...
+# 核越大，模糊效果越强
+# 标准差为0时自动计算
+\end{lstlisting}
+
+\textbf{2. 中值滤波（Median Blur）}
+
+\begin{itemize}
+\item 原理：用邻域像素的中值替换中心像素
+\item 适合：椒盐噪声、保持边缘
+\end{itemize}
+
+\begin{lstlisting}
+# 中值滤波
+# 参数：(图像, 核大小)
+median = cv2.medianBlur(img, 5)
+
+# 中值滤波对椒盐噪声效果更好
+# 能更好地保持边缘清晰
+\end{lstlisting}
+
+\textbf{3. 双边滤波（Bilateral Filter）}
+
+\begin{itemize}
+\item 原理：同时考虑空间距离和像素值差异
+\item 适合：保边去噪
+\end{itemize}
+
+\begin{lstlisting}
+# 双边滤波
+# 参数：(图像, d, sigmaColor, sigmaSpace)
+bilateral = cv2.bilateralFilter(img, 9, 75, 75)
+
+# d: 像素邻域直径
+# sigmaColor: 颜色空间的标准差
+# sigmaSpace: 坐标空间的标准差
+\end{lstlisting}
+
+\subsubsection{2.3 效果对比实验（10分钟）}
+
+\begin{lstlisting}
+import cv2
+import matplotlib.pyplot as plt
+
+# 读取带噪声的图像
+img = cv2.imread('noisy_exam.jpg')
+
+# 应用不同滤波方法
+gaussian = cv2.GaussianBlur(img, (5, 5), 0)
+median = cv2.medianBlur(img, 5)
+bilateral = cv2.bilateralFilter(img, 9, 75, 75)
+
+# 可视化对比
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+
+axes[0, 0].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+axes[0, 0].set_title('原始噪声图像')
+axes[0, 0].axis('off')
+
+axes[0, 1].imshow(cv2.cvtColor(gaussian, cv2.COLOR_BGR2RGB))
+axes[0, 1].set_title('高斯滤波')
+axes[0, 1].axis('off')
+
+axes[1, 0].imshow(cv2.cvtColor(median, cv2.COLOR_BGR2RGB))
+axes[1, 0].set_title('中值滤波')
+axes[1, 0].axis('off')
+
+axes[1, 1].imshow(cv2.cvtColor(bilateral, cv2.COLOR_BGR2RGB))
+axes[1, 1].set_title('双边滤波')
+axes[1, 1].axis('off')
+
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
+\subsection{环节三：图像二值化（50分钟）}
+
+\subsubsection{3.1 什么是二值化？（10分钟）}
+
+\textbf{定义：} 将灰度图像转换为只有黑白两种颜色的图像
+
+\begin{itemize}
+\item 像素值 > 阈值 $\to$ 白色（255）
+\item 像素值 $\le$ 阈值 $\to$ 黑色（0）
+\end{itemize}
+
+\textbf{应用场景：}
+\begin{itemize}
+\item 文档扫描处理
+\item 填涂识别（OMR）
+\item 边缘检测预处理
+\end{itemize}
+
+\subsubsection{3.2 全局阈值（15分钟）}
+
+\textbf{方法：} 对整幅图像使用同一个阈值
+
+\begin{lstlisting}
+# 先转灰度图
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 全局阈值
+# 参数：(图像, 阈值, 最大值, 阈值类型)
+ret, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+# ret: 实际使用的阈值
+# binary: 二值化结果
+\end{lstlisting}
+
+\textbf{阈值类型：}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{类型} & \textbf{公式} & \textbf{效果} \\
+\hline
+THRESH\_BINARY & $dst(x,y) = maxval$ if $src(x,y) > thresh$ & 大于阈值变白 \\
+\hline
+THRESH\_BINARY\_INV & $dst(x,y) = 0$ if $src(x,y) > thresh$ & 大于阈值变黑（反色） \\
+\hline
+THRESH\_TRUNC & $dst(x,y) = threshold$ if $src(x,y) > thresh$ & 超过阈值截断 \\
+\hline
+THRESH\_TOZERO & $dst(x,y) = src(x,y)$ if $src(x,y) > thresh$ & 小于阈值变0 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{选择题识别的常用设置：}
+\begin{lstlisting}
+# 填涂识别：使用反色二值化
+# 填涂部分（深色）变为白色，未填涂部分（浅色）变为黑色
+ret, binary_inv = cv2.threshold(
+    gray,
+    127,           # 阈值
+    255,           # 最大值
+    cv2.THRESH_BINARY_INV
+)
+\end{lstlisting}
+
+\subsubsection{3.3 自适应阈值（15分钟）}
+
+\textbf{问题：} 全局阈值对光照不均的图像效果差
+
+\textbf{解决方案：} 自适应阈值 —— 根据局部区域计算阈值
+
+\begin{lstlisting}
+# 自适应阈值
+# 参数：(图像, 最大值, 方法, 阈值类型, 邻域大小, 常数C)
+adaptive = cv2.adaptiveThreshold(
+    gray, 255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,  # 方法：高斯加权平均
+    cv2.THRESH_BINARY,                # 阈值类型
+    11,                               # 邻域大小（奇数）
+    2                                 # 常数C（从均值减去）
+)
+\end{lstlisting}
+
+\textbf{两种方法对比：}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{6cm}|p{4cm}|}
+\hline
+\textbf{方法} & \textbf{特点} & \textbf{适用场景} \\
+\hline
+ADAPTIVE\_THRESH\_MEAN\_C & 邻域均值计算阈值 & 计算快 \\
+\hline
+ADAPTIVE\_THRESH\_GAUSSIAN\_C & 高斯加权计算阈值 & 效果好，推荐 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{3.4 Otsu自动阈值（10分钟）}
+
+\textbf{原理：} 自动寻找最佳阈值，使类间方差最大
+
+\begin{lstlisting}
+# Otsu自动阈值
+# 阈值设为0，添加cv2.THRESH_OTSU标志
+ret, otsu = cv2.threshold(
+    gray,
+    0,                              # 阈值（会被忽略）
+    255,
+    cv2.THRESH_BINARY + cv2.THRESH_OTSU
+)
+
+print(f"Otsu自动选择的阈值: {ret}")
+\end{lstlisting}
+
+\subsection{环节四：透视矫正（40分钟）}
+
+\subsubsection{4.1 透视变换原理（10分钟）}
+
+\textbf{问题：} 拍照时试卷角度不正
+
+\textbf{解决：} 将梯形区域变换为矩形
+
+\begin{center}
+歪斜的试卷 $\to$ 矫正后的标准矩形
+\end{center}
+
+\textbf{四点变换：}
+\begin{enumerate}
+\item 检测试卷的四个角点
+\item 定义目标矩形的四个角点
+\item 计算透视变换矩阵
+\item 应用变换得到矫正图像
+\end{enumerate}
+
+\subsubsection{4.2 实现代码（20分钟）}
+
+\begin{lstlisting}
+import cv2
+import numpy as np
+
+def four_point_transform(image, pts):
+    """
+    四点透视变换
+
+    参数:
+        image: 输入图像
+        pts: 四个角点坐标 [tl, tr, br, bl]
+
+    返回:
+        变换后的图像
+    """
+    # 获取四个点坐标
+    rect = order_points(pts)
+    (tl, tr, br, bl) = rect
+
+    # 计算新图像的宽度
+    widthA = np.sqrt(((br[0] - bl[0])**2) + ((br[1] - bl[1])**2))
+    widthB = np.sqrt(((tr[0] - tl[0])**2) + ((tr[1] - tl[1])**2))
+    maxWidth = max(int(widthA), int(widthB))
+
+    # 计算新图像的高度
+    heightA = np.sqrt(((tr[0] - br[0])**2) + ((tr[1] - br[1])**2))
+    heightB = np.sqrt(((tl[0] - bl[0])**2) + ((tl[1] - bl[1])**2))
+    maxHeight = max(int(heightA), int(heightB))
+
+    # 目标点（矩形）
+    dst = np.array([
+        [0, 0],
+        [maxWidth - 1, 0],
+        [maxWidth - 1, maxHeight - 1],
+        [0, maxHeight - 1]
+    ], dtype="float32")
+
+    # 计算透视变换矩阵
+    M = cv2.getPerspectiveTransform(rect, dst)
+
+    # 应用变换
+    warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
+
+    return warped
+
+def order_points(pts):
+    """对四个点排序：左上、右上、右下、左下"""
+    rect = np.zeros((4, 2), dtype="float32")
+
+    # 计算点的和（左上和最小，右下和最大）
+    s = pts.sum(axis=1)
+    rect[0] = pts[np.argmin(s)]
+    rect[2] = pts[np.argmax(s)]
+
+    # 计算点的差（右上差最小，左下差最大）
+    diff = np.diff(pts, axis=1)
+    rect[1] = pts[np.argmin(diff)]
+    rect[3] = pts[np.argmax(diff)]
+
+    return rect
+\end{lstlisting}
+
+\subsubsection{4.3 完整示例（10分钟）}
+
+\begin{lstlisting}
+# 读取图像
+img = cv2.imread('skewed_exam.jpg')
+
+# 假设已经检测到四个角点（实际需要用轮廓检测）
+pts = np.array([
+    [100, 150],   # 左上
+    [450, 120],   # 右上
+    [480, 380],   # 右下
+    [80, 400]     # 左下
+], dtype="float32")
+
+# 应用透视变换
+warped = four_point_transform(img, pts)
+
+# 显示结果
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+axes[0].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+axes[0].set_title('原始倾斜图像')
+axes[0].axis('off')
+
+axes[1].imshow(cv2.cvtColor(warped, cv2.COLOR_BGR2RGB))
+axes[1].set_title('透视矫正后')
+axes[1].axis('off')
+
+plt.show()
+\end{lstlisting}
+
+\subsection{环节五：综合实验（20分钟）}
+
+\textbf{任务：} 实现完整的试卷预处理流水线
+
+\begin{lstlisting}
+def preprocess_exam_paper(image_path):
+    """
+    试卷图像预处理流水线
+
+    参数:
+        image_path: 试卷图像路径
+
+    返回:
+        预处理后的图像
+    """
+    # 1. 读取图像
+    img = cv2.imread(image_path)
+
+    # 2. 去噪
+    denoised = cv2.medianBlur(img, 5)
+
+    # 3. 转灰度
+    gray = cv2.cvtColor(denoised, cv2.COLOR_BGR2GRAY)
+
+    # 4. 二值化（用于后续处理）
+    _, binary = cv2.threshold(
+        gray,
+        127,
+        255,
+        cv2.THRESH_BINARY
+    )
+
+    # 5. 透视矫正（需要先检测角点）
+    # warped = perspective_transform(binary)
+
+    return gray, binary
+
+# 使用示例
+gray, binary = preprocess_exam_paper('exam.jpg')
+\end{lstlisting}
+
+\section{课后作业}
+
+\subsection{作业内容}
+
+\textbf{题目：} 实现试卷图像预处理完整流程
+
+\textbf{要求：}
+\begin{enumerate}
+\item 对试卷图像进行去噪处理
+\item 实现二值化（至少两种方法对比）
+\item 提交处理前后对比图
+\item 分析不同参数对结果的影响
+\end{enumerate}
+
+\subsection{评分标准}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|p{2cm}|}
+\hline
+\textbf{评分项} & \textbf{标准} & \textbf{分值} \\
+\hline
+代码实现 & 功能完整，无错误 & 40分 \\
+\hline
+效果对比 & 清晰展示处理前后差异 & 30分 \\
+\hline
+参数分析 & 分析参数对结果的影响 & 20分 \\
+\hline
+代码规范 & 注释完整，结构清晰 & 10分 \\
+\hline
+\textbf{合计} & & \textbf{100分} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{教学反思}
+
+\subsection{重点提醒}
+
+\begin{itemize}
+\item 预处理是后续识别的基础，必须重视
+\item 阈值选择需要根据具体图像调整
+\item 透视变换需要准确检测四个角点（下周内容）
+\end{itemize}
+
+\end{document}

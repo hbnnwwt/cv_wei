@@ -1,0 +1,522 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\title{\textbf{\large 第11周教案：成果展示与总结}}
+\author{计算机视觉课程组}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabular}{|l|p{12cm}|}
+\hline
+\textbf{周次} & 第11周 \\
+\hline
+\textbf{主题} & 成果展示与总结 \\
+\hline
+\textbf{学时} & 2学时（80分钟） \\
+\hline
+\textbf{故事问题} & 展示你的AI助教 \\
+\hline
+\textbf{OBE目标} & A4-系统集成：展示完整的阅卷系统 \\
+\hline
+\textbf{项目阶段} & 成果展示 + 课程总结 \\
+\hline
+\end{tabular}
+
+\section{教学目标}
+
+\begin{enumerate}
+\item \textbf{知识目标}：
+    \begin{itemize}
+    \item 回顾整个课程的知识体系
+    \item 总结计算机视觉技术的应用
+    \end{itemize}
+
+\item \textbf{能力目标}：
+    \begin{itemize}
+    \item 能够展示系统功能
+    \item 能够进行技术答辩
+    \item 能够撰写项目报告
+    \end{itemize}
+
+\item \textbf{素养目标}：
+    \begin{itemize}
+    \item 培养表达能力
+    \item 提升总结反思能力
+    \item 建立持续学习意识
+    \end{itemize}
+\end{enumerate}
+
+\section{教学过程设计}
+
+\subsection{环节一：成果展示（30分钟）}
+
+\subsubsection{1.1 展示安排（5分钟）}
+
+\textbf{展示规则：}
+\begin{itemize}
+\item 每组展示时间：5分钟
+\item 答辩时间：2分钟
+\item 总时间：7分钟/组
+\end{itemize}
+
+\textbf{展示顺序：}
+\begin{enumerate}
+\item 抽签决定顺序
+\item 按顺序依次展示
+\item 严格控制时间
+\end{enumerate}
+
+\subsubsection{1.2 展示评分表}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|p{2cm}|}
+\hline
+\textbf{评分项} & \textbf{标准} & \textbf{分值} \\
+\hline
+\multicolumn{3}{|c|}{\textbf{演示效果（30分）}} \\
+\hline
+系统演示 & 能完整演示系统功能 & 15分 \\
+\hline
+界面展示 & 界面清晰、操作流畅 & 10分 \\
+\hline
+时间控制 & 在规定时间内完成展示 & 5分 \\
+\hline
+\multicolumn{3}{|c|}{\textbf{技术实现（40分）}} \\
+\hline
+功能完整 & 实现三种题型识别 & 15分 \\
+\hline
+识别准确率 & 整体识别效果良好 & 15分 \\
+\hline
+代码质量 & 结构清晰、规范 & 10分 \\
+\hline
+\multicolumn{3}{|c|}{\textbf{答辩表现（20分）}} \\
+\hline
+问题理解 & 准确理解评委问题 & 10分 \\
+\hline
+回答质量 & 回答准确、思路清晰 & 10分 \\
+\hline
+\multicolumn{3}{|c|}{\textbf{文档报告（10分）}} \\
+\hline
+项目报告 & 内容完整、逻辑清晰 & 10分 \\
+\hline
+\textbf{合计} & & \textbf{100分} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{1.3 展示内容建议（20分钟）}
+
+\textbf{推荐展示结构（5分钟）：}
+
+\begin{enumerate}
+\item \textbf{开场介绍（30秒）}
+    \begin{itemize}
+    \item 组员介绍
+    \item 项目名称
+    \end{itemize}
+
+\item \textbf{系统演示（3分钟）}
+    \begin{itemize}
+    \item 展示完整处理流程
+    \item 演示输入输出
+    \item 可视化识别结果
+    \end{itemize}
+
+\item \textbf{技术亮点（1分钟）}
+    \begin{itemize}
+    \item 创新点
+    \item 难点及解决方案
+    \end{itemize}
+
+\item \textbf{总结致谢（30秒）}
+    \begin{itemize}
+    \item 不足与改进方向
+    \item 感谢
+    \end{itemize}
+\end{enumerate}
+
+\textbf{演示准备清单：}
+\begin{itemize}
+\item[$\square$] 准备演示PPT（3-5页）
+\item[$\square$] 准备演示数据（测试试卷）
+\item[$\square$] 测试系统稳定性
+\item[$\square$] 准备备用方案（防止演示失败）
+\item[$\square$] 预演一次
+\end{itemize}
+
+\subsection{环节二：互评与点评（30分钟）}
+
+\subsubsection{2.1 学生互评（15分钟）}
+
+\textbf{互评表（学生填写）：}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{3cm}|p{3cm}|p{3cm}|p{2cm}|}
+\hline
+\textbf{组别} & \textbf{功能完整} & \textbf{演示效果} & \textbf{创新亮点} & \textbf{评分} \\
+\hline
+第1组 & & & & \\
+\hline
+第2组 & & & & \\
+\hline
+第3组 & & & & \\
+\hline
+第4组 & & & & \\
+\hline
+第5组 & & & & \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{互评说明：}
+\begin{itemize}
+\item 每个学生评分
+\item 去掉最高分和最低分后取平均
+\item 互评占最终成绩的20\%
+\end{itemize}
+
+\subsubsection{2.2 教师点评（15分钟）}
+
+\textbf{点评维度：}
+
+\begin{enumerate}
+\item \textbf{功能完成度}
+    \begin{itemize}
+    \item 实现了哪些题型识别
+    \item 系统的完整性如何
+    \end{itemize}
+
+\item \textbf{技术质量}
+    \begin{itemize}
+    \item 识别准确率
+    \item 代码规范性
+    \item 创新性
+    \end{itemize}
+
+\item \textbf{团队协作}
+    \begin{itemize}
+    \item 分工是否明确
+    \item 合作是否顺畅
+    \end{itemize}
+
+\item \textbf{展示表达}
+    \begin{itemize}
+    \item 逻辑是否清晰
+    \item 表达是否流畅
+    \end{itemize}
+\end{enumerate}
+
+\subsection{环节三：课程总结（15分钟）}
+
+\subsubsection{3.1 知识体系回顾（5分钟）}
+
+\textbf{11周知识地图：}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{周次} & \textbf{核心知识点} \\
+\hline
+1 & 计算机视觉导论、OpenCV基础 \\
+\hline
+2 & AI辅助编程工具 \\
+\hline
+3 & 图像预处理（去噪、二值化、矫正） \\
+\hline
+4 & 版面分析（边缘、轮廓、区域定位） \\
+\hline
+5 & 选择题识别（OMR、填涂检测） \\
+\hline
+6 & 判断题识别（形状匹配、符号识别） \\
+\hline
+7 & OCR印刷文字识别 \\
+\hline
+8 & 手写文字识别 \\
+\hline
+9-10 & 系统集成与项目开发 \\
+\hline
+11 & 成果展示与总结 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{核心技术栈：}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{技术类别} & \textbf{主要内容} \\
+\hline
+图像处理 & 像素操作、滤波、二值化、几何变换 \\
+\hline
+特征提取 & 边缘检测、轮廓分析、形状特征 \\
+\hline
+模式识别 & 填涂检测、模板匹配、OCR \\
+\hline
+深度学习 & CNN、Transformer（TrOCR） \\
+\hline
+工程实践 & 模块化设计、测试、调试 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{3.2 能力提升总结（5分钟）}
+
+\textbf{学生应该获得的能力：}
+
+\begin{enumerate}
+\item \textbf{技术能力}
+    \begin{itemize}
+    \item 掌握OpenCV基础操作
+    \item 能够使用OCR工具
+    \item 能够实现简单的CV应用
+    \end{itemize}
+
+\item \textbf{工程能力}
+    \begin{itemize}
+    \item 模块化设计思维
+    \item 系统集成能力
+    \item 测试调试能力
+    \end{itemize}
+
+\item \textbf{学习能力}
+    \begin{itemize}
+    \item AI辅助编程
+    \item 文档查阅能力
+    \item 问题解决能力
+    \end{itemize}
+
+\item \textbf{协作能力}
+    \begin{itemize}
+    \item 团队沟通
+    \item 分工合作
+    \item 项目管理
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{3.3 应用展望（5分钟）}
+
+\textbf{计算机视觉的应用领域：}
+
+\begin{itemize}
+\item \textbf{教育领域}
+    \begin{itemize}
+    \item 自动阅卷系统
+    \item 课堂行为分析
+    \item 在线考试监考
+    \end{itemize}
+
+\item \textbf{医疗领域}
+    \begin{itemize}
+    \item 医学影像诊断
+    \item 病灶检测
+    \item 健康监测
+    \end{itemize}
+
+\item \textbf{交通领域}
+    \begin{itemize}
+    \item 自动驾驶
+    \item 车牌识别
+    \item 交通流量分析
+    \end{itemize}
+
+\item \textbf{安防领域}
+    \begin{itemize}
+    \item 人脸识别
+    \item 行为分析
+    \item 异常检测
+    \end{itemize}
+\end{itemize}
+
+\subsection{环节四：颁奖与寄语（5分钟）}
+
+\subsubsection{4.1 优秀项目颁奖（3分钟）}
+
+\textbf{奖项设置：}
+
+\begin{itemize}
+\item \textbf{最佳功能奖}：识别准确率最高、功能最完整
+\item \textbf{最佳技术奖}：技术创新、代码质量高
+\item \textbf{最佳展示奖}：演示效果最好、表达清晰
+\item \textbf{最佳协作奖}：团队合作优秀
+\end{itemize}
+
+\subsubsection{4.2 课程寄语（2分钟）}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{给同学们的话}]
+\begin{enumerate}
+\item \textbf{持续学习}：CV技术发展迅速，保持学习的热情
+
+\item \textbf{实践为本}：多动手实践，在做中学
+
+\item \textbf{善用工具}：AI是助手，不是替代
+
+\item \textbf{关注应用}：技术服务于实际需求
+
+\item \textbf{保持好奇}：探索未知的领域
+\end{enumerate}
+\end{tcolorbox}
+
+\section{项目报告要求}
+
+\subsection{报告结构}
+
+\textbf{项目报告应包含以下内容：}
+
+\begin{enumerate}
+\item \textbf{摘要}（200字）
+    \begin{itemize}
+    \item 项目背景、目标、方法、结果
+    \end{itemize}
+
+\item \textbf{引言}
+    \begin{itemize}
+    \item 项目背景与意义
+    \item 研究现状
+    \item 项目目标
+    \end{itemize}
+
+\item \textbf{系统设计}
+    \begin{itemize}
+    \item 系统架构
+    \item 模块设计
+    \item 技术选型
+    \end{itemize}
+
+\item \textbf{实现细节}
+    \begin{itemize}
+    \item 各模块实现方法
+    \item 关键算法说明
+    \item 难点与解决方案
+    \end{itemize}
+
+\item \textbf{测试与结果}
+    \begin{itemize}
+    \item 测试数据
+    \item 测试方法
+    \item 实验结果
+    \item 准确率分析
+    \end{itemize}
+
+\item \textbf{总结与展望}
+    \begin{itemize}
+    \item 工作总结
+    \item 不足之处
+    \item 改进方向
+    \end{itemize}
+\end{enumerate}
+
+\subsection{提交要求}
+
+\begin{itemize}
+\item 报告格式：PDF
+\item 报告篇幅：10-15页
+\item 截止时间：课程结束后一周
+\item 提交位置：教学平台/邮箱
+\end{itemize}
+
+\section{课程资源汇总}
+
+\subsection{学习资源}
+
+\textbf{官方文档：}
+\begin{itemize}
+\item OpenCV官方文档：\url{https://docs.opencv.org/}
+\item PaddleOCR文档：\url{https://github.com/PaddlePaddle/PaddleOCR}
+\item TrOCR文档：\url{https://huggingface.co/microsoft/trocr}
+\end{itemize}
+
+\textbf{在线课程：}
+\begin{itemize}
+\item Coursera: Deep Learning Specialization
+\item Udacity: Computer Vision Nanodegree
+\item B站: 计算机视觉相关课程
+\end{itemize}
+
+\subsection{开源项目}
+
+\textbf{推荐学习项目：}
+\begin{itemize}
+\item Tesseract OCR
+\item EasyOCR
+\item MMOCR
+\item PaddleOCR
+\end{itemize}
+
+\section{教学反思}
+
+\subsection{课程总结}
+
+\begin{itemize}
+\item \textbf{成功经验}
+    \begin{itemize}
+    \item 项目驱动的教学方式
+    \item AI辅助编程降低门槛
+    \item 分组协作培养团队精神
+    \end{itemize}
+
+\item \textbf{改进方向}
+    \begin{itemize}
+    \item 可以增加更多深度学习内容
+    \item 可以提供更多数据集支持
+    \item 可以设计更多应用场景
+    \end{itemize}
+\end{itemize}
+
+\subsection{后续学习建议}
+
+\begin{enumerate}
+\item \textbf{深入学习}
+    \begin{itemize}
+    \item 深度学习与CNN
+    \item 目标检测（YOLO、Faster R-CNN）
+    \item 图像分割
+    \end{itemize}
+
+\item \textbf{实践项目}
+    \begin{itemize}
+    \item 人脸识别系统
+    \item 车牌识别系统
+    \item 文档扫描与OCR
+    \end{itemize}
+
+\item \textbf{参加竞赛}
+    \begin{itemize}
+    \item Kaggle竞赛
+    \item 天池竞赛
+    \item 数学建模比赛
+    \end{itemize}
+\end{enumerate}
+
+\end{document}

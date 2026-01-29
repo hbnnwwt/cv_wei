@@ -1,0 +1,592 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\title{\textbf{\large 第4周教案：试卷版面分析}}
+\author{计算机视觉课程组}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabular}{|l|p{12cm}|}
+\hline
+\textbf{周次} & 第4周 \\
+\hline
+\textbf{主题} & 试卷版面分析 \\
+\hline
+\textbf{学时} & 3学时（160分钟） \\
+\hline
+\textbf{故事问题} & 怎么知道选择题、简答题在哪里？ \\
+\hline
+\textbf{OBE目标} & A2-版面分析：能定位试卷中各题型区域 \\
+\hline
+\textbf{项目贡献} & 找到题目边界，分隔各题型区域，为后续识别打基础 \\
+\hline
+\end{tabular}
+
+\section{教学目标}
+
+\begin{enumerate}
+\item \textbf{知识目标}：
+    \begin{itemize}
+    \item 理解边缘检测的原理
+    \item 掌握轮廓检测与形状分析
+    \item 了解连通域分析方法
+    \end{itemize}
+
+\item \textbf{能力目标}：
+    \begin{itemize}
+    \item 能够使用Canny边缘检测
+    \item 能够检测和绘制轮廓
+    \item 能够根据形状特征筛选目标轮廓
+    \end{itemize}
+
+\item \textbf{素养目标}：
+    \begin{itemize}
+    \item 理解版面分析在文档处理中的重要性
+    \item 培养从复杂图像中提取结构化信息的能力
+    \end{itemize}
+\end{enumerate}
+
+\section{教学重点与难点}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{教学重点}]
+\begin{itemize}
+\item Canny边缘检测
+\item 轮廓检测与特征提取
+\item 形状筛选（面积、长宽比、封闭性）
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{教学难点}]
+\begin{itemize}
+\item 边缘检测参数调节
+\item 从多个轮廓中识别目标区域
+\end{itemize}
+\end{tcolorbox}
+
+\section{教学过程设计}
+
+\subsection{环节一：版面分析概述（10分钟）}
+
+\subsubsection{1.1 什么是版面分析？（5分钟）}
+
+\textbf{定义：} 从文档图像中识别和定位不同区域（标题、正文、表格等）
+
+\textbf{在阅卷系统中的作用：}
+\begin{itemize}
+\item 找到试卷边界
+\item 定位选择题区域
+\item 定位判断题区域
+\item 定位简答题区域
+\end{itemize}
+
+\subsubsection{1.2 版面分析流程（5分钟）}
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{layout_pipeline.png}
+\\
+\footnotesize{输入 $\to$ 预处理 $\to$ 边缘检测 $\to$ 轮廓检测 $\to$ 区域筛选}
+\end{center}
+
+\subsection{环节二：边缘检测（40分钟）}
+
+\subsubsection{2.1 什么是边缘？（10分钟）}
+
+\textbf{边缘定义：} 图像中像素值发生剧烈变化的位置
+
+\textbf{边缘类型：}
+\begin{itemize}
+\item 阶梯边缘：像素值突变
+\item 屋顶边缘：像素值先增后减
+\end{itemize}
+
+\subsubsection{2.2 Canny边缘检测（20分钟）}
+
+\textbf{为什么选择Canny？}
+\begin{itemize}
+\item 最优边缘检测算法
+\item 检测准确、定位精确、单边缘响应
+\end{itemize}
+
+\begin{lstlisting}
+import cv2
+import numpy as np
+
+# Canny边缘检测
+# 参数：(图像, 低阈值, 高阈值)
+edges = cv2.Canny(image, threshold1, threshold2)
+
+# 阈值说明：
+# - 小于threshold1的像素不是边缘
+# - 大于threshold2的像素肯定是边缘
+# - 介于两者之间的像素，如果与强边缘相连则认为是边缘
+\end{lstlisting}
+
+\textbf{参数选择经验：}
+\begin{itemize}
+\item 高阈值通常是低阈值的2-3倍
+\item 低阈值：50-150
+\item 高阈值：100-300
+\end{itemize}
+
+\begin{lstlisting}
+# 示例：检测试卷边缘
+img = cv2.imread('exam.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+blur = cv2.GaussianBlur(gray, (5, 5), 0)
+
+# Canny边缘检测
+edges = cv2.Canny(blur, 50, 150)
+
+# 显示结果
+cv2.imshow('Edges', edges)
+cv2.waitKey(0)
+\end{lstlisting}
+
+\subsubsection{2.3 其他边缘检测算子（10分钟）}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+\textbf{算子} & \textbf{特点} & \textbf{适用场景} \\
+\hline
+Sobel & 基于导数，计算简单 & 快速检测 \\
+\hline
+Laplacian & 二阶导数，对噪声敏感 & 理论研究 \\
+\hline
+Canny & 多阶段，效果最好 & 实际应用，推荐 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{环节三：轮廓检测（50分钟）}
+
+\subsubsection{3.1 什么是轮廓？（10分钟）}
+
+\textbf{定义：** 连续的边缘点构成的曲线
+
+\textbf{与边缘的区别：}
+\begin{itemize}
+\item 边缘：不连续的像素集合
+\item 轮廓：封闭的、有序的曲线
+\end{itemize}
+
+\textbf{应用：** 物体识别、形状分析、区域定位}
+
+\subsubsection{3.2 轮廓检测API（15分钟）}
+
+\begin{lstlisting}
+# 查找轮廓
+# 参数：(图像, 轮廓模式, 轮廓逼近方法)
+contours, hierarchy = cv2.findContours(
+    image,           # 输入图像（二值图）
+    cv2.RETR_EXTERNAL,  # 轮廓模式
+    cv2.CHAIN_APPROX_SIMPLE  # 逼近方法
+)
+\end{lstlisting}
+
+\textbf{轮廓模式：}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{模式} & \textbf{说明} \\
+\hline
+cv2.RETR\_EXTERNAL & 只检测最外层轮廓 \\
+\hline
+cv2.RETR\_LIST & 检测所有轮廓，不建立层级关系 \\
+\hline
+cv2.RETR\_TREE & 检测所有轮廓，建立完整层级树 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{逼近方法：}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{方法} & \textbf{说明} \\
+\hline
+cv2.CHAIN\_APPROX\_NONE & 存储所有轮廓点 \\
+\hline
+cv2.CHAIN\_APPROX\_SIMPLE & 压缩垂直、水平、对角线段，只保留端点（推荐） \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{3.3 绘制轮廓（10分钟）}
+
+\begin{lstlisting}
+# 绘制轮廓
+# 参数：(图像, 轮廓列表, 轮廓索引, 颜色, 线宽)
+output = cv2.drawContours(
+    image.copy(),      # 目标图像
+    contours,          # 轮廓列表
+    -1,                # 轮廓索引（-1表示绘制所有轮廓）
+    (0, 255, 0),       # 颜色（BGR格式）
+    2                  # 线宽
+)
+\end{lstlisting}
+
+\subsubsection{3.4 轮廓特征（15分钟）}
+
+\textbf{常用特征：}
+
+\begin{lstlisting}
+# 遍历所有轮廓
+for i, contour in enumerate(contours):
+    # 1. 面积
+    area = cv2.contourArea(contour)
+
+    # 2. 周长
+    perimeter = cv2.arcLength(contour, True)  # True表示封闭
+
+    # 3. 边界矩形
+    x, y, w, h = cv2.boundingRect(contour)
+
+    # 4. 最小外接矩形（可能旋转）
+    rect = cv2.minAreaRect(contour)
+    box = cv2.boxPoints(rect)
+    box = np.int32(box)
+
+    # 5. 最小外接圆
+    (x, y), radius = cv2.minEnclosingCircle(contour)
+
+    # 6. 凸包
+    hull = cv2.convexHull(contour)
+\end{lstlisting}
+
+\textbf{筛选示例：** 找到试卷轮廓}
+
+\begin{lstlisting}
+def find_paper_contour(contours, image_area):
+    """
+    从轮廓列表中找到试卷轮廓
+
+    参数:
+        contours: 所有轮廓
+        image_area: 图像总面积
+
+    返回:
+        试卷轮廓，未找到则返回None
+    """
+    for contour in contours:
+        # 计算轮廓面积
+        area = cv2.contourArea(contour)
+
+        # 面积筛选：应该是图像面积的一定比例
+        if area > image_area * 0.5:
+            # 计算轮廓周长
+            peri = cv2.arcLength(contour, True)
+
+            # 多边形逼近（四边形）
+            approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
+
+            # 如果是四边形（4个顶点）
+            if len(approx) == 4:
+                return approx
+
+    return None
+\end{lstlisting}
+
+\subsection{环节四：区域定位（40分钟）}
+
+\subsubsection{4.1 投影法（15分钟）}
+
+\textbf{原理：** 通过投影检测文本行和空白区域}
+
+\begin{lstlisting}
+def horizontal_projection(binary_image):
+    """
+    水平投影：统计每行的白色像素数量
+
+    用于检测文本行之间的空白
+    """
+    # 水平方向求和
+    proj = np.sum(binary_image, axis=1)
+
+    return proj
+
+def vertical_projection(binary_image):
+    """
+    垂直投影：统计每列的白色像素数量
+
+    用于检测字符之间的空白
+    """
+    # 垂直方向求和
+    proj = np.sum(binary_image, axis=0)
+
+    return proj
+
+# 可视化投影
+import matplotlib.pyplot as plt
+
+proj = horizontal_projection(binary)
+
+plt.figure(figsize=(10, 4))
+plt.plot(proj)
+plt.title('Horizontal Projection')
+plt.xlabel('Row')
+plt.ylabel('White pixel count')
+plt.show()
+\end{lstlisting}
+
+\textbf{应用：** 检测题目之间的分隔}
+
+\begin{lstlisting}
+def find_divider_lines(projection, threshold=10):
+    """
+    找到投影值低于阈值的行（分隔线）
+
+    参数:
+        projection: 投影数组
+        threshold: 阈值
+
+    返回:
+        分隔线的行索引列表
+    """
+    dividers = []
+    for i, value in enumerate(projection):
+        if value < threshold:
+            dividers.append(i)
+
+    return dividers
+\end{lstlisting}
+
+\subsubsection{4.2 连通域分析（15分钟）}
+
+\textbf{什么是连通域？** 相邻的相同像素值构成的区域}
+
+\begin{lstlisting}
+# 连通域分析
+# 参数：(图像, 连通性类型)
+# 连通性：
+#   - cv2.CV_8UC1: 4连通（上下左右）
+#   - cv2.CV_8UC1: 8连通（加上对角线）
+num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+    binary_image,
+    connectivity=8
+)
+
+# stats: 每个连通域的统计信息
+# stats[i] = [left, top, width, height, area]
+\end{lstlisting}
+
+\textbf{应用：** 识别填涂区域}
+
+\begin{lstlisting}
+def find_bubble_regions(binary_image, min_area=100, max_area=1000):
+    """
+    找到可能的填涂区域
+
+    参数:
+        binary_image: 二值图像
+        min_area: 最小面积
+        max_area: 最大面积
+
+    返回:
+        候选区域列表
+    """
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+        binary_image
+    )
+
+    bubbles = []
+    for i in range(1, num_labels):  # 跳过背景（0）
+        area = stats[i, cv2.CC_STAT_AREA]
+
+        # 面积筛选
+        if min_area < area < max_area:
+            # 获取边界矩形
+            x = stats[i, cv2.CC_STAT_LEFT]
+            y = stats[i, cv2.CC_STAT_TOP]
+            w = stats[i, cv2.CC_STAT_WIDTH]
+            h = stats[i, cv2.CC_STAT_HEIGHT]
+
+            bubbles.append((x, y, w, h))
+
+    return bubbles
+\end{lstlisting}
+
+\subsubsection{4.3 完整版面分析示例（10分钟）}
+
+\begin{lstlisting}
+def analyze_exam_layout(image_path):
+    """
+    分析试卷版面，定位各题型区域
+
+    参数:
+        image_path: 试卷图像路径
+
+    返回:
+        版面分析结果
+    """
+    # 1. 读取和预处理
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    _, binary = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # 2. 边缘检测
+    edges = cv2.Canny(binary, 50, 150)
+
+    # 3. 查找轮廓
+    contours, _ = cv2.findContours(
+        edges,
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE
+    )
+
+    # 4. 找到试卷轮廓
+    paper_contour = find_paper_contour(contours, img.size)
+
+    # 5. 投影分析
+    h_proj = horizontal_projection(binary)
+    dividers = find_divider_lines(h_proj)
+
+    return {
+        'paper_contour': paper_contour,
+        'dividers': dividers
+    }
+\end{lstlisting}
+
+\subsection{环节五：实验（20分钟）}
+
+\textbf{任务：** 实现试卷版面结构可视化}
+
+\begin{lstlisting}
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+def visualize_layout(image_path):
+    """可视化版面分析结果"""
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # 预处理
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    edges = cv2.Canny(blur, 50, 150)
+
+    # 查找轮廓
+    contours, _ = cv2.findContours(
+        edges.copy(),
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE
+    )
+
+    # 绘制所有轮廓
+    result = img.copy()
+    for contour in contours:
+        # 筛选大轮廓
+        area = cv2.contourArea(contour)
+        if area > 100:
+            cv2.drawContours(result, [contour], -1, (0, 255, 0), 2)
+
+            # 绘制边界矩形
+            x, y, w, h = cv2.boundingRect(contour)
+            cv2.rectangle(result, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+    # 显示结果
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+    axes[0].imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    axes[0].set_title('原图')
+    axes[0].axis('off')
+
+    axes[1].imshow(edges, cmap='gray')
+    axes[1].set_title('边缘检测')
+    axes[1].axis('off')
+
+    axes[2].imshow(cv2.cvtColor(result, cv2.COLOR_BGR2RGB))
+    axes[2].set_title('轮廓检测')
+    axes[2].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+# 使用
+visualize_layout('exam.jpg')
+\end{lstlisting}
+
+\section{课后作业}
+
+\subsection{作业内容}
+
+\textbf{题目：** 实现试卷版面分析，标注三种题型区域}
+
+\textbf{要求：**
+\begin{enumerate}
+\item 使用轮廓检测找到试卷边界
+\item 使用投影法分析试卷结构
+\item 标注出选择题、判断题、简答题的大致区域
+\item 提交标注结果的可视化图像
+\end{enumerate}
+
+\subsection{评分标准}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|p{2cm}|}
+\hline
+\textbf{评分项} & \textbf{标准} & \textbf{分值} \\
+\hline
+轮廓检测 & 正确检测到试卷边界 & 25分 \\
+\hline
+区域定位 & 合理标注各题型区域 & 35分 \\
+\hline
+可视化 & 标注清晰可见 & 25分 \\
+\hline
+代码质量 & 结构清晰，有注释 & 15分 \\
+\hline
+\textbf{合计} & & \textbf{100分} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{教学反思}
+
+\subsection{重点提醒}
+
+\begin{itemize}
+\item 版面分析是后续题型识别的基础
+\item 实际应用中可能需要结合深度学习方法（如PaddleLayout）
+\item 参数调节需要根据具体试卷版面调整
+\end{itemize}
+
+\subsection{下节预告}
+
+下周将学习选择题的填涂识别，会用到本周的轮廓和连通域分析技术。
+
+\end{document}

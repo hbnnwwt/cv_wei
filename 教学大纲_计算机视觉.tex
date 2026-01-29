@@ -1,0 +1,704 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+\title{\textbf{\huge 计算机视觉通选课教学大纲}}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ============================================================================
+% 第一部分：课程定位
+% ============================================================================
+\section{课程定位}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{属性} & \textbf{说明} \\
+\hline
+课程性质 & 通选课，面向多专业本科生 \\
+\hline
+学时安排 & 32学时（前10周$\times$3学时 + 第11周$\times$2学时） \\
+\hline
+设计理念 & OBE成果导向 + 学生中心 + 项目驱动 \\
+\hline
+最终项目 & \textbf{自动阅卷系统}（支持选择题、判断题、简答题） \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% 第二部分：OBE能力矩阵
+% ============================================================================
+\section{OBE能力矩阵}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|p{6cm}|p{4cm}|}
+\hline
+\textbf{能力维度} & \textbf{具体描述} & \textbf{可验证产出} \\
+\hline
+A1-图像处理 & 能对图像进行预处理、增强、分割 & 每周实验代码 \\
+\hline
+A2-版面分析 & 能定位试卷中各题型区域 & 第4周作业 \\
+\hline
+A3-特征识别 & 能识别填涂、符号、手写文字 & 第5-8周作业 \\
+\hline
+A4-系统集成 & 能将各模块整合为完整系统 & 最终项目 \\
+\hline
+A5-AI协作 & 能用AI工具辅助编程开发 & 全过程体现 \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% 第三部分：课程故事线
+% ============================================================================
+\section{课程故事线}
+
+本课程以\textbf{“造一个能改卷子的AI助教”}为主线，通过11周的渐进式学习，让学生从零开始构建一个完整的自动阅卷系统。
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+\node[draw, rectangle, minimum width=3cm, minimum height=1cm, fill=blue!20] (goal) at (0,3) {\textbf{目标：AI阅卷助教}};
+
+\node[draw, rectangle, minimum width=2.5cm, minimum height=0.8cm, fill=green!20] (phase1) at (-4,1) {\textbf{第1-2周}\\装上眼睛+AI武器};
+\node[draw, rectangle, minimum width=2.5cm, minimum height=0.8cm, fill=yellow!20] (phase2) at (0,1) {\textbf{第3-8周}\\学会识别三种题型};
+\node[draw, rectangle, minimum width=2.5cm, minimum height=0.8cm, fill=red!20] (phase3) at (4,1) {\textbf{第9-11周}\\成为助教改完整卷};
+
+\draw[->, thick] (goal) -- (phase1);
+\draw[->, thick] (goal) -- (phase2);
+\draw[->, thick] (goal) -- (phase3);
+\end{tikzpicture}
+\end{center}
+
+\textbf{故事线章节：}
+\begin{enumerate}[label=第\chinese*章：]
+\item \textbf{装上眼睛} —— 机器怎么看见试卷？（第1-2周）
+\item \textbf{让试卷更清晰} —— 拍照模糊怎么办？（第3周）
+\item \textbf{找到题目位置} —— 选择题、简答题在哪里？（第4周）
+\item \textbf{识别填涂答案} —— 怎么知道选了A还是B？（第5周）
+\item \textbf{识别对错符号} —— 怎么看到是$\checkmark$还是$\times$？（第6周）
+\item \textbf{阅读手写文字} —— 能看懂学生写的答案吗？（第7-8周）
+\item \textbf{整合成AI助教} —— 让它改完一整张卷子（第9-11周）
+\end{enumerate}
+
+\newpage
+
+% ============================================================================
+% 第四部分：详细周次设计
+% ============================================================================
+\section{详细周次设计（32学时）}
+
+% ============================================================================
+% 第一阶段：基础准备
+% ============================================================================
+\subsection{第一阶段：基础准备（第1-2周，6学时）}
+
+% ---------------- 第1周 ----------------
+\subsubsection{第1周：计算机视觉导论与图像基础}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{故事问题：机器是怎么“看见”试卷的？}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{5cm}|p{3cm}|p{2.5cm}|}
+\hline
+\textbf{时间} & \textbf{内容} & \textbf{活动} & \textbf{产出} \\
+\hline
+40min & CV导论：从人脸识别到阅卷系统 & 案例展示 & 理解课程目标 \\
+\hline
+50min & 图像的数字表示：像素$\to$RGB$\to$矩阵 & Jupyter实验 & 能用代码显示图像 \\
+\hline
+40min & OpenCV入门：读取、显示、保存 & 跟着做 & 读取试卷图片 \\
+\hline
+30min & 实验：给试卷加滤镜 & 动手实践 & 提交实验结果 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{课后作业：} 用OpenCV实现3种图像滤镜效果
+
+% ---------------- 第2周 ----------------
+\subsubsection{第2周：AI辅助编程工具实战}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{故事问题：怎么让AI帮我写代码？}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{5cm}|p{3cm}|p{2.5cm}|}
+\hline
+\textbf{时间} & \textbf{内容} & \textbf{活动} & \textbf{产出} \\
+\hline
+30min & AI编程工具介绍 & 演示 & 了解工具 \\
+\hline
+40min & Prompt工程：CV领域专用模板 & 互动练习 & 能写有效Prompt \\
+\hline
+50min & 实战：用AI辅助实现人脸检测 & 分组实践 & 跑通第一个CV项目 \\
+\hline
+40min & 代码调试与优化技巧 & 实战演示 & 学会调试方法 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{课后作业：} 用AI辅助实现一个手势识别程序
+
+\newpage
+
+% ============================================================================
+% 第二阶段：核心技能
+% ============================================================================
+\subsection{第二阶段：核心技能（第3-8周，18学时）}
+
+% ---------------- 第3周 ----------------
+\subsubsection{第3周：图像预处理与增强}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{故事问题：试卷拍照模糊怎么办？}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{5cm}|p{3.5cm}|p{2.5cm}|}
+\hline
+\textbf{时间} & \textbf{内容} & \textbf{项目贡献} & \textbf{产出} \\
+\hline
+40min & 图像去噪（高斯/中值滤波） & 清理试卷噪点 & \\
+\hline
+50min & 二值化与阈值分割 & 分离填涂与背景 & \\
+\hline
+40min & 透视矫正（修正拍照角度） & 矫正倾斜试卷 & \\
+\hline
+30min & 实验：预处理流水线 & 动手实践 & 提交对比效果图 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{课后作业：} 实现试卷图像预处理完整流程
+
+% ---------------- 第4周 ----------------
+\subsubsection{第4周：试卷版面分析}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{故事问题：怎么知道选择题、简答题在哪里？}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{5cm}|p{3.5cm}|p{2.5cm}|}
+\hline
+\textbf{时间} & \textbf{内容} & \textbf{项目贡献} & \textbf{产出} \\
+\hline
+40min & 边缘检测与轮廓查找 & 找到题目边界 & \\
+\hline
+50min & 连通域分析与区域分割 & 分隔各题型区域 & \\
+\hline
+40min & 文本行检测（PaddleLayout） & 定位简答题位置 & \\
+\hline
+30min & 实验：版面结构可视化 & 动手实践 & 提交标注结果 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{课后作业：} 实现试卷版面分析，标注三种题型区域
+
+% ---------------- 第5周 ----------------
+\subsubsection{第5周：选择题识别（填涂检测）}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{故事问题：怎么知道选了A还是B？}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{5cm}|p{3.5cm}|p{2.5cm}|}
+\hline
+\textbf{时间} & \textbf{内容} & \textbf{项目贡献} & \textbf{产出} \\
+\hline
+30min & OMR原理：光学标记识别 & 理解填涂检测 & \\
+\hline
+60min & 像素密度统计算法 & 核心识别逻辑 & \\
+\hline
+50min & 多选项处理（A/B/C/D） & 完整选择题识别 & \\
+\hline
+20min & 实验：识别一张选择题答卷 & 动手实践 & 提交识别结果 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{课后作业：} 实现选择题填涂识别模块
+
+\newpage
+
+% ---------------- 第6周 ----------------
+\subsubsection{第6周：判断题识别（符号匹配）}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{故事问题：怎么看到是$\checkmark$还是$\times$？}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{5cm}|p{3.5cm}|p{2.5cm}|}
+\hline
+\textbf{时间} & \textbf{内容} & \textbf{项目贡献} & \textbf{产出} \\
+\hline
+40min & 形状匹配算法原理 & 理解符号识别 & \\
+\hline
+50min & 轮廓特征提取（圆度、凸性） & 区分$\checkmark$和$\times$ & \\
+\hline
+40min & 模板匹配实战 & 判断题识别 & \\
+\hline
+30min & 实验：识别判断题答案 & 动手实践 & 提交识别结果 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{课后作业：} 实现判断题符号识别模块
+
+% ---------------- 第7周 ----------------
+\subsubsection{第7周：OCR基础与文字识别}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{故事问题：怎么让机器“阅读”文字？}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{5cm}|p{3.5cm}|p{2.5cm}|}
+\hline
+\textbf{时间} & \textbf{内容} & \textbf{项目贡献} & \textbf{产出} \\
+\hline
+40min & OCR技术原理与发展 & 理解文字识别 & \\
+\hline
+60min & PaddleOCR快速上手 & 中文识别工具 & \\
+\hline
+40min & 印刷体文字识别实战 & 识别试卷题号 & \\
+\hline
+20min & 实验：识别试卷标题 & 动手实践 & 提交识别结果 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{课后作业：} 用OCR识别试卷中的印刷文字
+
+% ---------------- 第8周 ----------------
+\subsubsection{第8周：手写简答题识别}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{故事问题：能看懂学生写的答案吗？}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{5cm}|p{3.5cm}|p{2.5cm}|}
+\hline
+\textbf{时间} & \textbf{内容} & \textbf{项目贡献} & \textbf{产出} \\
+\hline
+40min & 手写识别的挑战 & 理解技术难点 & \\
+\hline
+60min & 端到端手写识别（TrOCR） & 手写文字识别 & \\
+\hline
+40min & 识别结果后处理 & 优化识别效果 & \\
+\hline
+20min & 实验：识别手写简答 & 动手实践 & 提交识别结果 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{课后作业：} 实现简答题手写识别模块
+
+\newpage
+
+% ============================================================================
+% 第三阶段：项目实战
+% ============================================================================
+\subsection{第三阶段：项目实战（第9-11周，8学时）}
+
+% ---------------- 第9周 ----------------
+\subsubsection{第9周：系统架构与分组开发}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{故事问题：把所有模块组合起来}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{12cm}|}
+\hline
+\textbf{时间} & \textbf{内容} \\
+\hline
+40min & 项目架构讲解与模块划分 \\
+\hline
+80min & 分组开发 + 教师巡回指导 \\
+\hline
+20min & 进度检查与问题解答 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{系统框架（已提供）：}
+\begin{verbatim}
+auto_grading_system/
+├── input/                  # 测试试卷
+├── output/                 # 识别结果
+├── modules/
+│   ├── preprocess.py       # 预处理（已实现）
+│   ├── layout.py           # 版面分析（已实现）
+│   ├── choice.py           # 选择题识别（学生实现）
+│   ├── judge.py            # 判断题识别（学生实现）
+│   ├── essay.py            # 简答题识别（学生实现）
+│   └── grading.py          # 评分逻辑（学生实现）
+└── main.py                 # 主程序（部分实现）
+\end{verbatim}
+
+\textbf{分组要求：}
+\begin{itemize}
+\item 3-4人/组
+\item 包含不同专业背景
+\item 明确分工：前端展示、后端整合、算法优化
+\end{itemize}
+
+% ---------------- 第10周 ----------------
+\subsubsection{第10周：核心开发与调试}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{故事问题：让系统真正跑起来}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{12cm}|}
+\hline
+\textbf{时间} & \textbf{内容} \\
+\hline
+30min & 集成指导：如何拼接各模块 \\
+\hline
+120min & 分组开发 + 教师一对一指导 \\
+\hline
+30min & 测试集验证（10张标准试卷） \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{开发要求：}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|p{5cm}|p{3cm}|}
+\hline
+\textbf{等级} & \textbf{完成度} & \textbf{分数段} \\
+\hline
+基础版 & 完成一种题型识别 & 60-75 \\
+\hline
+进阶版 & 完成两种题型识别 & 76-88 \\
+\hline
+完整版 & 完成三种题型识别 & 89-100 \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ---------------- 第11周 ----------------
+\subsubsection{第11周：成果展示与总结}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{故事问题：展示你的AI助教}]
+\end{tcolorbox}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|p{12cm}|}
+\hline
+\textbf{时间} & \textbf{内容} \\
+\hline
+30min & 分组展示（每组5分钟演示 + 2分钟答辩） \\
+\hline
+40min & 互评与教师点评 \\
+\hline
+20min & 课程总结与CV技术展望 \\
+\hline
+10min & 优秀项目颁奖 \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ============================================================================
+% 第五部分：课程设计详细方案
+% ============================================================================
+\section{课程设计详细方案}
+
+\subsection{项目名称：智能阅卷系统}
+
+\subsection{功能需求矩阵}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|p{3cm}|p{4cm}|p{2.5cm}|p{3cm}|}
+\hline
+\textbf{题型} & \textbf{输入} & \textbf{处理} & \textbf{输出} & \textbf{技术方案} \\
+\hline
+\textbf{选择题} & 填涂区域图像 & 像素密度统计 & 选项(A/B/C/D) & OpenCV countNonZero \\
+\hline
+\textbf{判断题} & 符号区域图像 & 形状匹配 & 符号($\checkmark$/$\times$) & 轮廓特征 + 模板匹配 \\
+\hline
+\textbf{简答题} & 手写文字区域图像 & 端到端OCR & 文字内容 & PaddleOCR / TrOCR \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{系统流程}
+
+\begin{center}
+\textbf{试卷图片} $\to$ \textbf{图像预处理} $\to$ \textbf{版面分析} $\to$
+\begin{tabular}{c}
+\textbf{选择题识别} \\
+\textbf{判断题识别} \\
+\textbf{简答题识别}
+\end{tabular}
+$\to$ \textbf{答案匹配} $\to$ \textbf{评分报告}
+\end{center}
+
+\subsection{分组策略}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|p{6cm}|p{5cm}|}
+\hline
+\textbf{角色} & \textbf{职责} & \textbf{适合专业} \\
+\hline
+组长 & 统筹协调、进度管理 & 所有专业 \\
+\hline
+算法负责人 & 识别算法实现与调优 & CS/EE \\
+\hline
+前端负责人 & 界面展示、可视化 & 设计/媒体 \\
+\hline
+测试负责人 & 测试用例、文档撰写 & 所有专业 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{评估标准}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|p{3cm}|p{8cm}|}
+\hline
+\textbf{维度} & \textbf{占比} & \textbf{评分标准} \\
+\hline
+功能完整性 & 40\% &
+\begin{tabular}{@{}l@{}}
+三种题型全实现(40分) / 两种题型(30分) / 一种题型(20分)
+\end{tabular} \\
+\hline
+识别准确率 & 25\% &
+\begin{tabular}{@{}l@{}}
+测试集准确率$>$90\%(25分) / $>$80\%(20分) / $>$70\%(15分)
+\end{tabular} \\
+\hline
+代码质量 & 15\% & 结构清晰、注释完整、可复用 \\
+\hline
+展示效果 & 10\% & 演示流畅、问题回答清晰 \\
+\hline
+团队协作 & 10\% & 分工明确、组内互评 \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ============================================================================
+% 第六部分：教学资源设计
+% ============================================================================
+\section{教学资源设计}
+
+\subsection{代码脚手架（三层支持）}
+
+\textbf{Layer 1: 完全封装版（面向零基础）}
+\begin{verbatim}
+from cv_toolkit import ChoiceRecognizer
+
+recognizer = ChoiceRecognizer()
+result = recognizer.detect(image)  # 一行调用
+\end{verbatim}
+
+\textbf{Layer 2: 参数可调版（面向进阶）}
+\begin{verbatim}
+from cv_toolkit import ChoiceRecognizer
+
+recognizer = ChoiceRecognizer(
+    threshold=127,      # 可调参数
+    option_count=4,
+    min_density=0.3
+)
+result = recognizer.detect(image)
+\end{verbatim}
+
+\textbf{Layer 3: 算法实现版（面向挑战）}
+\begin{verbatim}
+# 学生需要实现核心算法
+def detect_answers(image, threshold=127):
+    binary = cv2.threshold(image, threshold, 255, cv2.THRESH_BINARY)[1]
+    # TODO: 实现密度统计算法
+    pass
+\end{verbatim}
+
+\subsection{实验数据集}
+
+\begin{verbatim}
+datasets/
+├── test_papers/          # 测试试卷（20张，三种题型）
+├── templates/            # 标准答案模板
+├── samples/
+│   ├── choice/           # 选择题样本
+│   ├── judge/            # 判断题样本
+│   └── essay/            # 简答题样本
+└── results/              # 标注结果（用于验证）
+\end{verbatim}
+
+% ============================================================================
+% 第七部分：差异化教学策略
+% ============================================================================
+\section{差异化教学策略}
+
+\subsection{跨专业适配方案}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|p{5cm}|p{7cm}|}
+\hline
+\textbf{学生类型} & \textbf{特点} & \textbf{支持策略} \\
+\hline
+CS专业 & 编程基础好 & 提供算法实现版，鼓励深入优化 \\
+\hline
+EE专业 & 数学基础好 & 强调算法原理，提供数学推导 \\
+\hline
+文科专业 & 编程薄弱 & 提供封装API，强调应用场景 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{AI辅助编程Prompt模板}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|p{11cm}|}
+\hline
+\textbf{场景} & \textbf{Prompt模板} \\
+\hline
+理解代码 & “这段OpenCV代码是什么意思？请用通俗语言解释：\{代码\}” \\
+\hline
+调试问题 & “我的填涂识别结果不准确，这是代码和输入输出，请帮我分析问题” \\
+\hline
+优化算法 & “如何提高这张试卷的OCR识别准确率？当前使用PaddleOCR” \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ============================================================================
+% 第八部分：考核方案
+% ============================================================================
+\section{考核方案}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|p{4cm}|p{7cm}|}
+\hline
+\textbf{考核环节} & \textbf{占比} & \textbf{说明} \\
+\hline
+平时作业 & 30\% & 每周实验（8次$\times$3-4分） \\
+\hline
+课程项目 & 50\% & 功能完整度 + 代码质量 + 识别准确率 \\
+\hline
+展示报告 & 15\% & 演示效果 + 文档质量 + 答辩表现 \\
+\hline
+团队互评 & 5\% & 组内贡献度评价 \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% 第九部分：时间投入建议
+% ============================================================================
+\section{时间投入建议}
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|c|c|c|p{6cm}|}
+\hline
+\textbf{周次} & \textbf{课内学时} & \textbf{课外学时} & \textbf{累计产出} \\
+\hline
+1-2周 & 6h & 4h/周 & 能用OpenCV + AI工具 \\
+\hline
+3-4周 & 6h & 6h/周 & 预处理 + 版面分析 \\
+\hline
+5-6周 & 6h & 6h/周 & 选择题 + 判断题识别 \\
+\hline
+7-8周 & 6h & 8h/周 & OCR + 手写识别 \\
+\hline
+9-11周 & 8h & 12h/周 & 完整阅卷系统 \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% 第十部分：设计总结
+% ============================================================================
+\section{设计总结}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{课程设计核心优势}]
+\begin{itemize}
+\item \textbf{零浪费}：每周产出直接用于最终项目
+\item \textbf{零门槛}：AI工具 + 三层脚手架
+\item \textbf{零脱节}：所有内容服务于三种题型识别
+\item \textbf{故事化}：从“看见”到“理解”再到“评分”的完整叙事
+\item \textbf{可扩展}：基础版$\to$进阶版$\to$挑战版，满足不同层次需求
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

@@ -1,0 +1,261 @@
+\documentclass[aspectratio=169, 12pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    backgroundcolor=\color{gray!10}
+}
+
+\title[核心开发与调试]{第10周：核心开发与调试}
+\subtitle{让系统真正跑起来}
+\author{计算机视觉课程组}
+\institute{通选课}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{课程概览}
+    \tableofcontents
+\end{frame}
+
+\section{主程序框架}
+
+\begin{frame}[fragile]{主程序结构}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+class AutoGradingSystem:
+    """自动阅卷系统"""
+
+    def __init__(self):
+        # 初始化各模块
+        self.preprocessor = Preprocessor()
+        self.layout_analyzer = LayoutAnalyzer()
+        self.choice_recognizer = ChoiceRecognizer()
+        self.judge_recognizer = JudgeRecognizer()
+        self.essay_recognizer = EssayRecognizer()
+        self.grading_module = GradingModule()
+
+    def process(self, image_path):
+        """处理试卷"""
+        # 1. 预处理
+        preprocessed = self.preprocessor.process(image)
+
+        # 2. 版面分析
+        layout = self.layout_analyzer.analyze(image)
+
+        # 3. 识别
+        choices = self.choice_recognizer.recognize_all(...)
+        judges = self.judge_recognizer.recognize_all(...)
+        essays = self.essay_recognizer.recognize_all(...)
+
+        # 4. 评分
+        result = self.grading_module.grade(...)
+
+        return result
+    \end{lstlisting}
+\end{frame}
+
+\section{集成指导}
+
+\begin{frame}{集成步骤}
+    \begin{enumerate}
+        \item \textbf{搭建框架}
+            \begin{itemize}
+                \item 创建项目结构
+                \item 配置开发环境
+                \item 编写基础代码
+            \end{itemize}
+
+        \item \textbf{模块开发}
+            \begin{itemize}
+                \item 从选择题开始
+                \item 编写单元测试
+                \item 调试优化
+            \end{itemize}
+
+        \item \textbf{模块集成}
+            \begin{itemize}
+                \item 整合各模块
+                \item 测试整体流程
+                \item 修复接口问题
+            \end{itemize}
+
+        \item \textbf{测试优化}
+            \begin{itemize}
+                \item 使用测试集验证
+                \item 优化识别准确率
+            \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+\section{测试策略}
+
+\begin{frame}{测试集准备}
+    \textbf{测试数据：}
+    \begin{itemize}
+        \item 基础选择题：单独测试选择题识别
+        \item 基础判断题：单独测试判断题识别
+        \item 完整试卷：测试整体流程
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{测试目标：}
+    \begin{itemize}
+        \item 选择题准确率 $>$80\%
+        \item 判断题准确率 $>$80\%
+        \item 简答题能提取文字
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{单元测试示例}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import unittest
+
+class TestChoiceRecognizer(unittest.TestCase):
+    def test_calculate_density(self):
+        """测试密度计算"""
+        test_img = create_test_image(density=0.5)
+        density = self.recognizer.calculate_density(test_img)
+        self.assertAlmostEqual(density, 0.5, places=1)
+
+    def test_recognize_single(self):
+        """测试单题识别"""
+        result = self.recognizer.recognize_question(img, positions)
+        self.assertIn(result, ['A', 'B', 'C', 'D', None])
+
+if __name__ == '__main__':
+    unittest.main()
+    \end{lstlisting}
+\end{frame}
+
+\section{思考题}
+
+\begin{frame}{课堂思考题}
+    \begin{block}{问题1：集成调试}
+        \begin{itemize}
+            \item 模块集成时常见问题有哪些？
+            \item 如何快速定位错误来源？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：性能优化}
+        \begin{itemize}
+            \item 如何提升识别准确率？
+            \item 如何优化代码执行速度？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{开发实践}
+
+\begin{frame}{开发检查点}
+    \textbf{检查点1：选择题模块完成}
+    \begin{itemize}
+        \item 能检测填涂
+        \item 能识别A/B/C/D
+        \item 输出格式正确
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{检查点2：判断题模块完成}
+    \begin{itemize}
+        \item 能检测$\checkmark$/$\times$
+        \item 能区分正误
+        \item 输出格式正确
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{检查点3：模块集成完成}
+    \begin{itemize}
+        \item 主程序能调用各模块
+        \item 数据能正确流转
+        \item 无致命错误
+    \end{itemize}
+\end{frame}
+
+\section{常见问题}
+
+\begin{frame}{常见问题与解决}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}}
+            \toprule
+            \textbf{问题} & \textbf{解决方案} \\
+            \midrule
+            填涂识别不准 & 调整阈值，检查二值化 \\
+            符号识别失败 & 检查轮廓，用模板匹配后备 \\
+            OCR结果乱码 & 检查预处理，调整分辨率 \\
+            模块导入错误 & 检查sys.path，确保\_\_init\_\_.py \\
+            数组越界 & 使用safe\_crop，检查边界 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{本周任务}
+    \begin{alertblock}{核心任务}
+        \begin{enumerate}
+            \item 完成所有模块开发
+            \item 完成模块集成
+            \item 通过基本功能测试
+            \item 准备演示材料
+        \end{enumerate}
+    \end{alertblock}
+
+    \vspace{0.2cm}
+
+    \textbf{时间紧迫，务必确保系统基本可用！}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第11周：成果展示与总结}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        每组5分钟演示 + 2分钟答辩
+
+        \vspace{0.3cm}
+
+        \textbf{准备好你们的展示！}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{加油！}
+
+        \vspace{1cm}
+
+        \Large 最后一周冲刺
+    \end{center}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,348 @@
+\documentclass[aspectratio=169, 12pt]{beamer}
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+\title[成果展示与总结]{第11周：成果展示与总结}
+\subtitle{展示你的AI助教}
+\author{计算机视觉课程组}
+\institute{通选课}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{课程概览}
+    \tableofcontents
+\end{frame}
+
+\section{成果展示}
+
+\begin{frame}{展示安排}
+    \textbf{展示规则：}
+    \begin{itemize}
+        \item 每组展示：5分钟
+        \item 答辩时间：2分钟
+        \item 总时间：7分钟/组
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{展示顺序：} 抽签决定
+
+    \vspace{0.3cm}
+
+    \textbf{严格控制时间！}
+\end{frame}
+
+\begin{frame}{展示评分表}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{演示效果（30分）}
+        \begin{itemize}
+            \item 系统演示：15分
+            \item 界面展示：10分
+            \item 时间控制：5分
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{技术实现（40分）}
+        \begin{itemize}
+            \item 功能完整：15分
+            \item 识别准确率：15分
+            \item 代码质量：10分
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{答辩表现（20分）}
+        \begin{itemize}
+            \item 问题理解：10分
+            \item 回答质量：10分
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{文档报告（10分）}
+        \begin{itemize}
+            \item 内容完整：10分
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{展示结构建议}
+    \textbf{5分钟展示安排：}
+    \begin{enumerate}
+        \item \textbf{开场介绍}（30秒）
+            \begin{itemize}
+                \item 组员介绍
+                \item 项目名称
+            \end{itemize}
+
+        \item \textbf{系统演示}（3分钟）
+            \begin{itemize}
+                \item 完整处理流程
+                \item 输入输出展示
+                \item 可视化结果
+            \end{itemize}
+
+        \item \textbf{技术亮点}（1分钟）
+            \begin{itemize}
+                \item 创新点
+                \item 难点及解决方案
+            \end{itemize}
+
+        \item \textbf{总结致谢}（30秒）
+            \begin{itemize}
+                \item 不足与改进
+                \item 感谢
+            \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+\section{课程总结}
+
+\begin{frame}{11周知识地图}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{clp{4cm}}
+            \toprule
+            \textbf{周次} & \textbf{核心知识点} \\
+            \midrule
+            1 & 计算机视觉导论、OpenCV基础 \\
+            2 & AI辅助编程工具 \\
+            3 & 图像预处理（去噪、二值化、矫正） \\
+            4 & 版面分析（边缘、轮廓、区域定位） \\
+            5 & 选择题识别（OMR、填涂检测） \\
+            6 & 判断题识别（形状匹配、符号识别） \\
+            7 & OCR印刷文字识别 \\
+            8 & 手写文字识别 \\
+            9-10 & 系统集成与项目开发 \\
+            11 & 成果展示与总结 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{核心技术栈}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{图像处理}
+        \begin{itemize}
+            \item 像素操作
+            \item 滤波、二值化
+            \item 几何变换
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{特征提取}
+        \begin{itemize}
+            \item 边缘检测
+            \item 轮廓分析
+            \item 形状特征
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{模式识别}
+        \begin{itemize}
+            \item 填涂检测
+            \item 模板匹配
+            \item OCR
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{工程实践}
+        \begin{itemize}
+            \item 模块化设计
+            \item 测试调试
+            \item 团队协作
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{能力提升}
+    \textbf{技术能力}
+    \begin{itemize}
+        \item 掌握OpenCV基础操作
+        \item 能够使用OCR工具
+        \item 能够实现CV应用
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{工程能力}
+    \begin{itemize}
+        \item 模块化设计思维
+        \item 系统集成能力
+        \item 测试调试能力
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{学习能力}
+    \begin{itemize}
+        \item AI辅助编程
+        \item 文档查阅
+        \item 问题解决
+    \end{itemize}
+\end{frame}
+
+\section{思考题}
+
+\begin{frame}{课程回顾思考题}
+    \begin{block}{问题1：知识整合}
+        \begin{itemize}
+            \item 本课程的核心技术有哪些？
+            \item 各模块如何协同工作？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：实践反思}
+        \begin{itemize}
+            \item 项目开发中最大的挑战是什么？
+            \item 如何进一步提升系统性能？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{后续学习}
+
+\begin{frame}{计算机视觉应用领域}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{教育领域}
+                \begin{itemize}
+                    \item 自动阅卷系统
+                    \item 课堂行为分析
+                \end{itemize}
+
+            \item \textbf{医疗领域}
+                \begin{itemize}
+                    \item 医学影像诊断
+                    \item 病灶检测
+                \end{itemize}
+
+            \item \textbf{交通领域}
+                \begin{itemize}
+                    \item 自动驾驶
+                    \item 车牌识别
+                \end{itemize}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{安防领域}
+                \begin{itemize}
+                    \item 人脸识别
+                    \item 行为分析
+                \end{itemize}
+
+            \item \textbf{工业领域}
+                \begin{itemize}
+                    \item 缺陷检测
+                    \item 质量分拣
+                \end{itemize}
+
+            \item \textbf{娱乐领域}
+                \begin{itemize}
+                    \item AR/VR
+                    \item 视频特效
+                \end{itemize}
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{后续学习建议}
+    \textbf{深入学习方向：}
+    \begin{enumerate}
+        \item \textbf{深度学习与CNN}
+            \begin{itemize}
+                \item 卷积神经网络
+                \item 目标检测（YOLO、Faster R-CNN）
+                \item 图像分割
+            \end{itemize}
+
+        \item \textbf{实践项目}
+            \begin{itemize}
+                \item 人脸识别系统
+                \item 车牌识别系统
+                \item 文档扫描与OCR
+            \end{itemize}
+
+        \item \textbf{参加竞赛}
+            \begin{itemize}
+                \item Kaggle竞赛
+                \item 天池竞赛
+                \item 数学建模比赛
+            \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{学习资源}
+    \textbf{官方文档：}
+    \begin{itemize}
+        \item OpenCV: \url{https://docs.opencv.org/}
+        \item PaddleOCR: \url{https://github.com/PaddlePaddle/PaddleOCR}
+        \item TrOCR: \url{https://huggingface.co/microsoft/trocr}
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{在线课程：}
+    \begin{itemize}
+        \item Coursera: Deep Learning Specialization
+        \item Udacity: Computer Vision Nanodegree
+        \item B站: 计算机视觉相关课程
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{开源项目：}
+    \begin{itemize}
+        \item Tesseract OCR、EasyOCR、MMOCR
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{课程寄语}
+    \begin{center}
+        \Large
+        \begin{enumerate}
+            \item \textbf{持续学习} —— CV技术发展迅速
+            \item \textbf{实践为本} —— 在做中学
+            \item \textbf{善用工具} —— AI是助手，不是替代
+            \item \textbf{关注应用} —— 技术服务于需求
+            \item \textbf{保持好奇} —— 探索未知领域
+        \end{enumerate}
+    \end{center}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \Huge \textbf{谢谢大家！}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \Large 祝大家学习进步！
+    \end{center}
+\end{frame}
+
+\end{document}

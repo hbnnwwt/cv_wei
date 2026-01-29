@@ -1,0 +1,639 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\title{\textbf{\large 第7周教案：OCR基础与文字识别}}
+\author{计算机视觉课程组}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabular}{|l|p{12cm}|}
+\hline
+\textbf{周次} & 第7周 \\
+\hline
+\textbf{主题} & OCR基础与文字识别 \\
+\hline
+\textbf{学时} & 3学时（160分钟） \\
+\hline
+\textbf{故事问题} & 怎么让机器"阅读"文字？ \\
+\hline
+\textbf{OBE目标} & A3-特征识别：能使用OCR识别文字 \\
+\hline
+\textbf{项目贡献} & 为简答题识别和题号识别提供技术基础 \\
+\hline
+\end{tabular}
+
+\section{教学目标}
+
+\begin{enumerate}
+\item \textbf{知识目标}：
+    \begin{itemize}
+    \item 理解OCR技术原理与发展
+    \item 了解主流OCR工具和库
+    \item 掌握PaddleOCR的基本使用
+    \end{itemize}
+
+\item \textbf{能力目标}：
+    \begin{itemize}
+    \item 能够安装和配置OCR工具
+    \item 能够识别图像中的印刷文字
+    \item 能够处理OCR识别结果
+    \end{itemize}
+
+\item \textbf{素养目标}：
+    \begin{itemize}
+    \item 理解OCR在实际应用中的价值
+    \item 了解OCR技术的局限性和改进方向
+    \end{itemize}
+\end{enumerate}
+
+\section{教学重点与难点}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\textbf{教学重点}]
+\begin{itemize}
+\item PaddleOCR的安装与使用
+\item OCR结果后处理
+\item 中文文字识别
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!75!black,title=\textbf{教学难点}]
+\begin{itemize}
+\item OCR结果准确率优化
+\item 多语言识别配置
+\end{itemize}
+\end{tcolorbox}
+
+\section{教学过程设计}
+
+\subsection{环节一：OCR技术概述（40分钟）}
+
+\subsubsection{1.1 什么是OCR？（10分钟）}
+
+\textbf{定义：** Optical Character Recognition，光学字符识别}
+
+\textbf{功能：** 将图像中的文字转换为计算机可编辑的文本
+
+\textbf{应用场景：}
+\begin{itemize}
+\item 文档数字化
+\item 车牌识别
+\item 身份证/护照识别
+\item 证件/票据识别
+\item \textbf{试卷文字识别}
+\end{itemize}
+
+\subsubsection{1.2 OCR技术的发展（15分钟）}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{6cm}|p{5cm}|}
+\hline
+\textbf{阶段} & \textbf{技术} & \textbf{特点} \\
+\hline
+第一代 & 模板匹配 & 只能识别特定字体，准确率低 \\
+\hline
+第二代 & 特征提取 & 能识别多种字体，但仍需规则 \\
+\hline
+第三代 & 机器学习 & SVM、神经网络，准确率提升 \\
+\hline
+第四代 & 深度学习 & CNN、RNN、Transformer，准确率高 \\
+\hline
+\textbf{当前} & \textbf{端到端模型} & \textbf{PaddleOCR、Tesseract、TrOCR} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{1.3 主流OCR工具对比（15分钟）}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{4cm}|p{4cm}|p{3cm}|}
+\hline
+\textbf{工具} & \textbf{优点} & \textbf{缺点} & \textbf{适用} \\
+\hline
+Tesseract & 开源免费，支持多语言 & 中文准确率一般 & 英文文档 \\
+\hline
+PaddleOCR & 中文准确率高，易用 & 需要联网下载模型 & 中文场景 \\
+\hline
+EasyOCR & 多语言支持好 & 速度较慢 & 多语言混合 \\
+\hline
+TrOCR & 手写识别强 & 资源占用大 & 手写文字 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{环节二：PaddleOCR快速上手（50分钟）}
+
+\subsubsection{2.1 安装PaddleOCR（10分钟）}
+
+\begin{lstlisting}
+# 安装PaddlePaddle（CPU版本）
+pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple
+
+# 安装PaddleOCR
+pip install paddleocr -i https://mirror.baidu.com/pypi/simple
+
+# 安装其他依赖
+pip install opencv-python pillow
+\end{lstlisting}
+
+\subsubsection{2.2 基础使用（20分钟）}
+
+\begin{lstlisting}
+from paddleocr import PaddleOCR
+
+# 初始化OCR
+# use_angle_cls=True: 启用文字方向分类
+# lang='ch': 中文模型（'en'为英文）
+ocr = PaddleOCR(use_angle_cls=True, lang='ch')
+
+# 识别图像
+result = ocr.ocr('exam_paper.jpg', cls=True)
+
+# 结果格式
+# [
+#   [[[左上x, 左上y], [右上x, 右上y], [右下x, 右下y], [左下x, 左下y]], ('文字', 置信度)],
+#   ...
+# ]
+
+# 打印识别结果
+for line in result:
+    boxes = line[0]  # 文字框坐标
+    text = line[1][0]  # 文字内容
+    confidence = line[1][1]  # 置信度
+
+    print(f"文字: {text}, 置信度: {confidence:.4f}")
+\end{lstlisting}
+
+\subsubsection{2.3 结果可视化（15分钟）}
+
+\begin{lstlisting}
+import cv2
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+
+def visualize_ocr_result(image_path, ocr_result, output_path='result.jpg'):
+    """
+    可视化OCR识别结果
+
+    参数:
+        image_path: 输入图像路径
+        ocr_result: OCR识别结果
+        output_path: 输出图像路径
+    """
+    # 读取图像
+    img = cv2.imread(image_path)
+    img_pil = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(img_pil)
+
+    # 尝试加载中文字体
+    try:
+        font = ImageFont.truetype("simhei.ttf", 20)
+    except:
+        font = ImageFont.load_default()
+
+    # 绘制每个文字框
+    for line in ocr_result:
+        boxes = line[0]
+        text = line[1][0]
+        confidence = line[1][1]
+
+        # 绘制文字框
+        pts = np.array(boxes).astype(np.int32)
+        cv2.polylines(img, [pts], True, (0, 255, 0), 2)
+
+        # 绘制文字和置信度
+        x, y = boxes[0]
+        label = f"{text} ({confidence:.2f})"
+
+        # 使用PIL绘制中文
+        img_pil_text = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        draw_text = ImageDraw.Draw(img_pil_text)
+        draw_text.text((x, y-30), label, fill=(0, 255, 0), font=font)
+
+        img = cv2.cvtColor(np.array(img_pil_text), cv2.COLOR_RGB2BGR)
+
+    # 保存结果
+    cv2.imwrite(output_path, img)
+    print(f"结果已保存到 {output_path}")
+
+# 使用示例
+ocr = PaddleOCR(use_angle_cls=True, lang='ch')
+result = ocr.ocr('exam_paper.jpg', cls=True)
+visualize_ocr_result('exam_paper.jpg', result)
+\end{lstlisting}
+
+\subsubsection{2.4 结果提取（5分钟）}
+
+\begin{lstlisting}
+def extract_text_lines(ocr_result):
+    """
+    提取所有识别的文字行
+
+    参数:
+        ocr_result: OCR识别结果
+
+    返回:
+        文字行列表
+    """
+    text_lines = []
+
+    for line in ocr_result:
+        if line is None:
+            continue
+        text = line[1][0]
+        confidence = line[1][1]
+
+        # 过滤低置信度结果
+        if confidence > 0.5:
+            text_lines.append(text)
+
+    return text_lines
+
+def extract_full_text(ocr_result):
+    """
+    提取完整文本
+
+    参数:
+        ocr_result: OCR识别结果
+
+    返回:
+        完整文本字符串
+    """
+    text_lines = extract_text_lines(ocr_result)
+    full_text = '\n'.join(text_lines)
+    return full_text
+
+# 使用
+text_lines = extract_text_lines(result)
+full_text = extract_full_text(result)
+
+print("识别的文字行:")
+for line in text_lines:
+    print(line)
+
+print("\n完整文本:")
+print(full_text)
+\end{lstlisting}
+
+\subsection{环节三：试卷文字识别实战（40分钟）}
+
+\subsubsection{3.1 识别试卷标题（10分钟）}
+
+\begin{lstlisting}
+def extract_exam_title(image_path):
+    """
+    提取试卷标题
+
+    策略: 识别图像上方最大字号的文字
+    """
+    ocr = PaddleOCR(use_angle_cls=True, lang='ch')
+    result = ocr.ocr(image_path, cls=True)
+
+    if not result or not result[0]:
+        return None
+
+    # 计算每个文字框的高度（字号）
+    boxes_with_height = []
+    for line in result:
+        boxes = line[0]
+        text = line[1][0]
+
+        # 计算高度（取左右两侧的平均）
+        left_height = np.linalg.norm(np.array(boxes[0]) - np.array(boxes[3]))
+        right_height = np.linalg.norm(np.array(boxes[1]) - np.array(boxes[2]))
+        avg_height = (left_height + right_height) / 2
+
+        boxes_with_height.append((text, avg_height, boxes))
+
+    # 按高度排序，取最大的
+    boxes_with_height.sort(key=lambda x: x[1], reverse=True)
+
+    # 取前3个最大的文字作为候选标题
+    title_candidates = boxes_with_height[:3]
+    title = ' '.join([t[0] for t in title_candidates])
+
+    return title
+
+# 使用
+title = extract_exam_title('exam_paper.jpg')
+print(f"试卷标题: {title}")
+\end{lstlisting}
+
+\subsubsection{3.2 识别题号（15分钟）}
+
+\begin{lstlisting}
+import re
+
+def extract_question_numbers(ocr_result):
+    """
+    从OCR结果中提取题号
+
+    参数:
+        ocr_result: OCR识别结果
+
+    返回:
+        题号列表 [(题号, 坐标), ...]
+    """
+    questions = []
+
+    for line in ocr_result:
+        if line is None:
+            continue
+
+        text = line[1][0]
+        boxes = line[0]
+
+        # 匹配题号模式: "1." "1、" "（1）" 等
+        patterns = [
+            r'^(\d+)[.、．]',  # 1. 1、1．
+            r'^[（(](\d+)[)）]',  # （1） (1)
+            r'^第?(\d+)题',  # 第1题 1题
+        ]
+
+        for pattern in patterns:
+            match = re.match(pattern, text.strip())
+            if match:
+                question_num = int(match.group(1))
+                # 计算中心点坐标
+                center_x = int(np.mean([box[0] for box in boxes]))
+                center_y = int(np.mean([box[1] for box in boxes]))
+                questions.append((question_num, (center_x, center_y), boxes))
+                break
+
+    return questions
+
+# 使用
+questions = extract_question_numbers(result)
+for num, center, boxes in questions:
+    print(f"题号: {num}, 位置: {center}")
+\end{lstlisting}
+
+\subsubsection{3.3 按题号分割题目（15分钟）}
+
+\begin{lstlisting}
+def split_by_questions(image, ocr_result):
+    """
+    按题号分割试卷图像
+
+    参数:
+        image: 试卷图像
+        ocr_result: OCR识别结果
+
+    返回:
+        题目图像列表
+    """
+    questions = extract_question_numbers(ocr_result)
+
+    if len(questions) < 2:
+        return [image]
+
+    # 计算分割线（相邻题号的中点）
+    split_lines = []
+    for i in range(len(questions) - 1):
+        curr_center = questions[i][1]
+        next_center = questions[i+1][1]
+
+        # Y方向的中点作为分割线
+        split_y = (curr_center[1] + next_center[1]) // 2
+        split_lines.append(split_y)
+
+    # 分割图像
+    height, width = image.shape[:2]
+    question_images = []
+
+    # 第一题：从顶部到第一个分割线
+    y_prev = 0
+    for split_y in split_lines:
+        question_img = image[y_prev:split_y, 0:width]
+        question_images.append(question_img)
+        y_prev = split_y
+
+    # 最后一题：从最后一个分割线到底部
+    question_img = image[y_prev:height, 0:width]
+    question_images.append(question_img)
+
+    return question_images
+
+# 使用
+img = cv2.imread('exam_paper.jpg')
+question_images = split_by_questions(img, result)
+
+for i, q_img in enumerate(question_images):
+    cv2.imwrite(f'question_{i+1}.jpg', q_img)
+\end{lstlisting}
+
+\subsection{环节四：OCR优化技巧（20分钟）}
+
+\subsubsection{4.1 图像预处理优化（10分钟）}
+
+\begin{lstlisting}
+def preprocess_for_ocr(image):
+    """
+    专门为OCR优化的预处理
+
+    参数:
+        image: 输入图像
+
+    返回:
+        优化后的图像
+    """
+    # 转灰度
+    if len(image.shape) == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image
+
+    # 去噪
+    denoised = cv2.fastNlMeansDenoising(gray)
+
+    # 二值化（针对文档）
+    _, binary = cv2.threshold(
+        denoised, 0, 255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    # 或者使用自适应阈值（针对光照不均）
+    # binary = cv2.adaptiveThreshold(
+    #     denoised, 255,
+    #     cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    #     cv2.THRESH_BINARY, 11, 2
+    # )
+
+    return binary
+
+# 使用
+img = cv2.imread('exam_paper.jpg')
+processed = preprocess_for_ocr(img)
+cv2.imwrite('processed_for_ocr.jpg', processed)
+\end{lstlisting}
+
+\subsubsection{4.2 参数调优（10分钟）}
+
+\begin{lstlisting}
+# PaddleOCR参数说明
+ocr = PaddleOCR(
+    # 基础参数
+    use_angle_cls=True,      # 启用文字方向分类
+    lang='ch',               # 语言: ch(中文), en(英文), fr(法文)等
+
+    # 模型选择
+    det_model_dir=None,      # 检测模型路径（None使用默认）
+    rec_model_dir=None,      # 识别模型路径
+    cls_model_dir=None,      # 方向分类模型路径
+
+    # 高级参数
+    use_gpu=False,           # 是否使用GPU
+    show_log=False,          # 是否显示日志
+
+    # 检测参数
+    det_db_thresh=0.3,       # 检测阈值
+    det_db_box_thresh=0.6,   # 框选阈值
+
+    # 识别参数
+    rec_batch_num=6,         # 批处理大小
+
+    # 方向分类参数
+    cls_batch_num=6,         # 批处理大小
+    cls_thresh=0.9           # 分类阈值
+)
+
+# 针对手写文字
+ocr_handwrite = PaddleOCR(
+    use_angle_cls=True,
+    lang='ch',               # 中文手写
+    det_model_dir=None,      # 可以加载专门的手写模型
+)
+
+# 针对英文
+ocr_english = PaddleOCR(
+    use_angle_cls=True,
+    lang='en'
+)
+\end{lstlisting}
+
+\subsection{环节五：综合实验（10分钟）}
+
+\begin{lstlisting}
+# 完整示例：识别试卷中的所有印刷文字
+from paddleocr import PaddleOCR
+import cv2
+
+def recognize_exam_paper(image_path):
+    """识别试卷中的所有文字"""
+    # 初始化OCR
+    ocr = PaddleOCR(use_angle_cls=True, lang='ch', show_log=False)
+
+    # 读取图像
+    img = cv2.imread(image_path)
+
+    # 预处理
+    processed = preprocess_for_ocr(img)
+
+    # 识别
+    result = ocr.ocr(processed, cls=True)
+
+    # 提取信息
+    title = extract_exam_title(processed)
+    questions = extract_question_numbers(result)
+    text_lines = extract_text_lines(result)
+
+    # 输出结果
+    print(f"试卷标题: {title}")
+    print(f"\n共识别到 {len(questions)} 道题目")
+    print(f"\n文字内容:")
+    for i, line in enumerate(text_lines, 1):
+        print(f"{i}. {line}")
+
+    # 可视化
+    visualize_ocr_result(image_path, result, 'ocr_result.jpg')
+
+    return {
+        'title': title,
+        'questions': questions,
+        'text_lines': text_lines,
+        'full_result': result
+    }
+
+# 使用
+result = recognize_exam_paper('exam_paper.jpg')
+\end{lstlisting}
+
+\section{课后作业}
+
+\subsection{作业内容}
+
+\textbf{题目：** 用OCR识别试卷中的印刷文字}
+
+\textbf{要求：}
+\begin{enumerate}
+\item 安装配置PaddleOCR
+\item 识别试卷标题和题号
+\item 提取所有文字内容
+\item 可视化标注识别结果
+\end{enumerate}
+
+\subsection{评分标准}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|p{8cm}|p{2cm}|}
+\hline
+\textbf{评分项} & \textbf{标准} & \textbf{分值} \\
+\hline
+环境配置 & 成功安装运行PaddleOCR & 20分 \\
+\hline
+识别效果 & 正确识别试卷文字 & 40分 \\
+\hline
+信息提取 & 准确提取题号、标题 & 25分 \\
+\hline
+可视化 & 清晰标注识别结果 & 15分 \\
+\hline
+\textbf{合计} & & \textbf{100分} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{教学反思}
+
+\subsection{重点提醒}
+
+\begin{itemize}
+\item OCR需要联网下载模型，首次运行较慢
+\item 印刷文字识别准确率较高，手写文字是下周内容
+\item 图像质量对OCR结果影响很大
+\end{itemize}
+
+\subsection{下节预告}
+
+下周将学习手写文字识别，使用TrOCR等专门的手写识别模型。
+
+\end{document}
