@@ -25,9 +25,13 @@
 
 \title[AI辅助编程工具实战]{第2周：AI辅助编程工具实战}
 \subtitle{怎么让AI帮我写代码？}
-\author{计算机视觉课程组}
+\author{北京石油化工学院\\人工智能研究院\\王文通}
 \institute{通选课}
-\date{}
+\date{2025-2026 学年}
+\titlegraphic{
+    \includegraphics[height=1.2cm]{../xiaohui.png}\hspace{2cm}
+    \includegraphics[height=1.2cm]{../name.png}
+}
 
 \begin{document}
 
@@ -309,10 +313,29 @@ result = detect_faces('test.jpg')
 \end{frame}
 
 \begin{frame}{下节预告}
+    \textbf{本周回顾：AI辅助编程工具实战}
+    \begin{itemize}
+        \item 掌握了主流AI工具的使用方法
+        \item 学会了编写有效的Prompt
+        \item 完成了人脸检测实战
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{知识衔接：}
+    \begin{itemize}
+        \item \textbf{直方图与统计}（第1周） $\to$ 下周将学习基于直方图的阈值算法（Otsu）
+        \item \textbf{定位锚点}（第1周） $\to$ 下周将学习透视矫正的角点检测
+        \item \textbf{中文路径处理}（第1周） $\to$ 下周将学习批量图像预处理流程
+        \item \textbf{JPEG压缩}（第1周） $\to$ 下周将学习去噪技术弥补压缩损失
+    \end{itemize}
+
+    \vspace{0.5cm}
+
     \begin{center}
         \Large \textbf{第3周：图像预处理与增强}
 
-        \vspace{0.5cm}
+        \vspace{0.3cm}
 
         \normalsize
         故事问题：\textcolor{blue}{试卷拍照模糊怎么办？}
@@ -322,8 +345,8 @@ result = detect_faces('test.jpg')
         你将学会：
         \begin{itemize}
             \item 图像去噪（高斯/中值滤波）
-            \item 图像二值化
-            \item 透视矫正
+            \item 图像二值化（全局/Otsu/自适应）
+            \item 透视矫正（透视变换）
         \end{itemize}
     \end{center}
 \end{frame}
