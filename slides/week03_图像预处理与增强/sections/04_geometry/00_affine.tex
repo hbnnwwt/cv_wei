@@ -1,0 +1,86 @@
+%===========================================================
+% 00_affine.tex - 仿射变换
+%===========================================================
+
+\section{几何变换}
+
+\begin{frame}{仿射变换基础}
+    \textbf{仿射变换：} 保持"平直线"和"平行性"的变换
+
+    \vspace{0.3cm}
+
+    \textbf{包含的操作：}
+    \begin{itemize}
+        \item 平移（Translation）
+        \item 旋转（Rotation）
+        \item 缩放（Scaling）
+        \item 倾斜/剪切（Shear）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{变换矩阵（2×3）：}
+    $$
+    M = \begin{bmatrix}
+    a & b & c \\
+    d & e & f
+    \end{bmatrix}
+    $$
+
+    新坐标：$\begin{bmatrix} x' \\ y' \end{bmatrix} = \begin{bmatrix} a & b \\ d & e \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} + \begin{bmatrix} c \\ f \end{bmatrix}$
+\end{frame}
+
+\begin{frame}[fragile]{仿射变换代码实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+# 图像平移
+def translate(img, x, y):
+    M = np.float32([[1, 0, x], [0, 1, y]])
+    return cv2.warpAffine(img, M, (img.shape[1], img.shape[0]))
+
+# 图像旋转
+def rotate(img, angle, center=None):
+    h, w = img.shape[:2]
+    if center is None:
+        center = (w // 2, h // 2)
+
+    M = cv2.getRotationMatrix2D(center, angle, 1.0)
+    return cv2.warpAffine(img, M, (w, h))
+
+# 使用
+translated = translate(img, 50, 30)   # 向右50，向下30
+rotated = rotate(img, 15)             # 旋转15度
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{注意：} 仿射变换需要3个点对来确定变换矩阵
+\end{frame}
+
+\begin{frame}{仿射变换应用场景}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{文档矫正}
+            \begin{itemize}
+                \item 轻微倾斜修正
+                \item 水平对齐
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{图像增强}
+            \begin{itemize}
+                \item 数据增强
+                \item 随机变换
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{局限}
+        仿射变换不能处理透视变形（近大远小）
+    \end{alertblock}
+\end{frame}

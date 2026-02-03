@@ -1,0 +1,97 @@
+%===========================================================
+% 00_histogram.tex - 直方图与对比度
+%===========================================================
+
+\section{图像增强}
+
+\begin{frame}{为什么要增强图像？}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{低质量图像问题：}
+        \begin{itemize}
+            \item 对比度低（灰蒙蒙）
+            \item 亮部过曝或暗部欠曝
+            \item 细节不清晰
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{增强目标}
+            \begin{itemize}
+                \item 提升对比度
+                \item 恢复细节
+                \item 改善视觉效果
+                \item \textbf{方便后续处理}
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textbf{图像增强 $\neq$ 去噪}
+    \end{center}
+    \small 去噪是"清理"，增强是"优化"
+\end{frame}
+
+\begin{frame}[fragile]{图像直方图}
+    \textbf{直方图：} 显示各像素值级别的分布
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+img = cv2.imread('exam.jpg', 0)
+
+# 计算直方图
+hist = cv2.calcHist(
+    [img], [0], None,
+    [256], [0, 256]
+)
+
+# 绘制直方图
+plt.plot(hist, color='black')
+plt.xlabel('像素值')
+plt.ylabel('像素数量')
+plt.show()
+        \end{lstlisting}
+
+        \column{0.5\textwidth}
+        \textbf{直方图解读：}
+        \begin{itemize}
+            \item \textbf{左偏}：图像偏暗
+            \item \textbf{右偏}：图像偏亮
+            \item \textbf{集中}：对比度低
+            \item \textbf{分散}：对比度高
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{直方图均衡化}
+    \textbf{原理：} 重新分布像素值，使直方图更均匀
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 全局直方图均衡化
+equalized = cv2.equalizeHist(gray)
+
+# 显示对比
+fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+
+# 原图与直方图
+axes[0,0].imshow(gray, cmap='gray')
+axes[0,0].set_title('原图')
+axes[0,1].plot(cv2.calcHist([gray], [0], None, [256], [0, 256]))
+axes[0,1].set_title('原图直方图')
+
+# 均衡化后与直方图
+axes[1,0].imshow(equalized, cmap='gray')
+axes[1,0].set_title('均衡化后')
+axes[1,1].plot(cv2.calcHist([equalized], [0], None, [256], [0, 256]))
+axes[1,1].set_title('均衡化直方图')
+
+plt.tight_layout()
+plt.show()
+    \end{lstlisting}
+\end{frame}

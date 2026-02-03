@@ -1,0 +1,71 @@
+%===========================================================
+% 02_filters_basics.tex - 基础滤波器
+%===========================================================
+
+\begin{frame}[fragile]{基础滤波器对比}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \textbf{均值滤波}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+blur = cv2.blur(
+    img, (5, 5)
+)
+        \end{lstlisting}
+        \begin{itemize}
+            \item 简单平均
+            \item 速度快
+            \item 边缘模糊
+        \end{itemize}
+
+        \column{0.33\textwidth}
+        \textbf{高斯滤波}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+blur = cv2.GaussianBlur(
+    img, (5, 5), 0
+)
+        \end{lstlisting}
+        \begin{itemize}
+            \item 加权平均
+            \item 自然模糊
+            \item 适合高斯噪声
+        \end{itemize}
+
+        \column{0.33\textwidth}
+        \textbf{中值滤波}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+blur = cv2.medianBlur(
+    img, 5
+)
+        \end{lstlisting}
+        \begin{itemize}
+            \item 中值替代
+            \item 保边缘
+            \item 适合椒盐噪声
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{滤波效果对比}
+    \begin{table}
+        \centering
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{滤波器} & \textbf{高斯噪声} & \textbf{椒盐噪声} & \textbf{边缘保留} \\
+            \midrule
+            均值滤波 & 良好 & 一般 & 差 \\
+            高斯滤波 & \textbf{优秀} & 差 & 一般 \\
+            中值滤波 & 一般 & \textbf{优秀} & 良好 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.5cm}
+
+    \begin{block}{选择建议}
+        \begin{itemize}
+            \item \textbf{试卷扫描}：中值滤波（去除点状噪声）
+            \item \textbf{照片美化}：高斯滤波（自然模糊）
+            \item \textbf{边缘检测前}：双边滤波（保边去噪）
+        \end{itemize}
+    \end{block}
+\end{frame}

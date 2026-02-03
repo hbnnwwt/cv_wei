@@ -1,0 +1,66 @@
+%===========================================================
+% 03_summary.tex - 知识点总结
+%===========================================================
+
+\section{知识点总结}
+
+\begin{frame}{预处理完整流程回顾}
+    \begin{center}
+        \begin{tikzpicture}[node distance=1.2cm, auto,
+            block/.style={draw, rectangle, rounded corners, fill=blue!10, minimum height=0.8cm, minimum width=1.8cm, font=\small},
+            arrow/.style={->, thick}]
+
+            \node[block] (input) {原始图像};
+            \node[block, right of=input, node distance=2cm, fill=yellow!10] (denoise) {去噪};
+            \node[block, right of=denoise, node distance=2cm, fill=green!10] (enhance) {增强};
+            \node[block, right of=enhance, node distance=2cm, fill=orange!10] (binary) {二值化};
+            \node[block, right of=binary, node distance=2cm, fill=red!10] (correct) {几何矫正};
+            \node[block, right of=correct, node distance=2cm, fill=purple!10] (output) {输出};
+
+            \draw[arrow] (input) -- (denoise);
+            \draw[arrow] (denoise) -- (enhance);
+            \draw[arrow] (enhance) -- (binary);
+            \draw[arrow] (binary) -- (correct);
+            \draw[arrow] (correct) -- (output);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{核心方法对比：}
+    \begin{table}
+        \centering
+        \tiny
+        \begin{tabular}{llll}
+            \toprule
+            \textbf{类别} & \textbf{基础方法} & \textbf{进阶方法} & \textbf{推荐场景} \\
+            \midrule
+            去噪 & 高斯/均值滤波 & 中值/NLM & 试卷用中值 \\
+            增强 & 直方图均衡化 & CLAHE/伽马 & 试卷用CLAHE \\
+            二值化 & 全局阈值 & Otsu/自适应 & 拍照用自适应 \\
+            几何 & 仿射变换 & 透视变换 & 文档用透视 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{参数速查表}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{llp{5cm}}
+            \toprule
+            \textbf{操作} & \textbf{参数} & \textbf{推荐值} \\
+            \midrule
+            中值滤波 & kernel & 5 \\
+            CLAHE & clipLimit & 2.0 \\
+            CLAHE & tileGridSize & (8, 8) \\
+            自适应阈值 & blockSize & 15 \\
+            自适应阈值 & C & 2-5 \\
+            伽马校正 & gamma & 0.7-0.9 \\
+            USM锐化 & sigma & 1.0 \\
+            USM锐化 & strength & 1.5 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}

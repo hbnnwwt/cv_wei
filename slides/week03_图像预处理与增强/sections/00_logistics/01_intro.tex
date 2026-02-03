@@ -1,0 +1,71 @@
+%===========================================================
+% 01_intro.tex - 预处理的重要性
+%===========================================================
+
+\section{为什么需要预处理？}
+
+\begin{frame}{预处理是计算机视觉的"门卫"}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{alertblock}{现实问题}
+            \begin{itemize}
+                \item 拍摄角度不正
+                \item 光照不均匀
+                \item 纸张有折痕
+                \item 背景有杂物
+                \item \textbf{手机拍照 vs 扫描仪}
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{exampleblock}{预处理目标}
+            \begin{enumerate}
+                \item 去除噪声干扰
+                \item 增强目标特征
+                \item 规范图像格式
+                \item \textbf{提升识别准确率}
+            \end{enumerate}
+        \end{exampleblock}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \centering
+    \textbf{\textcolor{red}{预处理质量直接决定后续识别效果！}}
+\end{frame}
+
+\begin{frame}{真实场景案例分析}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \centering
+        \textbf{低光照拍摄}\\
+        \vspace{0.2cm}
+        \begin{tikzpicture}
+            \draw[fill=gray!30] (0,0) rectangle (2.5,3);
+            \node at (1.25,1.5) {暗淡有噪点};
+        \end{tikzpicture}
+
+        \column{0.33\textwidth}
+        \centering
+        \textbf{光照不均}\\
+        \vspace{0.2cm}
+        \begin{tikzpicture}
+            \shade[left color=white, right color=gray!50] (0,0) rectangle (2.5,3);
+            \node at (1.25,1.5) {阴影干扰};
+        \end{tikzpicture}
+
+        \column{0.33\textwidth}
+        \centering
+        \textbf{拍摄角度}\\
+        \vspace{0.2cm}
+        \begin{tikzpicture}
+            \draw[fill=blue!10, rotate=10] (0,0) rectangle (2.5,3);
+            \node at (1.25,1.5) {透视变形};
+        \end{tikzpicture}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{核心结论}
+        没有好的预处理，再先进的算法也无法发挥威力！
+    \end{block}
+\end{frame}

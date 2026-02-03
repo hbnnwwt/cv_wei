@@ -1,0 +1,66 @@
+%===========================================================
+% 04_denoising_coding.tex - 去噪实战代码
+%===========================================================
+
+\begin{frame}[fragile]{去噪实战：完整代码}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 读取图像
+img = cv2.imread('exam_noisy.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 方法1：高斯滤波（适合高斯噪声）
+gaussian = cv2.GaussianBlur(gray, (5, 5), 0)
+
+# 方法2：中值滤波（适合椒盐噪声）- 推荐用于试卷
+median = cv2.medianBlur(gray, 5)
+
+# 方法3：双边滤波（保边去噪）
+bilateral = cv2.bilateralFilter(gray, 9, 75, 75)
+
+# 方法4：非局部均值（效果最好，速度较慢）
+nlm = cv2.fastNlMeansDenoising(gray, None, 10, 7, 21)
+
+# 显示对比
+titles = ['原图', '高斯', '中值', '双边', 'NLM']
+images = [gray, gaussian, median, bilateral, nlm]
+
+plt.figure(figsize=(15, 3))
+for i in range(5):
+    plt.subplot(1, 5, i+1)
+    plt.imshow(images[i], cmap='gray')
+    plt.title(titles[i])
+    plt.axis('off')
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{PSNR 评估去噪质量}
+    \textbf{PSNR（峰值信噪比）：} 评估图像质量的指标
+
+    \begin{lstlisting}
+def psnr(img1, img2):
+    mse = np.mean((img1 - img2) ** 2)
+    if mse == 0:
+        return float('inf')
+    return 20 * np.log10(255.0 / np.sqrt(mse))
+
+# 对比各方法PSNR
+print(f"高斯滤波: {psnr(gray, gaussian):.2f} dB")
+print(f"中值滤波: {psnr(gray, median):.2f} dB")
+print(f"双边滤波: {psnr(gray, bilateral):.2f} dB")
+print(f"NLM去噪: {psnr(gray, nlm):.2f} dB")
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{PSNR 参考值：}
+    \begin{itemize}
+        \item $> 40$ dB：优秀
+        \item $30-40$ dB：良好
+        \item $< 30$ dB：较差
+    \end{itemize}
+\end{frame}

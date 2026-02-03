@@ -1,0 +1,55 @@
+%===========================================================
+% 05_denoising_compare.tex - 效果对比总结
+%===========================================================
+
+\begin{frame}{去噪方法总结对比}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{方法} & \textbf{速度} & \textbf{去噪效果} & \textbf{边缘保留} & \textbf{适用场景} \\
+            \midrule
+            均值滤波 & ★★★★★ & ★★ & ★ & 快速预览 \\
+            高斯滤波 & ★★★★☆ & ★★★ & ★★ & 高斯噪声 \\
+            中值滤波 & ★★★☆☆ & ★★★★ & ★★★ & \textbf{椒盐噪声} \\
+            双边滤波 & ★★☆☆☆ & ★★★★ & ★★★★ & 保边去噪 \\
+            NLM去噪 & ★☆☆☆☆ & ★★★★★ & ★★★★★ & \textbf{高质量去噪} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{试卷预处理推荐方案}
+        \textbf{首选：} 中值滤波（快速、有效、保边）
+
+        \textbf{备选：} NLM去噪（质量要求高时）
+
+        \textbf{不推荐：} 均值滤波（边缘模糊严重）
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{去噪参数调优建议}
+    \textbf{核大小选择：}
+    \begin{itemize}
+        \item 3×3：轻微去噪，保留细节
+        \item 5×5：\textbf{平衡选择}（推荐）
+        \item 7×7：强去噪，可能模糊细节
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{组合策略：}
+    \begin{enumerate}
+        \item 先用中值滤波去除椒盐噪声
+        \item 再用高斯滤波平滑处理
+        \item 最后用NLM精细化处理（可选）
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{注意}
+        过度去噪会导致字符边缘模糊，反而降低OCR识别率！
+    \end{alertblock}
+\end{frame}

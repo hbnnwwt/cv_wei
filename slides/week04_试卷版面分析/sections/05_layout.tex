@@ -1,0 +1,232 @@
+%===========================================================
+% 05_layout.tex - 投影法与区域定位
+%===========================================================
+
+\section{区域定位}
+
+\begin{frame}{投影法原理}
+    \textbf{什么是投影？}
+    \begin{itemize}
+        \item 统计图像在某个方向上的像素分布
+        \item \textbf{水平投影}：统计每行的白色像素数
+        \item \textbf{垂直投影}：统计每列的白色像素数
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{水平投影应用：}
+        \begin{itemize}
+            \item 检测文本行分隔
+            \item 找到题目之间的空白
+            \item 切割试卷区域
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{垂直投影应用：}
+        \begin{itemize}
+            \item 检测字符分隔
+            \item 找到列边界
+            \item 对齐文本
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{水平投影}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def horizontal_projection(binary):
+    """
+    水平投影：统计每行的白色像素数
+    binary: 二值图像（0=黑, 255=白）
+    """
+    # 将图像归一化到 0-1
+    binary = binary // 255
+
+    # 沿水平方向求和（每行的白色像素数）
+    proj = np.sum(binary, axis=1)
+
+    return proj
+
+# 使用
+binary = cv2.adaptiveThreshold(gray, 255, ...)
+h_proj = horizontal_projection(binary)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{垂直投影}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def vertical_projection(binary):
+    """
+    垂直投影：统计每列的白色像素数
+    """
+    binary = binary // 255
+    proj = np.sum(binary, axis=0)
+    return proj
+
+# 使用
+v_proj = vertical_projection(binary)
+
+# 可视化
+import matplotlib.pyplot as plt
+plt.figure(figsize=(10, 4))
+plt.plot(v_proj)
+plt.title('Vertical Projection')
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{投影波形分析}
+    \begin{columns}
+        \column{0.6\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.8]
+                \draw[->] (0,0) -- (5,0) node[right] {行/列};
+                \draw[->] (0,0) -- (0,3) node[above] {像素数};
+                \draw[blue, thick] (0,0.5) -- (1,2) -- (2,2.5) -- (3,1) -- (4,2.5) -- (5,1);
+                \draw[red, dashed] (0,0.5) -- (5,0.5);
+                \node[red, font=\tiny] at (2.5,0.2) {阈值};
+            \end{tikzpicture}
+        \end{center}
+
+        \column{0.4\textwidth}
+        \textbf{波峰（Peak）：}
+        \begin{itemize}
+            \item 像素数多的位置
+            \item 对应文本/图形区域
+        \end{itemize}
+
+        \textbf{波谷（Valley）：}
+        \begin{itemize}
+            \item 像素数少的位置
+            \item 对应空白/分隔
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{分隔线检测：} 找投影值低于阈值的波谷位置
+\end{frame}
+
+\begin{frame}[fragile]{找到分隔线}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def find_divider_lines(proj, threshold=10, min_length=5):
+    """
+    找到分隔线（波谷）
+    proj: 投影数组
+    threshold: 波谷阈值
+    min_length: 最小连续长度（过滤噪声）
+    """
+    dividers = []
+    current_start = None
+
+    for i, value in enumerate(proj):
+        if value < threshold:
+            if current_start is None:
+                current_start = i
+        else:
+            if current_start is not None:
+                length = i - current_start
+                if length >= min_length:
+                    dividers.append((current_start, i))
+                current_start = None
+
+    return dividers
+
+# 使用
+dividers = find_divider_lines(h_proj, threshold=10)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{投影法实战}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+def layout_analysis(binary):
+    """
+    版面分析：找到题目分隔线
+    """
+    # 水平投影
+    h_proj = np.sum(binary // 255, axis=1)
+
+    # 找分隔线
+    threshold = np.mean(h_proj) * 0.1  # 自适应阈值
+    dividers = find_divider_lines(h_proj, threshold)
+
+    # 计算题目区域
+    regions = []
+    prev_end = 0
+    for start, end in dividers:
+        if start > prev_end:
+            regions.append((prev_end, start))
+        prev_end = end
+
+    # 最后一个区域
+    if prev_end < binary.shape[0]:
+        regions.append((prev_end, binary.shape[0]))
+
+    return regions
+
+# 使用
+regions = layout_analysis(binary)
+print(f"检测到 {len(regions)} 个区域")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{连通域分析}
+    \textbf{什么是连通域？}
+    \begin{itemize}
+        \item 相邻的相同像素值构成的区域
+        \item 4连通：上下左右
+        \item 8连通：包括对角线
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{应用场景：}
+    \begin{itemize}
+        \item 识别填涂区域（选择题气泡）
+        \item 分离独立字符
+        \item 去除噪声斑点
+    \end{itemize}
+
+    \begin{alertblock}{下周预告}
+        下周将用连通域分析来识别选择题填涂！
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{连通域检测}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 连通域检测
+num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+    binary,      # 输入（二值图，0=背景，>0=前景）
+    connectivity=8  # 8连通
+)
+
+# stats 格式：[x, y, width, height, area]
+# centroids 格式：[cx, cy]
+
+# 遍历所有连通域（跳过背景 label=0）
+for i in range(1, num_labels):
+    x, y, w, h, area = stats[i]
+    cx, cy = centroids[i]
+
+    # 筛选：面积在一定范围内
+    if 100 < area < 10000:
+        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{区域定位完整流程}
+    \begin{enumerate}
+        \item \textbf{输入}：预处理后的二值图像
+        \item \textbf{轮廓检测}：找到主要区域边界
+        \item \textbf{投影分析}：定位水平/垂直分隔
+        \item \textbf{连通域分析}：识别填涂区域
+        \item \textbf{区域标注}：绘制识别结果
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{block}{组合策略}
+        轮廓检测 + 投影法 + 连通域分析 = 完整版面分析
+    \end{block}
+\end{frame}

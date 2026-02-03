@@ -1,0 +1,26 @@
+%===========================================================
+% main.tex - 主控文件（模块化重构版）
+%===========================================================
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 导入配置文件
+\input{preamble.tex}
+
+% 更新课程信息
+\title[试卷版面分析]{第4周：试卷版面分析}
+\subtitle{怎么知道选择题、简答题在哪里？}
+
+\begin{document}
+
+%===========================================================
+% 模块组装
+%===========================================================
+\input{sections/00_front.tex}
+\input{sections/01_overview.tex}
+\input{sections/02_edge.tex}
+\input{sections/03_contour.tex}
+\input{sections/04_geometry.tex}
+\input{sections/05_layout.tex}
+\input{sections/06_conclusion.tex}
+
+\end{document}

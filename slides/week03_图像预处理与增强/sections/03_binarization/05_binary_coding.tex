@@ -1,0 +1,94 @@
+%===========================================================
+% 05_binary_coding.tex - 二值化实战代码
+%===========================================================
+
+\begin{frame}[fragile]{二值化完整流程}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+def binarize_exam(img_path, method='adaptive'):
+    """
+    试卷二值化处理
+    method: 'global', 'otsu', 'adaptive'
+    """
+    # 读取图像
+    img = cv2.imread(img_path, 0)
+
+    if method == 'global':
+        _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+
+    elif method == 'otsu':
+        _, binary = cv2.threshold(img, 0, 255,
+            cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+    elif method == 'adaptive':
+        # 推荐用于试卷
+        binary = cv2.adaptiveThreshold(
+            img, 255,
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY_INV,
+            15, 2
+        )
+
+    return binary
+
+# 使用
+result = binarize_exam('exam.jpg', method='adaptive')
+cv2.imwrite('exam_binary.jpg', result)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{三种方法对比展示}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import matplotlib.pyplot as plt
+
+# 读取图像
+img = cv2.imread('exam.jpg', 0)
+
+# 三种二值化方法
+_, global_bin = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+_, otsu_bin = cv2.threshold(img, 0, 255,
+    cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+adaptive_bin = cv2.adaptiveThreshold(img, 255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv2.THRESH_BINARY_INV, 15, 2)
+
+# 对比显示
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+axes[0,0].imshow(img, cmap='gray')
+axes[0,0].set_title('原图')
+axes[0,1].imshow(global_bin, cmap='gray')
+axes[0,1].set_title('全局阈值')
+axes[1,0].imshow(otsu_bin, cmap='gray')
+axes[1,0].set_title('Otsu')
+axes[1,1].imshow(adaptive_bin, cmap='gray')
+axes[1,1].set_title('自适应阈值（推荐）')
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{二值化方法总结}
+    \begin{table}
+        \centering
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{方法} & \textbf{光照均匀} & \textbf{光照不均} & \textbf{速度} \\
+            \midrule
+            全局阈值 & 良好 & 差 & 快 \\
+            Otsu & \textbf{优秀} & 差 & 快 \\
+            自适应阈值 & 良好 & \textbf{优秀} & 较慢 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.5cm}
+
+    \begin{exampleblock}{试卷二值化建议}
+        \begin{itemize}
+            \item \textbf{扫描件}：Otsu（速度快，效果好）
+            \item \textbf{手机拍照}：自适应阈值（应对光照不均）
+            \item \textbf{参数推荐}：blockSize=15, C=2-5
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}

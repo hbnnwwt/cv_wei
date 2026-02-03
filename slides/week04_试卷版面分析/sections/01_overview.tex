@@ -1,0 +1,130 @@
+%===========================================================
+% 01_overview.tex - 版面分析概述与流程
+%===========================================================
+
+\section{版面分析概述}
+
+\begin{frame}{什么是版面分析？}
+    \begin{block}{定义}
+        从文档图像中识别和定位不同区域（标题、正文、表格、图片等）
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{在阅卷系统中的作用：}
+    \begin{enumerate}
+        \item 找到试卷边界（定位试卷）
+        \item 定位选择题区域（OMR识别）
+        \item 定位判断题区域（符号匹配）
+        \item 定位简答题区域（手写识别）
+        \item 定位填空题区域（内容提取）
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{为什么需要版面分析？}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{没有版面分析：}
+        \begin{itemize}
+            \item 不知道答题卡在哪
+            \item 无法区分题型
+            \item OCR识别范围过大
+            \item 处理效率低下
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{有了版面分析：}
+        \begin{itemize}
+            \item 精确定位各区域
+            \item 分类处理不同题型
+            \item 提高识别准确率
+            \item 加快处理速度
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{核心价值}
+        版面分析是自动阅卷的"地图导航"！
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{版面分析完整流程}
+    \begin{center}
+        \begin{tikzpicture}[node distance=1.5cm, auto,
+            block/.style={draw, rectangle, rounded corners, fill=blue!10, minimum height=0.8cm, minimum width=2cm},
+            arrow/.style={->, thick}]
+
+            \node[block] (input) {输入图像};
+            \node[block, right of=input, node distance=2.2cm, fill=yellow!10] (pre) {预处理};
+            \node[block, right of=pre, node distance=2.2cm, fill=green!10] (edge) {边缘检测};
+            \node[block, right of=edge, node distance=2.2cm, fill=red!10] (contour) {轮廓检测};
+            \node[block, below of=contour, node distance=1.5cm, fill=purple!10] (filter) {轮廓筛选};
+            \node[block, left of=filter, node distance=2.2cm, fill=orange!10] (layout) {版面分析};
+            \node[block, left of=layout, node distance=2.2cm, fill=cyan!10] (output) {区域输出};
+
+            \draw[arrow] (input) -- (pre);
+            \draw[arrow] (pre) -- (edge);
+            \draw[arrow] (edge) -- (contour);
+            \draw[arrow] (contour) -- (filter);
+            \draw[arrow] (filter) -- (layout);
+            \draw[arrow] (layout) -- (output);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{版面分析方法分类}
+    \textbf{传统方法：}
+    \begin{itemize}
+        \item \textbf{边缘检测}：Canny、Sobel
+        \item \textbf{轮廓检测}：findContours
+        \item \textbf{投影法}：水平/垂直投影
+        \item \textbf{连通域分析}：blob检测
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{深度学习方法：}
+    \begin{itemize}
+        \item \textbf{目标检测}：YOLO、Faster R-CNN
+        \item \textbf{语义分割}：U-Net、DeepLab
+        \item \textbf{版面分析模型}：LayoutLM、DocFormer
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{block}{本课程重点}
+        传统方法（简单、高效、可控）
+    \end{block}
+\end{frame}
+
+\begin{frame}{应用场景}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{教育阅卷}
+            \begin{itemize}
+                \item 答题卡识别
+                \item 试卷自动批改
+                \item 成绩统计
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{文档处理}
+            \begin{itemize}
+                \item 发票识别
+                \item 表单提取
+                \item 合同分析
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{档案数字化}
+            \begin{itemize}
+                \item 版面重建
+                \item 区域提取
+                \item 内容索引
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}

@@ -1,0 +1,259 @@
+%===========================================================
+% 02_edge.tex - 边缘检测
+%===========================================================
+
+\section{边缘检测}
+
+\begin{frame}{边缘检测基础}
+    \textbf{什么是边缘？}
+    \begin{itemize}
+        \item 图像中像素值发生剧烈变化的位置
+        \item 反映了物体边界、纹理变化等信息
+        \item 是图像的重要特征
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{边缘类型：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}
+                \draw[gray!20] (0,0) rectangle (4,1);
+                \fill[black] (0,0) rectangle (2,1);
+                \draw[red, thick] (2,0) -- (2,1);
+                \node[below] at (2,0) {阶跃边缘};
+            \end{tikzpicture}
+        \end{center}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}
+                \shade[left color=black, right color=white] (0,0) rectangle (4,1);
+                \node at (2,0.5) {斜坡边缘};
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{梯度与边缘}
+    \textbf{梯度原理：}
+    $$\nabla f = \begin{bmatrix} \frac{\partial f}{\partial x} \\ \frac{\partial f}{\partial y} \end{bmatrix}$$
+
+    \vspace{0.2cm}
+
+    \textbf{梯度幅值：}
+    $$|\nabla f| = \sqrt{(\frac{\partial f}{\partial x})^2 + (\frac{\partial f}{\partial y})^2}$$
+
+    \vspace{0.2cm}
+
+    \textbf{梯度方向：}
+    $$\theta = \arctan(\frac{\partial f}{\partial y} / \frac{\partial f}{\partial x})$$
+
+    \vspace{0.3cm}
+
+    \begin{block}{核心思想}
+        边缘处梯度幅值最大！
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Sobel 算子}
+    \textbf{水平方向卷积核（检测垂直边缘）：}
+    $$
+    G_x = \begin{bmatrix}
+    -1 & 0 & 1 \\
+    -2 & 0 & 2 \\
+    -1 & 0 & 1
+    \end{bmatrix}
+    $$
+
+    \textbf{垂直方向卷积核（检测水平边缘）：}
+    $$
+    G_y = \begin{bmatrix}
+    -1 & -2 & -1 \\
+     0 &  0 &  0 \\
+     1 &  2 &  1
+    \end{bmatrix}
+    $$
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# Sobel 边缘检测
+sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+sobel = np.sqrt(sobel_x**2 + sobel_y**2)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Canny 边缘检测}
+    \textbf{为什么选择 Canny？}
+    \begin{itemize}
+        \item 最优边缘检测算法（1986年提出）
+        \item 检测准确率高（低误检率）
+        \item 定位精确（边缘位置准确）
+        \item 单边缘响应（每个边缘只有一条响应线）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{Canny 算法步骤：}
+    \begin{enumerate}
+        \item 高斯滤波降噪
+        \item 计算梯度幅值和方向
+        \item 非极大值抑制
+        \item 双阈值检测和边缘连接
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Canny 算法详解（1/4）}
+    \textbf{步骤1：高斯滤波}
+    \begin{itemize}
+        \item 去除图像噪声
+        \item 防止噪声被误认为边缘
+        \item 通常使用 5×5 高斯核
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{步骤2：计算梯度}
+    \begin{itemize}
+        \item 使用 Sobel 算子计算梯度
+        \item 得到梯度幅值和方向
+        \item 梯度方向垂直于边缘方向
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Canny 算法详解（2/4）}
+    \textbf{步骤3：非极大值抑制}
+
+    \begin{columns}
+        \column{0.6\textwidth}
+        \textbf{目的：} 将粗边缘变成细边缘（单像素宽）
+
+        \vspace{0.2cm}
+
+        \textbf{方法：}
+        \begin{enumerate}
+            \item 在梯度方向上比较当前像素
+            \item 如果不是局部最大值，则抑制（置0）
+            \item 保留梯度方向上的最大值点
+        \end{enumerate}
+
+        \column{0.4\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \draw[step=0.5, gray!30] (0,0) grid (3,3);
+            \fill[red] (1.5,1.5) circle (0.15);
+            \draw[->, blue] (1.5,1.5) -- (2.5,2.5);
+            \node[below, font=\tiny] at (1.5,0) {梯度方向};
+        \end{tikzpicture}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Canny 算法详解（3/4）}
+    \textbf{步骤4：双阈值检测}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{两个阈值：}
+        \begin{itemize}
+            \item \textbf{高阈值}（threshold2）：强边缘
+            \item \textbf{低阈值}（threshold1）：弱边缘
+        \end{itemize}
+
+        \textbf{分类：}
+        \begin{itemize}
+            \item 梯度 > 高阈值 $\rightarrow$ 强边缘
+            \item 低阈值 < 梯度 < 高阈值 $\rightarrow$ 弱边缘
+            \item 梯度 < 低阈值 $\rightarrow$ 非边缘
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{边缘连接：}
+        \begin{itemize}
+            \item 强边缘直接保留
+            \item 弱边缘如果与强边缘相连则保留
+            \item 孤立的弱边缘被抑制
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{推荐比例}
+        高阈值 = 低阈值 × 2~3
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Canny 代码实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+# 预处理
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+blur = cv2.GaussianBlur(gray, (5, 5), 0)
+
+# Canny 边缘检测
+edges = cv2.Canny(
+    blur,           # 输入图像
+    50,             # 低阈值 threshold1
+    150             # 高阈值 threshold2
+)
+
+# 可视化
+cv2.imshow('Edges', edges)
+cv2.waitKey(0)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Canny 参数调优}
+    \textbf{参数影响：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{llp{5cm}}
+            \toprule
+            \textbf{参数} & \textbf{调整方向} & \textbf{效果} \\
+            \midrule
+            低阈值 & 提高 & 减少噪声，但可能丢失弱边缘 \\
+            低阈值 & 降低 & 检测更多边缘，但噪声增多 \\
+            高阈值 & 提高 & 只保留强边缘，边缘更少 \\
+            高阈值 & 降低 & 保留更多边缘，可能引入噪声 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{试卷处理推荐值：}
+    \begin{itemize}
+        \item 低阈值：50-100
+        \item 高阈值：150-200
+        \item 可根据图像质量调整
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{自动阈值选择}
+    \textbf{问题：} 手动调参太繁琐
+
+    \vspace{0.2cm}
+
+    \textbf{解决方案：} 基于图像中值自动计算
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def auto_canny(gray, sigma=0.33):
+    """
+    自动计算 Canny 阈值
+    sigma: 控制阈值范围，通常 0.33
+    """
+    # 计算图像中值
+    v = np.median(gray)
+
+    # 计算阈值
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+
+    # 应用 Canny
+    return cv2.Canny(gray, lower, upper)
+
+# 使用
+edges = auto_canny(blur)
+    \end{lstlisting}
+\end{frame}

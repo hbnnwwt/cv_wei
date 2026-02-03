@@ -1,0 +1,70 @@
+%===========================================================
+% 00_binary_intro.tex - 二值化概述
+%===========================================================
+
+\section{图像二值化}
+
+\begin{frame}{什么是二值化？}
+    \begin{block}{定义}
+        将灰度图像转换为只有黑白两种颜色的图像（0或255）
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{转换规则：}
+        $$f(x) = \begin{cases} 255 & \text{if } I(x,y) > T \\ 0 & \text{if } I(x,y) \le T \end{cases}$$
+
+        \textbf{为什么要二值化？}
+        \begin{itemize}
+            \item 简化数据（减少信息量）
+            \item 突出目标（文字边缘清晰）
+            \item 便于后续处理（OCR输入）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \shade[ball color=gray] (0,0) circle (0.6cm);
+            \node at (0,-1) {灰度图};
+            \node at (1.5,0) {\Huge $\rightarrow$};
+            \begin{scope}[shift={(3,0)}]
+                \draw[fill=white] (-0.6,-0.6) rectangle (0.6,0.6);
+                \fill[black] (-0.3,-0.3) rectangle (0,0.3);
+                \fill[black] (0.1,-0.2) rectangle (0.6,0.2);
+                \node at (0,-1) {二值图};
+            \end{scope}
+        \end{tikzpicture}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{二值化的应用场景}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{OCR 文字识别}
+            \begin{itemize}
+                \item 试卷答题卡识别
+                \item 身份证识别
+                \item 发票处理
+                \item 文档数字化
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{其他应用}
+            \begin{itemize}
+                \item 边缘检测预处理
+                \item 形态学操作输入
+                \item 条形码识别
+                \item 图像压缩
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{关键点}
+        二值化质量直接影响 OCR 识别率！
+    \end{alertblock}
+\end{frame}

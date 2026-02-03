@@ -1,0 +1,69 @@
+%===========================================================
+% 04_histogram_analysis.tex - 直方图分析与二值化质量评估
+%===========================================================
+
+\begin{frame}[fragile]{直方图指导阈值选择}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import matplotlib.pyplot as plt
+
+# 计算直方图
+hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
+
+# 绘制直方图，标记 Otsu 阈值
+plt.figure(figsize=(10, 4))
+plt.plot(hist, color='black')
+plt.axvline(x=ret, color='red', linestyle='--',
+            label=f'Otsu阈值={ret:.1f}')
+plt.xlabel('像素值')
+plt.ylabel('像素数量')
+plt.legend()
+plt.title('灰度直方图与最优阈值')
+plt.grid(alpha=0.3)
+plt.show()
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{直方图分析：}
+    \begin{itemize}
+        \item \textbf{双峰明显}：适合 Otsu
+        \item \textbf{单峰分布}：考虑自适应阈值
+        \item \textbf{多峰分布}：可能需要分段处理
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{二值化质量评估}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def evaluate_binary(binary_img):
+    """
+    评估二值化质量
+    """
+    # 黑白像素比例
+    black_ratio = np.sum(binary_img == 0) / binary_img.size
+    white_ratio = np.sum(binary_img == 255) / binary_img.size
+
+    # 噪声评估（孤立白点）
+    contours, _ = cv2.findContours(
+        255 - binary_img,
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE
+    )
+    small_noise = sum(1 for c in contours if cv2.contourArea(c) < 10)
+
+    return {
+        'black_ratio': black_ratio,
+        'white_ratio': white_ratio,
+        'noise_count': small_noise
+    }
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{质量指标：}
+    \begin{itemize}
+        \item 黑白比例合理（文档约 3:7 或 4:6）
+        \item 噪声点数量少
+        \item 字符边缘清晰
+    \end{itemize}
+\end{frame}

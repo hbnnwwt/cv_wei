@@ -1,0 +1,95 @@
+%===========================================================
+% 01_perspective.tex - 透视变换
+%===========================================================
+
+\begin{frame}{透视变换原理}
+    \textbf{问题：} 拍照时相机与试卷不平行，产生透视变形
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \draw[fill=gray!20] (0,0) -- (2.5,0.5) -- (2.8,3.5) -- (0.3,3) -- cycle;
+            \node at (1.5,1.8) {透视变形};
+        \end{tikzpicture}
+
+        \column{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \draw[fill=white] (0,0) rectangle (2.5,3.5);
+            \node at (1.25,1.75) {矫正结果};
+        \end{tikzpicture}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{透视变换矩阵（3×3）：}
+    $$
+    H = \begin{bmatrix}
+    h_{00} & h_{01} & h_{02} \\
+    h_{10} & h_{11} & h_{12} \\
+    h_{20} & h_{21} & h_{22}
+    \end{bmatrix}
+    $$
+
+    需要\textbf{4个点对}来确定变换矩阵
+\end{frame}
+
+\begin{frame}[fragile]{透视变换实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import numpy as np
+import cv2
+
+# 定义四个角点（原图像）
+pts1 = np.float32([
+    [100, 150],   # 左上
+    [450, 120],   # 右上
+    [480, 380],   # 右下
+    [80, 400]     # 左下
+])
+
+# 定义目标矩形
+width, height = 400, 300
+pts2 = np.float32([
+    [0, 0],                    # 左上
+    [width - 1, 0],            # 右上
+    [width - 1, height - 1],   # 右下
+    [0, height - 1]            # 左下
+])
+
+# 计算透视变换矩阵
+M = cv2.getPerspectiveTransform(pts1, pts2)
+
+# 应用透视变换
+result = cv2.warpPerspective(img, M, (width, height))
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{输出尺寸计算}
+    \textbf{如何确定输出尺寸？}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import numpy as np
+
+def calculate_output_size(pts):
+    """
+    根据四个角点计算输出尺寸
+    """
+    # 计算宽度（取上下边长的最大值）
+    w1 = np.linalg.norm(pts[1] - pts[0])
+    w2 = np.linalg.norm(pts[2] - pts[3])
+    width = max(int(w1), int(w2))
+
+    # 计算高度（取左右边长的最大值）
+    h1 = np.linalg.norm(pts[3] - pts[0])
+    h2 = np.linalg.norm(pts[2] - pts[1])
+    height = max(int(h1), int(h2))
+
+    return width, height
+
+# 使用
+width, height = calculate_output_size(pts1)
+    \end{lstlisting}
+\end{frame}

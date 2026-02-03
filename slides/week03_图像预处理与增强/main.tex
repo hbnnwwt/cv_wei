@@ -1,0 +1,66 @@
+%===========================================================
+% main.tex - 主控文件（模块化扩展版 - 60页目标）
+%===========================================================
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 导入配置文件
+\input{preamble.tex}
+
+\begin{document}
+
+%===========================================================
+% 模块0: 背景知识铺垫 (10页)
+%===========================================================
+\input{sections/00_logistics/00_title.tex}
+\input{sections/00_logistics/01_intro.tex}
+\input{sections/00_logistics/02_image_basics.tex}
+\input{sections/00_logistics/03_app_scenarios.tex}
+\input{sections/00_logistics/04_pipeline.tex}
+
+%===========================================================
+% 模块1: 图像去噪 (12页)
+%===========================================================
+\input{sections/01_denoising/00_noise_models.tex}
+\input{sections/01_denoising/01_convolution.tex}
+\input{sections/01_denoising/02_filters_basics.tex}
+\input{sections/01_denoising/03_advanced_filters.tex}
+\input{sections/01_denoising/04_denoising_coding.tex}
+\input{sections/01_denoising/05_denoising_compare.tex}
+
+%===========================================================
+% 模块2: 图像增强 (8页) - 新增模块
+%===========================================================
+\input{sections/02_enhancement/00_histogram.tex}
+\input{sections/02_enhancement/01_clahe.tex}
+\input{sections/02_enhancement/02_gamma.tex}
+\input{sections/02_enhancement/03_sharpening.tex}
+
+%===========================================================
+% 模块3: 图像二值化 (12页)
+%===========================================================
+\input{sections/03_binarization/00_binary_intro.tex}
+\input{sections/03_binarization/01_global_thresh.tex}
+\input{sections/03_binarization/02_otsu.tex}
+\input{sections/03_binarization/03_adaptive.tex}
+\input{sections/03_binarization/04_histogram_analysis.tex}
+\input{sections/03_binarization/05_binary_coding.tex}
+
+%===========================================================
+% 模块4: 几何变换 (10页)
+%===========================================================
+\input{sections/04_geometry/00_affine.tex}
+\input{sections/04_geometry/01_perspective.tex}
+\input{sections/04_geometry/02_auto_correct.tex}
+\input{sections/04_geometry/03_geometry_coding.tex}
+
+%===========================================================
+% 模块5: 总结与作业 (8页)
+%===========================================================
+\input{sections/05_conclusion/00_real_cases.tex}
+\input{sections/05_conclusion/01_industry_apps.tex}
+\input{sections/05_conclusion/02_quiz.tex}
+\input{sections/05_conclusion/03_summary.tex}
+\input{sections/05_conclusion/04_homework.tex}
+\input{sections/05_conclusion/05_next_week.tex}
+
+\end{document}

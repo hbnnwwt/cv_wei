@@ -1,0 +1,100 @@
+%===========================================================
+% 02_otsu.tex - Otsu 自动阈值算法
+%===========================================================
+
+\begin{frame}{Otsu 算法原理}
+    \textbf{核心思想：} 最大化类间方差
+
+    \vspace{0.2cm}
+
+    \textbf{算法步骤：}
+    \begin{enumerate}
+        \item 遍历所有可能的阈值 $T$
+        \item 计算每个阈值下的类间方差 $\sigma^2$
+        \item 选择使 $\sigma^2$ 最大的阈值作为最优阈值
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    $$
+    \sigma^2 = \omega_0 \omega_1 (\mu_0 - \mu_1)^2
+    $$
+
+    其中：
+    \begin{itemize}
+        \item $\omega_0, \omega_1$：两类像素的比例
+        \item $\mu_0, \mu_1$：两类像素的平均灰度
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \begin{block}{适用条件}
+        直方图呈\textbf{双峰分布}（前景与背景明显分离）
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Otsu 算法代码实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# Otsu 自动阈值
+ret, otsu = cv2.threshold(
+    gray,
+    0,                           # 自动计算
+    255,
+    cv2.THRESH_BINARY + cv2.THRESH_OTSU
+)
+
+print(f"Otsu 最优阈值: {ret}")
+
+# 反色 Otsu（试卷常用）
+ret, otsu_inv = cv2.threshold(
+    gray,
+    0,
+    255,
+    cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
+)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{Otsu 优势}
+        \begin{itemize}
+            \item 自动寻找最优阈值
+            \item 适合光照均匀的图像
+            \item 计算效率高
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Otsu 算法的局限}
+    \begin{alertblock}{问题场景}
+        \begin{itemize}
+            \item 光照不均（单峰直方图）
+            \item 噪声较多
+            \item 前景背景比例悬殊
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{适用：}
+        \begin{itemize}
+            \item 扫描仪扫描
+            \item 光照均匀拍摄
+            \item 双峰直方图
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{不适用：}
+        \begin{itemize}
+            \item 手机拍照（光照不均）
+            \item 阴影遮挡
+            \item 复杂背景
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{解决方案：} 使用自适应阈值
+\end{frame}

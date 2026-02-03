@@ -1,0 +1,67 @@
+%===========================================================
+% 01_clahe.tex - CLAHE自适应直方图均衡化
+%===========================================================
+
+\begin{frame}[fragile]{CLAHE - 自适应直方图均衡化}
+    \textbf{问题：} 全局均衡化可能导致局部过度增强
+
+    \vspace{0.2cm}
+
+    \textbf{CLAHE（Contrast Limited Adaptive Histogram Equalization）：}
+    \begin{itemize}
+        \item 分块处理，保留局部对比度
+        \item 限制对比度，避免噪声放大
+    \end{itemize}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 创建CLAHE对象
+clahe = cv2.createCLAHE(
+    clipLimit=2.0,      # 对比度限制
+    tileGridSize=(8, 8) # 网格大小
+)
+
+# 应用CLAHE
+enhanced = clahe.apply(gray)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{参数说明：}
+    \begin{itemize}
+        \item \textbf{clipLimit}：对比度限制（1-3），值越大对比度越高
+        \item \textbf{tileGridSize}：网格大小（4×4 到 16×16），越小越局部
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{CLAHE 在试卷增强中的应用}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+# 试卷增强最佳实践
+def enhance_exam(img_path):
+    # 读取图像
+    img = cv2.imread(img_path, 0)
+
+    # 去噪
+    denoised = cv2.medianBlur(img, 3)
+
+    # CLAHE增强
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(denoised)
+
+    return enhanced
+
+# 使用
+result = enhance_exam('exam.jpg')
+
+# 保存结果
+cv2.imwrite('exam_enhanced.jpg', result)
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{试卷增强推荐参数}
+        \begin{itemize}
+            \item clipLimit = 2.0（平衡对比度与噪声）
+            \item tileGridSize = (8, 8)（适合文字区域）
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}

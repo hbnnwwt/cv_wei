@@ -1,0 +1,195 @@
+%===========================================================
+% 04_geometry.tex - 形状特征与试卷定位
+%===========================================================
+
+\section{形状特征}
+
+\begin{frame}{轮廓特征}
+    \textbf{常用几何特征：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{5cm}l}
+            \toprule
+            \textbf{特征} & \textbf{说明} & \textbf{OpenCV函数} \\
+            \midrule
+            面积 & 轮廓所围区域大小 & cv2.contourArea() \\
+            周长 & 轮廓长度 & cv2.arcLength() \\
+            边界矩形 & 外接矩形 & cv2.boundingRect() \\
+            最小外接矩形 & 旋转矩形 & cv2.minAreaRect() \\
+            最小外接圆 & 外接圆 & cv2.minEnclosingCircle() \\
+            凸包 & 最小凸多边形 & cv2.convexHull() \\
+            凸缺陷 & 凹陷部分 & cv2.convexityDefects() \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}[fragile]{面积与周长}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 计算面积
+area = cv2.contourArea(contour)
+
+# 计算周长
+perimeter = cv2.arcLength(contour, True)  # True=封闭
+
+# 面积比（用于筛选）
+image_area = img.shape[0] * img.shape[1]
+area_ratio = area / image_area
+
+# 筛选：保留面积占图像 10%-80% 的轮廓
+if 0.1 < area_ratio < 0.8:
+    # 保留该轮廓
+    pass
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{应用：} 根据面积筛选目标轮廓
+\end{frame}
+
+\begin{frame}[fragile]{边界矩形}
+    \textbf{直立边界矩形（不考虑旋转）：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+x, y, w, h = cv2.boundingRect(contour)
+
+# 绘制矩形
+cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{最小外接矩形（考虑旋转）：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+rect = cv2.minAreaRect(contour)
+box = cv2.boxPoints(rect)
+box = np.int0(box)
+
+# 绘制旋转矩形
+cv2.drawContours(img, [box], 0, (0, 0, 255), 2)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{多边形逼近}
+    \textbf{原理：} 用较少的点逼近轮廓形状
+
+    \vspace{0.2cm}
+
+    \textbf{approxPolyDP 函数：}
+    $$\epsilon = \text{precision} \times \text{perimeter}$$
+
+    \begin{itemize}
+        \item \textbf{precision}：逼近精度（0.01-0.05）
+        \item 值越小，逼近越精确（点越多）
+        \item 值越大，逼近越粗糙（点越少）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{应用：} 判断轮廓形状
+    \begin{itemize}
+        \item 4个点 $\rightarrow$ 四边形（试卷）
+        \item 3个点 $\rightarrow$ 三角形
+        \item 点很多 $\rightarrow$ 圆形
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{多边形逼近代码}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 计算周长
+peri = cv2.arcLength(contour, True)
+
+# 多边形逼近
+approx = cv2.approxPolyDP(
+    contour,      # 输入轮廓
+    0.02 * peri,  # 精度参数
+    True          # 轮廓是否封闭
+)
+
+# 获取顶点数
+num_vertices = len(approx)
+
+print(f"顶点数: {num_vertices}")
+
+# 绘制逼近结果
+cv2.drawContours(img, [approx], 0, (0, 255, 0), 2)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{凸包与凸缺陷}
+    \textbf{凸包（Convex Hull）：}
+    \begin{itemize}
+        \item 包含轮廓的最小凸多边形
+        \item 类似于"橡皮筋"包住轮廓
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{凸缺陷（Convexity Defects）：}
+    \begin{itemize}
+        \item 轮廓与凸包之间的凹陷
+        \item 用于手势识别、形状分析
+    \end{itemize}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 计算凸包
+hull = cv2.convexHull(contour)
+
+# 计算凸缺陷
+hull_idx = cv2.convexHull(contour, returnPoints=False)
+defects = cv2.convexityDefects(contour, hull_idx)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{找到试卷轮廓}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+def find_paper_contour(contours, image_area):
+    """
+    从轮廓中找到试卷
+    """
+    for contour in contours:
+        area = cv2.contourArea(contour)
+
+        # 面积筛选：应该是图像的一定比例
+        if area > image_area * 0.5:
+            # 计算周长
+            peri = cv2.arcLength(contour, True)
+
+            # 多边形逼近
+            approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
+
+            # 如果是四边形
+            if len(approx) == 4:
+                return approx
+
+    return None
+
+# 使用
+image_area = gray.shape[0] * gray.shape[1]
+paper_contour = find_paper_contour(contours, image_area)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{形状匹配}
+    \textbf{Hu矩：}
+    \begin{itemize}
+        \item 具有旋转、缩放、平移不变性
+        \item 用于形状相似度比较
+    \end{itemize}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 计算 Hu 矩
+moments = cv2.moments(contour)
+hu_moments = cv2.HuMoments(moments)
+
+# 形状匹配
+match = cv2.matchShapes(
+    contour1,
+    contour2,
+    cv2.CONTOURS_MATCH_I1,  # 匹配方法
+    0.0
+)
+    \end{lstlisting}
+
+    \textbf{应用：} 识别标准形状（圆形、方形等）
+\end{frame}

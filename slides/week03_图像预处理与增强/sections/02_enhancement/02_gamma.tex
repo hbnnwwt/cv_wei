@@ -1,0 +1,74 @@
+%===========================================================
+% 02_gamma.tex - 伽马校正
+%===========================================================
+
+\begin{frame}{伽马校正原理}
+    \textbf{原理：} 幂律变换 $O = (I/255)^\gamma \times 255$
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{伽马值的影响：}
+        \begin{itemize}
+            \item $\gamma < 1$：提亮暗部（曲线向上）
+            \item $\gamma = 1$：无变化
+            \item $\gamma > 1$：压暗亮部（曲线向下）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.8]
+                \draw[->] (0,0) -- (4,0) node[right] {输入};
+                \draw[->] (0,0) -- (0,4) node[above] {输出};
+                \draw[dashed] (0,0) -- (4,4);
+                \draw[blue, thick] (0,0) .. controls (1,0.5) and (2,2) .. (4,4);
+                \node[blue] at (3,0.5) {$\gamma<1$};
+                \draw[red, thick] (0,0) .. controls (2,0.5) and (3,2) .. (4,4);
+                \node[red] at (0.5,3) {$\gamma>1$};
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{应用场景：}
+    \begin{itemize}
+        \item 暗部细节恢复（$\gamma < 1$）
+        \item 过曝图像修正（$\gamma > 1$）
+        \item 显示设备校正
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{伽马校正代码实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import numpy as np
+
+def gamma_correction(img, gamma=1.0):
+    """
+    伽马校正
+    gamma < 1: 提亮暗部
+    gamma > 1: 压暗亮部
+    """
+    # 构建查找表
+    inv_gamma = 1.0 / gamma
+    table = np.array([
+        ((i / 255.0) ** inv_gamma) * 255
+        for i in np.arange(0, 256)
+    ]).astype("uint8")
+
+    # 应用查找表
+    return cv2.LUT(img, table)
+
+# 使用示例
+# 提亮暗部（适合暗光拍摄）
+gamma_bright = gamma_correction(gray, gamma=0.6)
+
+# 压暗亮部（适合过曝图像）
+gamma_dark = gamma_correction(gray, gamma=1.5)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \begin{alertblock}{试卷处理建议}
+        通常 $\gamma = 0.7 \sim 0.9$，提升暗部细节
+    \end{alertblock}
+\end{frame}

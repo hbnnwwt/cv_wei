@@ -1,0 +1,73 @@
+%===========================================================
+% 01_global_thresh.tex - 全局阈值方法
+%===========================================================
+
+\begin{frame}[fragile]{全局阈值法}
+    \textbf{原理：} 整个图像使用同一个阈值
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 固定阈值二值化
+ret, binary = cv2.threshold(
+    gray,                # 输入图像
+    127,                 # 阈值
+    255,                 # 最大值
+    cv2.THRESH_BINARY    # 类型
+)
+
+# 反色二值化（试卷常用）
+ret, binary_inv = cv2.threshold(
+    gray,
+    127,
+    255,
+    cv2.THRESH_BINARY_INV  # 黑白反转
+)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{阈值类型：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{类型} & \textbf{说明} \\
+            \midrule
+            THRESH\_BINARY & $>T \rightarrow 255$, $\le T \rightarrow 0$ \\
+            THRESH\_BINARY\_INV & $>T \rightarrow 0$, $\le T \rightarrow 255$ \\
+            THRESH\_TRUNC & $>T \rightarrow T$, $\le T \rightarrow$ 不变 \\
+            THRESH\_TOZERO & $>T \rightarrow$ 不变, $\le T \rightarrow 0$ \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{全局阈值的局限}
+    \begin{alertblock}{问题}
+        光照不均时，单一阈值无法适应所有区域！
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{阈值过高：}
+        \begin{itemize}
+            \item 亮部细节丢失
+            \item 背景变为黑色
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{阈值过低：}
+        \begin{itemize}
+            \item 暗部噪声保留
+            \item 背景变为白色
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textbf{解决方案：自适应阈值 / Otsu算法}
+    \end{center}
+\end{frame}

@@ -1,0 +1,71 @@
+%===========================================================
+% 03_advanced_filters.tex - 高级滤波器
+%===========================================================
+
+\begin{frame}[fragile]{双边滤波 - 保边去噪}
+    \textbf{原理：} 同时考虑空间距离和像素值差异
+
+    \vspace{0.2cm}
+
+    \begin{columns}
+        \column{0.6\textwidth}
+        \begin{lstlisting}
+# 双边滤波参数说明
+bilateral = cv2.bilateralFilter(
+    img,          # 输入图像
+    9,            # 邻域直径
+    75,           # 颜色空间标准差
+    75            # 坐标空间标准差
+)
+        \end{lstlisting}
+
+        \column{0.4\textwidth}
+        \textbf{特点：}
+        \begin{itemize}
+            \item 保持边缘清晰
+            \item 去除平滑区域噪声
+            \item 计算量较大
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{应用场景}
+        \begin{itemize}
+            \item 人像磨皮（卡通效果）
+            \item 边缘检测前的预处理
+            \item 需要保留边缘的场景
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{非局部均值去噪（NLM）}
+    \textbf{原理：} 利用图像的自相似性
+
+    \vspace{0.2cm}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 快速非局部均值去噪
+denoised = cv2.fastNlMeansDenoisingColored(
+    img,               # 输入图像
+    None,              # 输出
+    10,                # 滤波强度 (h)
+    10,                # 滤波强度 (hColor)
+    7,                 # 模板窗口大小
+    21                 # 搜索窗口大小
+)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{参数说明：}
+    \begin{itemize}
+        \item \textbf{h}：滤波强度，值越大去噪越强（但会丢失细节）
+        \item \textbf{templateWindowSize}：通常取7（奇数）
+        \item \textbf{searchWindowSize}：通常取21（奇数，大于template）
+    \end{itemize}
+
+    \begin{block}{优势}
+        去噪效果最好，能保留纹理细节！
+    \end{block}
+\end{frame}

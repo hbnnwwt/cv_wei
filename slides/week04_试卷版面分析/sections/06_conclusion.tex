@@ -1,0 +1,190 @@
+%===========================================================
+% 06_conclusion.tex - 思考题、作业与预告
+%===========================================================
+
+\section{思考题}
+
+\begin{frame}{课堂思考题}
+    \begin{block}{问题1：边缘检测}
+        \begin{itemize}
+            \item Canny 的双阈值如何选择？
+            \item 如果阈值设置不当会怎样？
+            \item 如何自动确定最优阈值？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：轮廓检测}
+        \begin{itemize}
+            \item 如何从多个轮廓中找到试卷轮廓？
+            \item 如果试卷边缘有破损，怎么办？
+            \item RETR\_EXTERNAL 和 RETR\_TREE 有什么区别？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{课堂思考题（续）}
+    \begin{block}{问题3：区域定位}
+        \begin{itemize}
+            \item 投影法检测分隔线的原理是什么？
+            \item 如何处理不同版式的试卷？
+            \item 连通域分析在选择题识别中的作用？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题4：综合应用}
+        \begin{itemize}
+            \item 如何设计一个通用的试卷版面分析系统？
+            \item 如何处理倾斜的试卷？
+            \item 如何处理有多栏的试卷？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{课后作业}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目}
+        实现试卷版面分析，标注三种题型区域
+    \end{block}
+
+    \textbf{要求：}
+    \begin{enumerate}
+        \item 使用 Canny 边缘检测找到试卷边界
+        \item 使用 findContours 检测轮廓
+        \item 使用投影法分析试卷结构
+        \item 标注出选择题、判断题、简答题区域
+        \item 提交标注结果的可视化图像
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    \textbf{评分标准：}
+    \begin{itemize}
+        \item 边缘检测：20分
+        \item 轮廓检测：20分
+        \item 区域定位：30分
+        \item 可视化效果：20分
+        \item 代码质量：10分
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{作业提交要求}
+    \textbf{提交内容：}
+    \begin{enumerate}
+        \item Python 源代码（.py 或 .ipynb）
+        \item 测试图像（原图 + 标注结果）
+        \item 实验报告（PDF）
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{实验报告包含：}
+    \begin{itemize}
+        \item 算法流程说明
+        \item 参数选择理由
+        \item 遇到的问题与解决方案
+        \item 处理结果展示
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{截止时间：} 下次上课前
+
+    \textbf{提交方式：} 教学平台上传
+\end{frame}
+
+\section{下节预告}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第5周：选择题识别（填涂检测）}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{怎么知道选了A还是B？}
+
+        \vspace{0.3cm}
+
+        你将学会：
+        \begin{itemize}
+            \item OMR 光学标记识别原理
+            \item 填涂密度计算方法
+            \item 选择题自动识别流程
+            \item 多选项处理逻辑
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}{延伸学习资源}
+    \textbf{推荐阅读：}
+    \begin{itemize}
+        \item OpenCV 官方文档 - Contours 章节
+        \item 《数字图像处理》冈萨雷斯 - 边缘检测章节
+        \item 论文：Canny, J. (1986). "A Computational Approach to Edge Detection"
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{实践项目：}
+    \begin{itemize}
+        \item 答题卡识别系统
+        \item 发票表格提取
+        \item 文档版面重建
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{在线资源：}
+    \begin{itemize}
+        \item OpenCV Python Tutorials
+        \item LearnOpenCV 网站教程
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{知识点总结}
+    \textbf{核心方法回顾：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{llp{5cm}}
+            \toprule
+            \textbf{步骤} & \textbf{方法} & \textbf{关键函数} \\
+            \midrule
+            边缘检测 & Canny & cv2.Canny() \\
+            轮廓检测 & findContours & cv2.findContours() \\
+            形状分析 & 多边形逼近 & cv2.approxPolyDP() \\
+            区域定位 & 投影法 & np.sum(axis=1/0) \\
+            细节识别 & 连通域 & cv2.connectedComponents() \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{关键参数：}
+    \begin{itemize}
+        \item Canny 阈值：(50, 150)
+        \item 逼近精度：0.02 × 周长
+        \item 面积筛选：图像面积的 10%-80%
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+
+        \vspace{1cm}
+
+        \Large 有问题随时交流
+
+        \vspace{0.5cm}
+
+        \normalsize
+        \textcolor{blue}{邮箱：} wwtong@bipt.edu.cn
+    \end{center}
+\end{frame}

@@ -1,0 +1,92 @@
+%===========================================================
+% 03_adaptive.tex - 自适应阈值
+%===========================================================
+
+\begin{frame}{自适应阈值原理}
+    \textbf{问题：} 光照不均时，全局阈值无法适应
+
+    \vspace{0.2cm}
+
+    \textbf{解决方案：} 为每个像素点计算局部阈值
+
+    \vspace{0.2cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{均值自适应：}
+        $$T(x,y) = \text{mean}(\text{邻域}) - C$$
+
+        \textbf{特点：}
+        \begin{itemize}
+            \item 计算简单
+            \item 对噪声敏感
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{高斯自适应：}
+        $$T(x,y) = \text{加权均值}(\text{邻域}) - C$$
+
+        \textbf{特点：}
+        \begin{itemize}
+            \item 加权平均
+            \item 效果更平滑
+            \item \textbf{推荐使用}
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{自适应阈值代码实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 自适应阈值 - 均值法
+adaptive_mean = cv2.adaptiveThreshold(
+    gray,
+    255,
+    cv2.ADAPTIVE_THRESH_MEAN_C,
+    cv2.THRESH_BINARY,
+    11,     # 邻域大小（奇数）
+    2       # 常数 C
+)
+
+# 自适应阈值 - 高斯法（推荐）
+adaptive_gaussian = cv2.adaptiveThreshold(
+    gray,
+    255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv2.THRESH_BINARY_INV,  # 反色，试卷常用
+    11,     # 邻域大小（奇数）
+    2       # 常数 C
+)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{参数说明：}
+    \begin{itemize}
+        \item \textbf{blockSize}：邻域大小，通常 11、15、21（必须是奇数）
+        \item \textbf{C}：从均值中减去的常数，用于微调
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{自适应阈值参数调优}
+    \textbf{blockSize 选择：}
+    \begin{itemize}
+        \item 太小（如 5）：对噪声敏感，产生细碎斑点
+        \item \textbf{适中（11-21）：推荐范围}
+        \item 太大（如 31）：接近全局阈值，失去自适应效果
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{C 值选择：}
+    \begin{itemize}
+        \item 正值：使阈值降低，更多像素变为黑色
+        \item 负值：使阈值升高，更多像素变为白色
+        \item \textbf{通常取 2-10}
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{试卷二值化推荐配置}
+        \texttt{blockSize=15, C=5, THRESH\_BINARY\_INV}
+    \end{exampleblock}
+\end{frame}

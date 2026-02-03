@@ -1,0 +1,82 @@
+%===========================================================
+% 01_convolution.tex - 卷积原理
+%===========================================================
+
+\begin{frame}{空间域滤波原理}
+    \textbf{卷积操作：}
+    \begin{itemize}
+        \item 滤波核（Kernel）在图像上滑动
+        \item 每个位置计算加权求和
+        \item 输出新的像素值
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{3×3 均值滤波核}
+            $$
+            K = \frac{1}{9}
+            \begin{bmatrix}
+            1 & 1 & 1 \\
+            1 & 1 & 1 \\
+            1 & 1 & 1
+            \end{bmatrix}
+            $$
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{3×3 高斯滤波核}
+            $$
+            K \approx
+            \begin{bmatrix}
+            1 & 2 & 1 \\
+            2 & 4 & 2 \\
+            1 & 2 & 1
+            \end{bmatrix}
+            $$
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{边界处理}
+        \begin{itemize}
+            \item \textbf{零填充}：边界外补0
+            \item \textbf{复制边界}：复制边缘像素
+            \item \textbf{镜像填充}：镜像边界（推荐）
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{OpenCV 卷积实现}
+    \textbf{自定义滤波核：}
+    \begin{lstlisting}
+import cv2
+import numpy as np
+
+# 自定义锐化核
+kernel = np.array([
+    [-1, -1, -1],
+    [-1,  9, -1],
+    [-1, -1, -1]
+])
+
+# 应用卷积
+result = cv2.filter2D(img, -1, kernel)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{常用滤波函数：}
+    \begin{lstlisting}
+# 均值滤波
+blur = cv2.blur(img, (5, 5))
+
+# 高斯滤波
+gaussian = cv2.GaussianBlur(img, (5, 5), 0)
+
+# 中值滤波
+median = cv2.medianBlur(img, 5)
+    \end{lstlisting}
+\end{frame}

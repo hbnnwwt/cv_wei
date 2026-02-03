@@ -1,0 +1,73 @@
+%===========================================================
+% 04_pipeline.tex - 预处理流水线详解
+%===========================================================
+
+\section{预处理流水线}
+
+\begin{frame}{标准预处理流水线}
+    \begin{center}
+        \begin{tikzpicture}[node distance=1.5cm, auto,
+            block/.style={draw, rectangle, rounded corners, fill=blue!10, minimum height=1cm, minimum width=2cm},
+            arrow/.style={->, thick}]
+
+            \node[block] (input) {原始图像};
+            \node[block, right of=input, node distance=2.5cm, fill=yellow!10] (denoise) {去噪};
+            \node[block, right of=denoise, node distance=2.5cm, fill=green!10] (enhance) {增强};
+            \node[block, right of=enhance, node distance=2.5cm, fill=orange!10] (binary) {二值化};
+            \node[block, right of=binary, node distance=2.5cm, fill=red!10] (correct) {几何矫正};
+            \node[block, right of=correct, node distance=2.5cm, fill=purple!10] (output) {输出};
+
+            \draw[arrow] (input) -- (denoise);
+            \draw[arrow] (denoise) -- (enhance);
+            \draw[arrow] (enhance) -- (binary);
+            \draw[arrow] (binary) -- (correct);
+            \draw[arrow] (correct) -- (output);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.5cm}
+
+    \textbf{各步骤作用：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{8cm}}
+            \toprule
+            \textbf{步骤} & \textbf{作用} \\
+            \midrule
+            去噪 & 消除拍摄噪声、传感器噪声 \\
+            增强 & 提升对比度、恢复细节 \\
+            二值化 & 简化数据、突出目标 \\
+            几何矫正 & 消除透视变形、统一尺寸 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{流水线顺序的重要性}
+    \begin{alertblock}{错误顺序示例}
+        先二值化 $\rightarrow$ 再去噪 $\times$
+
+        \textbf{问题：} 二值化后的图像只有0和255，滤波效果极差！
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{正确顺序}
+        去噪 $\rightarrow$ 增强 $\rightarrow$ 二值化 $\rightarrow$ 矫正 \checkmark
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{本课程学习顺序：}
+    \begin{enumerate}
+        \item 图像去噪（消除噪声）
+        \item 图像增强（提升质量）
+        \item 图像二值化（简化数据）
+        \item 几何变换（矫正变形）
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{课程概览}
+    \tableofcontents
+\end{frame}

@@ -1,0 +1,74 @@
+%===========================================================
+% 02_quiz.tex - 课堂互动
+%===========================================================
+
+\section{课堂互动}
+
+\begin{frame}{Quiz 1：噪声识别}
+    \textbf{问题：} 下面图像中的噪声属于哪种类型？
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{图像 A}
+            有随机分布的黑点和白点
+        \end{block}
+        \visible<2->{
+            \textcolor{green}{\textbf{答案：椒盐噪声}}
+        }
+
+        \column{0.5\textwidth}
+        \begin{block}{图像 B}
+            整体有朦胧感，细节模糊
+        \end{block}
+        \visible<2->{
+            \textcolor{green}{\textbf{答案：高斯噪声}}
+        }
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \visible<3->{
+        \textbf{思考：} 应该分别用什么滤波器处理？
+    }
+\end{frame}
+
+\begin{frame}{Quiz 2：场景选择}
+    \textbf{问题：} 以下场景应该使用哪种二值化方法？
+
+    \begin{enumerate}
+        \item<1-> 扫描仪扫描的试卷
+            \visible<2->{\textcolor{blue}{$\rightarrow$ Otsu 算法}}
+
+        \item<1-> 手机拍照的试卷（有阴影）
+            \visible<3->{\textcolor{blue}{$\rightarrow$ 自适应阈值}}
+
+        \item<1-> 光照均匀的发票
+            \visible<4->{\textcolor{blue}{$\rightarrow$ 全局阈值 或 Otsu}}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Quiz 3：参数调优}
+    \textbf{问题：} 自适应阈值参数如何选择？
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{场景 A：大号文字}
+            选择 blockSize：
+            \begin{itemize}
+                \item<2-> A. 5
+                \item<2-> B. 11
+                \item<2-> C. 21 \checkmark
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{场景 B：背景噪声多}
+            选择 C 值：
+            \begin{itemize}
+                \item<3-> A. 2
+                \item<3-> B. 10 \checkmark
+                \item<3-> C. -5
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}

@@ -1,0 +1,75 @@
+%===========================================================
+% 03_app_scenarios.tex - 预处理应用场景全景
+%===========================================================
+
+\section{预处理应用场景}
+
+\begin{frame}{OCR文字识别预处理}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{试卷识别流程：}
+        \begin{enumerate}
+            \item 去噪（去除拍摄噪点）
+            \item 二值化（黑白分明）
+            \item 透视矫正（展平试卷）
+            \item 区域分割（定位答题区）
+            \item 文字识别（OCR）
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[node distance=1cm]
+                \node[draw, fill=blue!10] (input) {原始试卷};
+                \node[draw, fill=yellow!10, below of=input] (denoise) {去噪};
+                \node[draw, fill=green!10, below of=denoise] (binary) {二值化};
+                \node[draw, fill=red!10, below of=binary] (ocr) {OCR识别};
+                \draw[->] (input) -- (denoise);
+                \draw[->] (denoise) -- (binary);
+                \draw[->] (binary) -- (ocr);
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+
+    \vspace{0.3cm}
+    \begin{alertblock}{关键点}
+        试卷识别的成功率，80\%取决于预处理质量！
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{其他应用场景}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{医学影像}
+            \begin{itemize}
+                \item X光片增强
+                \item CT图像去噪
+                \item 病灶区域增强
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{自动驾驶}
+            \begin{itemize}
+                \item 雨天图像增强
+                \item 夜视图像处理
+                \item 车道线清晰化
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{工业质检}
+            \begin{itemize}
+                \item 缺陷检测预处理
+                \item 尺寸测量图像优化
+                \item 表面纹理增强
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{人脸识别}
+            \begin{itemize}
+                \item 光照归一化
+                \item 人脸对齐
+                \item 直方图均衡化
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}

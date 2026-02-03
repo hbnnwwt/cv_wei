@@ -1,0 +1,111 @@
+%===========================================================
+% 03_sharpening.tex - 锐化技术
+%===========================================================
+
+\begin{frame}{图像锐化原理}
+    \textbf{目的：} 增强边缘，使图像更清晰
+
+    \vspace{0.3cm}
+
+    \textbf{常用锐化方法：}
+    \begin{enumerate}
+        \item \textbf{拉普拉斯锐化}：基于二阶导数
+        \item \textbf{USM锐化}：Unsharp Mask，反锐化掩模
+        \item \textbf{高反差保留}：保留高频细节
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{注意}
+        锐化会放大噪声！建议在去噪后进行。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{拉普拉斯锐化}
+    \textbf{拉普拉斯核：}
+    $$
+    \begin{bmatrix}
+    0 & -1 & 0 \\
+    -1 & 5 & -1 \\
+    0 & -1 & 0
+    \end{bmatrix}
+    $$
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 拉普拉斯锐化核
+kernel = np.array([
+    [0, -1, 0],
+    [-1, 5, -1],
+    [0, -1, 0]
+])
+
+# 应用锐化
+sharpened = cv2.filter2D(img, -1, kernel)
+
+# 更强的锐化核
+kernel_strong = np.array([
+    [-1, -1, -1],
+    [-1, 9, -1],
+    [-1, -1, -1]
+])
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{USM 锐化（推荐）}
+    \textbf{原理：} 原图 + (原图 - 模糊图) × 强度
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def usm_sharpen(img, sigma=1.0, strength=1.5):
+    """
+    Unsharp Mask 锐化
+    sigma: 高斯模糊半径
+    strength: 锐化强度
+    """
+    # 高斯模糊
+    blurred = cv2.GaussianBlur(img, (0, 0), sigma)
+
+    # 计算差值（高频成分）
+    high_freq = cv2.subtract(img, blurred)
+
+    # 叠加高频成分
+    sharpened = cv2.addWeighted(
+        img, 1,
+        high_freq, strength,
+        0
+    )
+
+    return sharpened
+
+# 使用
+sharp = usm_sharpen(gray, sigma=1.0, strength=1.5)
+    \end{lstlisting}
+
+    \begin{block}{参数建议}
+        \begin{itemize}
+            \item sigma = 0.5 ~ 2.0
+            \item strength = 1.0 ~ 2.0
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{图像增强总结}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{方法} & \textbf{作用} & \textbf{适用场景} \\
+            \midrule
+            直方图均衡化 & 提升整体对比度 & 低对比度图像 \\
+            CLAHE & 局部自适应增强 & \textbf{试卷增强} \\
+            伽马校正 & 调整亮度分布 & 暗部/亮部修正 \\
+            锐化 & 增强边缘细节 & 模糊图像 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{试卷增强推荐流程}
+        去噪 $\rightarrow$ CLAHE $\rightarrow$ 轻度锐化
+    \end{exampleblock}
+\end{frame}

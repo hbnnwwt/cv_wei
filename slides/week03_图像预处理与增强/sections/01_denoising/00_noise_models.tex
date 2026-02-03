@@ -1,0 +1,61 @@
+%===========================================================
+% 00_noise_models.tex - 噪声模型与分类
+%===========================================================
+
+\section{图像去噪}
+
+\begin{frame}{噪声类型与特征}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{噪声类型} & \textbf{特征} & \textbf{典型场景} \\
+            \midrule
+            高斯噪声 & 随机分布的亮度变化 & 传感器噪声、低光拍摄 \\
+            椒盐噪声 & 随机的黑点或白点 & 传输错误、老化传感器 \\
+            泊松噪声 & 与信号强度相关 & 低光摄影、X射线 \\
+            周期噪声 & 规则的干扰条纹 & 电气干扰、扫描缺陷 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{高斯噪声}
+            服从正态分布 $N(\mu, \sigma^2)$\\
+            \textit{最常见，容易处理}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{椒盐噪声}
+            随机像素变为0或255\\
+            \textit{需要非线性滤波}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{试卷扫描常见噪声}
+    \begin{alertblock}{实际问题}
+        \begin{itemize}
+            \item 手机拍照：ISO噪声（高斯）
+            \item 压缩传输：块效应、JPEG伪影
+            \item 扫描仪：灰尘颗粒（椒盐）
+            \item 纸张：纹理干扰
+        \end{itemize}
+    \end{alertblock}
+
+    \vspace{0.5cm}
+
+    \textbf{噪声对识别的影响：}
+    \begin{itemize}
+        \item 字符边缘模糊 $\rightarrow$ OCR识别率下降
+        \item 背景噪声干扰 $\rightarrow$ 边缘检测失败
+        \item 压缩伪影 $\rightarrow$ 细节丢失
+    \end{itemize}
+
+    \begin{center}
+        \textbf{结论：试卷预处理首选中值滤波！}
+    \end{center}
+\end{frame}

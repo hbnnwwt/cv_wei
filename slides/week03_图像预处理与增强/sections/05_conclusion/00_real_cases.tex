@@ -1,0 +1,77 @@
+%===========================================================
+% 00_real_cases.tex - 真实案例
+%===========================================================
+
+\section{案例分析}
+
+\begin{frame}{案例1：手机拍摄的模糊试卷}
+    \textbf{问题描述：}
+    \begin{itemize}
+        \item 拍摄角度不正
+        \item 光照不均匀
+        \item 手持模糊
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{处理方案：}
+    \begin{enumerate}
+        \item \textbf{去噪}：中值滤波去除噪点
+        \item \textbf{增强}：CLAHE 提升对比度
+        \item \textbf{锐化}：轻度 USM 锐化
+        \item \textbf{二值化}：自适应阈值
+        \item \textbf{矫正}：透视变换展平
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{效果：} OCR 识别率从 60\% 提升到 95\%
+\end{frame}
+
+\begin{frame}{案例2：光照不均的扫描件}
+    \textbf{问题描述：}
+    \begin{itemize}
+        \item 左侧有阴影
+        \item 中心过曝
+        \item 对比度低
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{处理方案：}
+    \begin{enumerate}
+        \item \textbf{直方图分析}：识别光照分布
+        \item \textbf{CLAHE}：局部自适应增强
+        \item \textbf{伽马校正}：$\gamma=0.8$ 提亮暗部
+        \item \textbf{自适应二值化}：blockSize=15
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{关键：} 避免使用全局阈值和全局均衡化
+\end{frame}
+
+\begin{frame}{案例3：有折痕的老试卷}
+    \textbf{问题描述：}
+    \begin{itemize}
+        \item 纸张有明显折痕
+        \item 折痕处有阴影
+        \item 字迹被折痕遮挡
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{处理方案：}
+    \begin{enumerate}
+        \item \textbf{去噪}：NLM 去除折痕噪声
+        \item \textbf{方向滤波}：沿文字方向平滑
+        \item \textbf{Inpainting}：修复折痕区域（高级）
+        \item \textbf{增强}：对比度拉伸
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{注意}
+        严重折痕可能需要手动干预或深度学习修复
+    \end{alertblock}
+\end{frame}

@@ -1,0 +1,250 @@
+%===========================================================
+% 03_contour.tex - 轮廓检测原理与API
+%===========================================================
+
+\section{轮廓检测}
+
+\begin{frame}{轮廓 vs 边缘}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{边缘（Edges）}
+            \begin{itemize}
+                \item 不连续的像素集合
+                \item 梯度变化的位置
+                \item 原始数据
+                \item 来自 Canny/Sobel
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{轮廓（Contours）}
+            \begin{itemize}
+                \item 连续的边界曲线
+                \item 封闭的、有序的
+                \item 可用于形状分析
+                \item 来自 findContours
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{关系：} 边缘 $\xrightarrow{\text{连接}}$ 轮廓
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        边缘图像 $\rightarrow$ 轮廓检测 $\rightarrow$ 轮廓列表
+    \end{center}
+\end{frame}
+
+\begin{frame}{轮廓检测流程}
+    \begin{enumerate}
+        \item \textbf{输入}：二值图像（通常来自 Canny 或 threshold）
+        \item \textbf{扫描}：遍历图像，寻找边界
+        \item \textbf{连接}：将相邻边缘点连接成轮廓
+        \item \textbf{层级}：建立轮廓之间的层级关系
+        \item \textbf{输出}：轮廓点集 + 层级结构
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{注意}
+        findContours 会修改输入图像！如果需要保留，请先复制。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{findContours API}
+    \textbf{函数原型：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+contours, hierarchy = cv2.findContours(
+    image,              # 输入（二值图，最好是白底黑字）
+    mode,               # 轮廓检索模式
+    method              # 轮廓逼近方法
+)
+    \end{lstlisting}
+
+    \textbf{轮廓检索模式（mode）：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{模式} & \textbf{说明} \\
+            \midrule
+            cv2.RETR\_EXTERNAL & 只检测最外层轮廓 \\
+            cv2.RETR\_LIST & 检测所有轮廓，不建立层级 \\
+            cv2.RETR\_CCOMP & 检测所有轮廓，建立两级层级 \\
+            cv2.RETR\_TREE & 检测所有轮廓，建立完整层级树 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}[fragile]{轮廓逼近方法（method）}
+    \textbf{存储方式：}
+    \begin{table}
+        \centering
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{方法} & \textbf{说明} \\
+            \midrule
+            cv2.CHAIN\_APPROX\_NONE & 存储所有边界点 \\
+            cv2.CHAIN\_APPROX\_SIMPLE & 压缩水平、垂直、对角线段 \\
+            cv2.CHAIN\_APPROX\_TC89\_L1 & Teh-Chin 链逼近算法 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 常用配置
+contours, hierarchy = cv2.findContours(
+    binary,
+    cv2.RETR_EXTERNAL,      # 只要外层轮廓
+    cv2.CHAIN_APPROX_SIMPLE # 压缩存储，节省内存
+)
+    \end{lstlisting}
+
+    \textbf{推荐：} RETR\_EXTERNAL + CHAIN\_APPROX\_SIMPLE
+\end{frame}
+
+\begin{frame}{层级结构（hierarchy）}
+    \textbf{什么是层级？}
+    \begin{itemize}
+        \item 轮廓之间的包含关系
+        \item 外轮廓 vs 内轮廓（孔洞）
+        \item 用树形结构表示
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{hierarchy 数组格式：}
+    $$
+    [next, previous, first\_child, parent]
+    $$
+
+    \begin{itemize}
+        \item \textbf{next}：同级下一个轮廓
+        \item \textbf{previous}：同级前一个轮廓
+        \item \textbf{first\_child}：第一个子轮廓
+        \item \textbf{parent}：父轮廓
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{层级结构示例}
+    \begin{columns}
+        \column{0.4\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \draw[thick] (0,0) rectangle (3,3);
+            \draw[thick] (0.5,0.5) rectangle (1.5,1.5);
+            \draw[thick] (2,1) rectangle (2.8,2);
+            \node at (1.5,3.3) {外轮廓 0};
+            \node at (1,0.2) {内轮廓 1};
+            \node at (2.4,0.7) {内轮廓 2};
+        \end{tikzpicture}
+
+        \column{0.6\textwidth}
+        \textbf{hierarchy 示例：}
+        \begin{table}
+            \centering
+            \tiny
+            \begin{tabular}{cccc}
+                \toprule
+                next & prev & child & parent \\
+                \midrule
+                1 & -1 & 2 & -1 \\
+                2 & 0 & -1 & 0 \\
+                -1 & 1 & -1 & 0 \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+
+        \small
+        \begin{itemize}
+            \item 轮廓0：外轮廓（无父级）
+            \item 轮廓1：内轮廓（父级=0）
+            \item 轮廓2：内轮廓（父级=0）
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{绘制轮廓}
+    \textbf{drawContours 函数：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 绘制所有轮廓
+output = cv2.drawContours(
+    image.copy(),    # 目标图像（会修改原图）
+    contours,        # 轮廓列表
+    -1,              # -1=绘制所有，0=绘制第一个
+    (0, 255, 0),     # 颜色 BGR
+    2                # 线宽
+)
+
+# 只绘制特定轮廓
+output = cv2.drawContours(
+    image.copy(), contours, 0, (0, 0, 255), 3
+)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{填充轮廓：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 线宽设为 -1 表示填充
+output = cv2.drawContours(
+    image.copy(), contours, -1, (0, 255, 0), -1
+)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{轮廓检测完整示例}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+# 读取图像
+img = cv2.imread('exam.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 预处理
+blur = cv2.GaussianBlur(gray, (5, 5), 0)
+edges = cv2.Canny(blur, 50, 150)
+
+# 查找轮廓
+contours, hierarchy = cv2.findContours(
+    edges,
+    cv2.RETR_EXTERNAL,
+    cv2.CHAIN_APPROX_SIMPLE
+)
+
+# 绘制轮廓
+output = img.copy()
+cv2.drawContours(output, contours, -1, (0, 255, 0), 2)
+
+print(f"检测到 {len(contours)} 个轮廓")
+cv2.imshow('Contours', output)
+cv2.waitKey(0)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{轮廓筛选技巧}
+    \textbf{按面积筛选：}
+    \begin{itemize}
+        \item 排除过小的轮廓（噪声）
+        \item 排除过大的轮廓（背景）
+    \end{itemize}
+
+    \textbf{按位置筛选：}
+    \begin{itemize}
+        \item 只保留图像中心区域
+        \item 排除边缘区域的轮廓
+    \end{itemize}
+
+    \textbf{按形状筛选：}
+    \begin{itemize}
+        \item 按长宽比筛选
+        \item 按纵横比筛选
+        \item 按凸包面积比筛选
+    \end{itemize}
+\end{frame}

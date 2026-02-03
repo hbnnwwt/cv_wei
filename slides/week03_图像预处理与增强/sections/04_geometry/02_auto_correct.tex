@@ -1,0 +1,89 @@
+%===========================================================
+% 02_auto_correct.tex - 自动文档矫正
+%===========================================================
+
+\begin{frame}{自动文档矫正流程}
+    \textbf{核心步骤：}
+    \begin{enumerate}
+        \item 边缘检测（Canny）
+        \item 轮廓查找（findContours）
+        \item 四边形近似（approxPolyDP）
+        \item 透视变换
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{关键点}
+        如何从图像中找到四个角点？
+    \end{alertblock}
+
+    \begin{itemize}
+        \item 假设最大轮廓是文档边缘
+        \item 将轮廓近似为四边形
+        \item 按顺序排列四个角点
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{自动矫正代码框架}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+def auto_correct_document(img):
+    # 1. 预处理
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    edged = cv2.Canny(blur, 50, 150)
+
+    # 2. 查找轮廓
+    contours, _ = cv2.findContours(
+        edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+    )
+
+    # 3. 找到最大轮廓（假设是文档）
+    doc_contour = max(contours, key=cv2.contourArea)
+
+    # 4. 近似为四边形
+    peri = cv2.arcLength(doc_contour, True)
+    approx = cv2.approxPolyDP(doc_contour, 0.02 * peri, True)
+
+    # 5. 透视变换
+    if len(approx) == 4:
+        # 获取四个角点并排序
+        pts = order_points(approx.reshape(4, 2))
+        # ... 执行透视变换
+
+    return result
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{角点排序}
+    \textbf{问题：} 轮廓检测返回的四个点顺序是随机的
+
+    \vspace{0.2cm}
+
+    \textbf{解决方案：} 统一排序为 [左上, 右上, 右下, 左下]
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def order_points(pts):
+    """
+    将四个点按左上、右上、右下、左下排序
+    """
+    # 按x坐标排序
+    x_sorted = pts[np.argsort(pts[:, 0]), :]
+
+    # 分为左右两组
+    left = x_sorted[:2, :]
+    right = x_sorted[2:, :]
+
+    # 左边按y排序（上→下）
+    left = left[np.argsort(left[:, 1]), :]
+    # 右边按y排序（上→下）
+    right = right[np.argsort(right[:, 1]), :]
+
+    # 返回：左上、右上、右下、左下
+    return np.array([
+        left[0],   # 左上
+        right[0],  # 右上
+        right[1],  # 右下
+        left[1]    # 左下
+    ])
+    \end{lstlisting}
+\end{frame}
