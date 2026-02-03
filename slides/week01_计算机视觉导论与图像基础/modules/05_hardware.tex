@@ -1,0 +1,259 @@
+%=============================================================================
+% 模块五：工业硬件知识
+%=============================================================================
+
+\section{硬件知识}
+
+\begin{frame}[fragile]{硬件知识（1/3）：卷帘快门 vs 全局快门}
+	\textbf{快门：控制传感器曝光时间的机制}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{卷帘快门}
+		\begin{itemize}
+			\item 逐行曝光，像"扫描"一样
+			\item 优点：便宜、功耗低
+			\item 缺点：拍摄快速物体会变形
+			\item \highlight{斜坡效应}
+			      \begin{itemize}
+				      \item 照片上下部分时间不同
+				      \item 快速物体会倾斜
+			      \end{itemize}
+		\end{itemize}
+
+		\vspace{0.3cm}
+		\textbf{应用：}手机摄像头、普通相机
+
+		\column{0.5\textwidth}
+		\textbf{全局快门}
+		\begin{itemize}
+			\item 所有像素同时曝光
+			\item 优点：无变形
+			\item 缺点：昂贵、功耗高
+			\item 工业相机标配
+		\end{itemize}
+
+		\vspace{0.3cm}
+		\textbf{应用：}工业检测、高速摄影
+
+		\vspace{0.3cm}
+		\begin{center}
+			\begin{tikzpicture}[scale=0.3]
+				\node[draw, fill=blue!20] (rolling) at (0,0) {卷帘快门};
+				\node[draw, fill=green!20] (global) at (5,0) {全局快门};
+				\draw[->] (rolling) -- (3,-2) node[midway,right] {\tiny 倾斜};
+				\draw[->] (global) -- (8,-2) node[midway,right] {\tiny 正常};
+			\end{tikzpicture}
+		\end{center}
+	\end{columns}
+
+	\vspace{0.3cm}
+	\begin{block}{阅卷系统建议}
+		如果试卷传输速度快，需使用全局快门相机，避免文字倾斜变形
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{硬件知识（2/3）：CMOS vs CCD 传感器}
+	\textbf{图像传感器：将光信号转换为电信号的芯片}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{CMOS 传感器}
+		\begin{itemize}
+			\item 每个像素有独立的放大器
+			\item 优点：
+			      \begin{itemize}
+				      \item 速度快（并行读出）
+				      \item 功耗低
+				      \item 成本低
+				      \item 集成度高
+			      \end{itemize}
+			\item 缺点：
+			      \begin{itemize}
+				      \item 噪声较大
+				      \item 填充因子低
+			      \end{itemize}
+		\end{itemize}
+
+		\vspace{0.2cm}
+		\textbf{应用：}手机、网络摄像头、消费级相机
+
+		\column{0.5\textwidth}
+		\textbf{CCD 传感器}
+		\begin{itemize}
+			\item 所有电荷通过一个放大器
+			\item 优点：
+			      \begin{itemize}
+				      \item 图像质量高
+				      \item 噪声低
+				      \item 动态范围大
+				      \item 一致性好
+			      \end{itemize}
+			\item 缺点：
+			      \begin{itemize}
+				      \item 速度慢（串行读出）
+				      \item 功耗高
+				      \item 成本高
+			      \end{itemize}
+		\end{itemize}
+
+		\vspace{0.2cm}
+		\textbf{应用：}天文摄影、科学成像、高端相机
+	\end{columns}
+
+	\vspace{0.3cm}
+	\begin{block}{阅卷系统选择}
+		高速扫描仪使用 CMOS（速度快），精密分析可考虑 CCD（质量高）
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{硬件知识（3/3）：图像传感器关键参数}
+	\textbf{选择相机时需要关注的参数}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{1. 分辨率}
+		\begin{itemize}
+			\item 像素数量：1920×1080, 4K等
+			\item \highlight{不是越高越好！}
+			\item 阅卷：300dpi 扫描足够
+		\end{itemize}
+
+		\vspace{0.2cm}
+		\textbf{2. 帧率}
+		\begin{itemize}
+			\item 每秒传输图像数
+			\item 高速扫描：30-60 fps
+		\end{itemize}
+
+		\vspace{0.2cm}
+		\textbf{3. 像素尺寸}
+		\begin{itemize}
+			\item 单个像素物理大小（μm）
+			\item 越大 = 进光量越大 = 噪声越低
+			\item 手机：1.4μm，单反：5-8μm
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{4. 动态范围}
+		\begin{itemize}
+			\item 能同时捕捉的最亮和最暗细节
+			\item 单位：dB 或 stops
+			\item 高端：60-80 dB
+			\item 普通：40-60 dB
+		\end{itemize}
+
+		\vspace{0.2cm}
+		\textbf{5. 信噪比（SNR）}
+		\begin{itemize}
+			\item 信号与噪声的比值
+			\item 越高越好
+			\item >40dB 为优秀
+		\end{itemize}
+
+		\vspace{0.2cm}
+		\textbf{6. ISO 感光度}
+		\begin{itemize}
+			\item 对光的敏感程度
+			\item 高 ISO：噪点多
+			\item 阅卷：低 ISO（100-400）
+		\end{itemize}
+	\end{columns}
+
+	\vspace{0.3cm}
+	\begin{block}{阅卷系统推荐配置}
+		分辨率：≥5MP | 帧率：≥30 fps | 快门：全局快门 | 接口：GigE/USB3.0
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{工业相机选型指南}
+	\textbf{阅卷系统相机选型决策树}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{根据吞吐量选择：}
+		\begin{itemize}
+			\item \textbf{小型（<1000张/天）}：USB3.0相机
+			\item \textbf{中型（1000-10000张/天）}：GigE相机
+			\item \textbf{大型（>10000张/天）}：Camera Link高速相机
+		\end{itemize}
+
+		\vspace{0.3cm}
+		\textbf{根据精度选择：}
+		\begin{itemize}
+			\item \textbf{普通阅卷}：300dpi ≈ 5MP
+			\item \textbf{手写识别}：600dpi ≈ 10MP
+			\item \textbf{图表分析}：1200dpi ≈ 20MP
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{热门品牌对比：}
+		\begin{table}
+			\centering
+			\small
+			\begin{tabular}{lccc}
+				\toprule
+				品牌 & 价格 & 质量 & 支持 \\
+				\midrule
+				Basler & 中 & 高 & 好 \\
+				IDS & 中 & 高 & 好 \\
+				海康 & 低 & 中 & 中 \\
+				大华 & 低 & 中 & 中 \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+
+		\vspace{0.2cm}
+		\textbf{接口选择：}
+		\begin{itemize}
+			\item \textbf{USB3.0}：短距离（<3m），即插即用
+			\item \textbf{GigE}：长距离（<100m），需交换机
+			\item \textbf{Camera Link}：超高速，专用线缆
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{阅卷系统硬件配置建议}
+	\textbf{完整硬件方案示例}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{方案A：经济型（学校用）}
+		\begin{itemize}
+			\item 相机：USB3.0工业相机（5MP，30fps）
+			\item 镜头：定焦镜头（8mm, f/2.8）
+			\item 光源：LED环形光（可调亮度）
+			\item 传输：USB3.0线缆（2米）
+			\item 预算：约5000-8000元
+		\end{itemize}
+
+		\vspace{0.3cm}
+		\textbf{方案B：专业型（考试中心）}
+		\begin{itemize}
+			\item 相机：GigE全局快门（10MP，60fps）
+			\item 镜头：远心镜头（低畸变）
+			\item 光源：条形光源阵列
+			\item 传输：千兆以太网
+			\item 预算：约20000-30000元
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{关键配置要点：}
+		\begin{enumerate}
+			\item \textbf{全局快门}：避免文字倾斜
+			\item \textbf{镜头畸变<1\%}：保证定位精度
+			\item \textbf{均匀照明}：光照变化<10\%
+			\item \textbf{固定焦距}：避免自动对焦抖动
+			\item \textbf{稳定支架}：减少震动影响
+		\end{enumerate}
+
+		\vspace{0.3cm}
+		\begin{alertblock}{避坑指南}
+			\begin{itemize}
+				\item 不要用手机摄像头（卷帘快门）
+				\item 不要用网络摄像头（分辨率低）
+				\item 不要用自动对焦镜头（会漂移）
+			\end{itemize}
+		\end{alertblock}
+	\end{columns}
+\end{frame}

@@ -1,0 +1,75 @@
+%=============================================================================
+% 主控文件：第1周计算机视觉导论与图像基础
+%=============================================================================
+
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 1. 导入宏包与样式
+\input{preamble.tex}
+
+% 2. 学校信息（使用相对路径引用图片）
+\institute{%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../name.png}}\hspace{0.5cm}%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../xiaohui.png}}\hspace{0.3cm}%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
+\title[CV导论与图像基础]{第1周：计算机视觉导论与图像基础}
+\subtitle{让机器「看懂」试卷的第一步}
+\author{王文通}
+\date{2025\textendash2026 学年}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% 标题页与目录
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \titlepage
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \textbf{本周内容：}
+        \begin{itemize}
+            \item 计算机视觉导论
+            \item 图像的数字表示
+            \item OpenCV 基础
+            \item 代码实战演练
+            \item 工业硬件知识
+        \end{itemize}
+
+        \column{0.55\textwidth}
+        \textbf{学期项目：AI阅卷助手}
+        \begin{enumerate}
+            \item 图像采集与预处理
+            \item 答题卡定位（Timing Marks）
+            \item 填涂检测与识别
+            \item 手写文字 OCR
+            \item 成绩统计与输出
+        \end{enumerate}
+    \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 教学模块
+% -----------------------------------------------------------------------------
+\input{modules/01_intro.tex}
+\input{modules/02_theory.tex}
+\input{modules/03_opencv.tex}
+\input{modules/04_practice.tex}
+\input{modules/05_hardware.tex}
+\input{modules/06_quiz.tex}
+
+% -----------------------------------------------------------------------------
+% 总结与作业
+% -----------------------------------------------------------------------------
+\input{sections/summary.tex}
+
+\end{document}

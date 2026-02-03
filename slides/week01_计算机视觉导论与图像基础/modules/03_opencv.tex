@@ -1,0 +1,403 @@
+%=============================================================================
+% 模块三：OpenCV 基础与进阶操作
+%=============================================================================
+
+\section{OpenCV 基础}
+
+\begin{frame}[fragile]{OpenCV 核心函数详解}
+	\begin{lstlisting}[title={图像读取的隐患}]
+import cv2
+
+# 路径千万不能有中文（新手常见错误）
+img = cv2.imread('paper.jpg')
+
+# 检查是否读取成功
+if img is None:
+    print("错误：文件不存在或路径含有中文！")
+
+# 打印维度 (H, W, C)
+print(img.shape)
+	\end{lstlisting}
+
+	\begin{block}{常用 Flag}
+		\begin{itemize}
+			\item \texttt{cv2.IMREAD\_COLOR}：加载彩色图（默认）
+			\item \texttt{cv2.IMREAD\_GRAYSCALE}：直接以灰度模式加载
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{工程实战：处理中文路径的"终极方案"}
+	\begin{alertblock}{真实场景}
+		阅卷系统中，学生姓名经常是中文，文件名如：\texttt{张三\_试卷.jpg}\\
+		\texttt{cv2.imread()} 直接读取会失败（返回 None）
+	\end{alertblock}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{问题原因：}
+		\begin{itemize}
+			\item OpenCV 的 C++ 库不支持 Unicode 路径
+			\item 中文路径会乱码
+		\end{itemize}
+
+		\vspace{0.3cm}
+		\textbf{错误做法：}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 直接读取，返回 None
+img = cv2.imread('张三_试卷.jpg')
+if img is None:
+    print("读取失败！")
+		\end{lstlisting}
+
+		\column{0.5\textwidth}
+		\textbf{正确做法：}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+def imread_chinese(path):
+    """读取中文路径的图片"""
+    img_array = np.fromfile(path, 
+                            dtype=np.uint8)
+    img = cv2.imdecode(img_array, -1)
+    return img
+
+# 使用
+img = imread_chinese('张三_试卷.jpg')
+cv2.imshow('成功！', img)
+		\end{lstlisting}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{工程实战：保存中文路径图片}
+	\textbf{配套技巧：}保存时也支持中文路径
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+def imwrite_chinese(path, img):
+    """保存中文路径的图片"""
+    is_success, img_buf = cv2.imencode(
+        ".jpg", img)
+    if is_success:
+        img_buf.tofile(path)
+        return True
+    return False
+
+# 使用
+img = cv2.imread('exam.jpg')
+imwrite_chinese('处理结果_张三.jpg', img)
+print("保存成功！")
+		\end{lstlisting}
+
+		\column{0.5\textwidth}
+		\textbf{原理说明：}
+		\begin{enumerate}
+			\item \textbf{imdecode}：从内存中的字节数组解码
+			\item \textbf{imencode + tofile}：编码为字节数组后写入
+		\end{enumerate}
+
+		\vspace{0.3cm}
+		\textbf{阅卷系统应用：}
+		\begin{itemize}
+			\item 批量处理学生试卷
+			\item 生成带学生姓名的结果文件
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Matplotlib 显示与 BGR 转换}
+	为什么用 \texttt{plt.imshow} 显示出来的人脸是青蓝色的？
+
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+import matplotlib.pyplot as plt
+
+# OpenCV 是 BGR，Matplotlib 是 RGB
+img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+plt.imshow(img_rgb)
+plt.show()
+	\end{lstlisting}
+
+	\vspace{0.3cm}
+	\textbf{注意：} 灰度图显示时需要设置 \texttt{cmap='gray'}，否则会变成"原油色"。
+
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+plt.imshow(gray_img, cmap='gray')
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{OpenCV进阶：几何变换}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{1. 平移（Translation）}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 向右平移100，向下平移50
+M = np.float32([
+    [1, 0, 100],  # x位移
+    [0, 1, 50]   # y位移
+])
+translated = cv2.warpAffine(
+    img, M, (w, h)
+)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\textbf{2. 旋转（Rotation）}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 逆时针旋转30度
+center = (w//2, h//2)  # 旋转中心
+M = cv2.getRotationMatrix2D(
+    center,
+    30,     # 角度（度）
+    1.0     # 缩放比例
+)
+rotated = cv2.warpAffine(
+    img, M, (w, h)
+)
+		\end{lstlisting}
+
+		\column{0.5\textwidth}
+		\textbf{3. 缩放（Scaling）}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 放大2倍
+scaled = cv2.resize(
+    img,
+    None,
+    fx=2.0,
+    fy=2.0,
+    interpolation=cv2.INTER_CUBIC
+)
+
+# 指定尺寸缩放
+resized = cv2.resize(
+    img,
+    (800, 600),  # 宽, 高
+    interpolation=cv2.INTER_LINEAR
+)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\begin{block}{插值方法选择}
+		\begin{itemize}
+			\item 放大：\texttt{INTER\_CUBIC}（质量最好）
+			\item 缩小：\texttt{INTER\_AREA}（抗锯齿）
+			\item 快速：\texttt{INTER\_LINEAR}
+		\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{OpenCV进阶：仿射变换与透视变换}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{仿射变换（Affine Transform）}
+		\begin{itemize}
+			\item 保持平行线的平行性
+			\item 需要3个点对应
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 原图像的3个点
+src_pts = np.float32([
+    [50, 50],    # 左上
+    [200, 50],   # 右上
+    [50, 200]    # 左下
+])
+
+# 目标图像的3个点
+dst_pts = np.float32([
+    [10, 10],
+    [200, 20],
+    [10, 200]
+])
+
+# 计算变换矩阵
+M = cv2.getAffineTransform(
+    src_pts, dst_pts
+)
+
+# 执行变换
+affine = cv2.warpAffine(
+    img, M, (w, h)
+)
+		\end{lstlisting}
+
+		\column{0.5\textwidth}
+		\textbf{透视变换（Perspective Transform）}
+		\begin{itemize}
+			\item 不保持平行性
+			\item 需要4个点对应
+			\item \highlight{下周重点！}
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 原图像的4个角点
+src_pts = np.float32([
+    [100, 150],  # 左上
+    [450, 120],  # 右上
+    [480, 380],  # 右下
+    [80, 400]    # 左下
+])
+
+# 目标矩形
+width, height = 400, 300
+dst_pts = np.float32([
+    [0, 0],
+    [width-1, 0],
+    [width-1, height-1],
+    [0, height-1]
+])
+
+# 计算变换矩阵
+M = cv2.getPerspectiveTransform(
+    src_pts, dst_pts
+)
+
+# 执行变换
+warped = cv2.warpPerspective(
+    img, M, (width, height)
+)
+		\end{lstlisting}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{OpenCV进阶：形态学操作基础}
+	\textbf{形态学操作：} 基于图像形状的变换，常用于二值图像
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{1. 腐蚀（Erosion）}
+		\begin{itemize}
+			\item 膨胀白色，收缩黑色
+			\item 去除小噪点
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+kernel = np.ones((3, 3), np.uint8)
+eroded = cv2.erode(binary, kernel, 
+                   iterations=1)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\textbf{2. 膨胀（Dilation）}
+		\begin{itemize}
+			\item 收缩白色，膨胀黑色
+			\item 填充小孔洞
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+dilated = cv2.dilate(binary, kernel, 
+                     iterations=1)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\textbf{3. 开运算（Opening）}
+		\begin{itemize}
+			\item 先腐蚀后膨胀
+			\item 去除小物体，保持大物体
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+opening = cv2.morphologyEx(
+    binary, cv2.MORPH_OPEN, kernel
+)
+		\end{lstlisting}
+
+		\column{0.5\textwidth}
+		\textbf{4. 闭运算（Closing）}
+		\begin{itemize}
+			\item 先膨胀后腐蚀
+			\item 填充小孔洞，连接近邻物体
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+closing = cv2.morphologyEx(
+    binary, cv2.MORPH_CLOSE, kernel
+)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\textbf{5. 形态学梯度}
+		\begin{itemize}
+			\item 膨胀 - 腐蚀
+			\item 提取边缘
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+gradient = cv2.morphologyEx(
+    binary, cv2.MORPH_GRADIENT, 
+    kernel
+)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\begin{block}{结构元素（Kernel）}
+		可自定义形状：矩形、十字形、椭圆形\\
+		大小决定影响范围
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{形态学操作在阅卷中的应用}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{场景1：去除填涂噪点}
+		\begin{itemize}
+			\item 问题：填涂边缘有细小噪点
+			\item 解决：开运算去除小噪点
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 去除小噪点
+kernel = np.ones((2, 2), np.uint8)
+clean_bubble = cv2.morphologyEx(
+    binary,
+    cv2.MORPH_OPEN,
+    kernel
+)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\textbf{场景2：连接断开的笔迹}
+		\begin{itemize}
+			\item 问题：手写数字断开
+			\item 解决：闭运算连接
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 连接断开部分
+kernel = np.ones((3, 3), np.uint8)
+connected = cv2.morphologyEx(
+    binary,
+    cv2.MORPH_CLOSE,
+    kernel
+)
+		\end{lstlisting}
+
+		\column{0.5\textwidth}
+		\textbf{场景3：提取轮廓边缘}
+		\begin{itemize}
+			\item 问题：需要清晰的轮廓
+			\item 解决：形态学梯度
+		\end{itemize}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 提取边缘
+gradient = cv2.morphologyEx(
+    binary,
+    cv2.MORPH_GRADIENT,
+    kernel
+)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\begin{block}{可视化对比}
+		\begin{itemize}
+			\item 原始：有噪点的填涂
+			\item 开运算：干净的填涂
+			\item 闭运算：连接的笔迹
+			\item 梯度：清晰的边缘
+		\end{itemize}
+		\end{block}
+
+		\vspace{0.2cm}
+		\begin{center}
+			\highlight{形态学操作是图像预处理的"外科手术刀"}
+		\end{center}
+	\end{columns}
+\end{frame}

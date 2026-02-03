@@ -1,0 +1,56 @@
+%=============================================================================
+% Week 2 - AI辅助编程工具实战 - 宏包配置与全局样式
+%=============================================================================
+
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{
+	shapes.geometric,
+	arrows,
+	positioning,
+	calc,
+	babel
+}
+\usepackage{amsmath}
+\usepackage{hyperref}
+% \usepackage{enumitem}  % 与 beamer 冲突，已移除
+\usepackage{multicol}
+\usepackage{fontawesome5}
+
+% --- 主题风格 ---
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+% --- 页脚logo ---
+\logo{\includegraphics[height=0.8cm]{../xiaohui.png}}
+
+% --- 代码高亮设置 ---
+\lstset{
+	language=Python,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue},
+	commentstyle=\color{green!60!black},
+	stringstyle=\color{orange},
+	breaklines=true,
+	frame=single,
+	showstringspaces=false,
+	backgroundcolor=\color{gray!5},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	xleftmargin=2em
+}
+
+% --- 自定义命令 ---
+\newcommand{\highlight}[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand{\prompt}[1]{\textcolor{blue}{\texttt{#1}}}
+\newcommand{\aioutput}[1]{\textcolor{green!60!black}{\texttt{#1}}}
+
+% --- Beamer 兼容性修复 ---
+\makeatletter
+\def\verbatim@font{\normalfont\ttfamily}
+\makeatother

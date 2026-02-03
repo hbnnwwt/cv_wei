@@ -1,0 +1,412 @@
+%=============================================================================
+% 模块一：导论与项目愿景
+%=============================================================================
+
+\section{计算机视觉导论}
+
+\begin{frame}[fragile]{视觉：人类获取信息的最主要渠道}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{人类视觉：}
+        \begin{itemize}
+            \item 人脑约 50\% 的神经元参与视觉处理。
+            \item \highlight{语义理解}：我们看到的不是像素，是"人"、"车"、"试卷"。
+        \end{itemize}
+        \vspace{0.5cm}
+        \textbf{计算机视觉 (CV)：}
+        \begin{itemize}
+            \item 目标：给机器安装"眼睛"和"大脑"。
+            \item 挑战：图像在计算机眼中只是一组 \highlight{数字}。
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{example-image}
+            \caption{语义 vs 矩阵（请替换为实际图片）}
+        \end{figure}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{计算机视觉应用全景}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{自动驾驶}
+            Tesla Autopilot、Waymo
+            \begin{itemize}
+                \item 车道检测
+                \item 交通标志识别
+                \item 行人检测
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{医疗影像}
+            CT/MRI诊断
+            \begin{itemize}
+                \item 肿瘤检测
+                \item 器官分割
+                \item 病理分析
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{工业检测}
+            产品质检
+            \begin{itemize}
+                \item 缺陷识别
+                \item 尺寸测量
+                \item 质量控制
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{人脸识别}
+            支付宝、安防系统
+            \begin{itemize}
+                \item 身份验证
+                \item 门禁系统
+                \item 犯罪侦查
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{OCR文字识别}
+            文档数字化
+            \begin{itemize}
+                \item 发票识别
+                \item 车牌识别
+                \item 手写转录
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{AR/VR}
+            增强现实
+            \begin{itemize}
+                \item 虚拟试衣
+                \item 游戏交互
+                \item 远程协作
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+    \begin{center}
+        \highlight{所有这些应用的核心都是：将图像转化为可理解的信息}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{CV 的历史与现状}
+    \begin{itemize}
+        \item \textbf{1960s}：Larry Roberts (CV之父) 尝试让机器识别积木世界。
+        \item \textbf{1970s-1980s}：提出边缘检测、Marr 视觉计算理论。
+        \item \textbf{2012-至今}：\highlight{深度学习爆发}，AlexNet 在 ImageNet 竞赛中夺冠。
+    \end{itemize}
+    \begin{block}{核心任务演变}
+        分类 (是什么?) $\to$ 检测 (在哪儿?) $\to$ 分割 (形状如何?) $\to$ 生成 (画一个出来)
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{贯穿本学期的项目：AI 阅卷助手}
+    \begin{columns}
+        \column{0.4\textwidth}
+        \textbf{任务分解：}
+        \begin{enumerate}
+            \item \textbf{图像采集}：拍照、扫描。
+            \item \textbf{预处理}：纠偏、增强（本周内容）。
+            \item \textbf{定位}：找到答题卡、填空区。
+            \item \textbf{识别}：OCR (光学字符识别)。
+            \item \textbf{评分}：逻辑比对。
+        \end{enumerate}
+        \column{0.6\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.8]
+                \draw[thick] (0,0) rectangle (4,5);
+                \node at (2,4.5) {试卷图像};
+                \draw[fill=blue!20] (0.5,3) rectangle (3.5,3.8); \node at (2,3.4) {学号区};
+                \draw[fill=red!20] (0.5,1) rectangle (3.5,2.5); \node at (2,1.75) {答题区};
+                \draw[->, ultra thick, red] (4.5, 2.5) -- (6, 2.5) node[right] {AI 识别};
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{AI阅卷系统的技术挑战}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{挑战1：手写字迹识别难度}
+        \begin{itemize}
+            \item 每个人的字迹不同
+            \item 连笔、潦草、抖动
+            \item 相似字符混淆（如：0 vs O, 1 vs l)
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{挑战2：答题卡污渍处理}
+        \begin{itemize}
+            \item 涂改痕迹
+            \item 折痕污损
+            \item 水渍污染
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{挑战3：多种笔迹类型识别}
+        \begin{itemize}
+            \item 钢笔、圆珠笔、铅笔
+            \item 蓝色、黑色、红色
+            \item 粗细不同、压力不同
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{挑战4：防作弊机制}
+        \begin{itemize}
+            \item 检测异常填涂
+            \item 识别多选作弊
+            \item 图像篡改检测
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \begin{block}{工程价值}
+        阅卷系统将人工阅卷的准确率从\textbf{95\%}提升到\textbf{99.9\%}，效率提升\textbf{100倍}
+    \end{block}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 答题卡定位锚点（Timing Marks）
+% -----------------------------------------------------------------------------
+
+\begin{frame}[fragile]{项目深度：答题卡的"定位锚点" (Timing Marks)}
+    \textbf{问题：}如果试卷皱了或者拍摄角度极度倾斜，如何准确定位答题卡？
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{Timing Marks 的作用：}
+        \begin{itemize}
+            \item 答题卡边缘的黑色小方块
+            \item 用于精确定位答题卡区域
+            \item 类似二维码的定位图案
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{设计规范：}
+        \begin{itemize}
+            \item 位置：四个角或边缘
+            \item 大小：固定的几何尺寸
+            \item 对比度：黑色 vs 白纸
+            \item 排列：特定模式（如L形）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.6]
+                % 试卷边框
+                \draw[thick] (0,0) rectangle (6,8);
+
+                % 定位块（Timing Marks）
+                \draw[fill=black] (0.2,0.2) rectangle (0.8,0.8);
+                \draw[fill=black] (5.2,0.2) rectangle (5.8,0.8);
+                \draw[fill=black] (0.2,7.2) rectangle (0.8,7.8);
+                \draw[fill=black] (5.2,7.2) rectangle (5.8,7.8);
+
+                % 答题区
+                \draw[fill=blue!10] (1,2) rectangle (5,6);
+                \node at (3,4) {答题区};
+
+                % 箭头说明
+                \draw[->, red, thick] (0.8,0.5) -- (2,0.5) node[right] {\tiny 检测黑块定位};
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+
+    \begin{block}{工程价值}
+        Timing Marks 是阅卷系统的"眼睛"，有了它们，即使试卷皱了也能准确定位
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{定位锚点检测：从轮廓到坐标}
+    \textbf{核心思路：}检测黑色方块 $\to$ 计算中心 $\to$ 透视变换
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{lstlisting}
+import cv2
+import numpy as np
+
+# 1. 读取答题卡
+img = cv2.imread('answer_sheet.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 2. 二值化
+_, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+# 3. 查找黑色方块轮廓
+contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 4. 筛选定位块（小方块）
+marks = []
+for cnt in contours:
+    area = cv2.contourArea(cnt)
+    if 100 < area < 1000:
+        M = cv2.moments(cnt)
+        if M['m00'] != 0:
+            cx = int(M['m10'] / M['m00'])
+            cy = int(M['m01'] / M['m00'])
+            marks.append((cx, cy))
+
+print(f"检测到 {len(marks)} 个定位点")
+        \end{lstlisting}
+
+        \column{0.5\textwidth}
+        \textbf{检测流程：}
+        \begin{enumerate}
+            \item \textbf{二值化}：分离黑色定位块和白色背景
+            \item \textbf{轮廓查找}：找到所有黑色区域
+            \item \textbf{面积筛选}：定位块面积固定，排除过大或过小的轮廓
+            \item \textbf{中心计算}：使用质心矩计算中心点
+        \end{enumerate}
+
+        \begin{block}{下周预告}
+        透视变换：矫正倾斜；特征匹配：自动定位
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{为什么需要AI编程助手？}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{传统编程的痛点：}
+        \begin{itemize}
+            \item API 参数复杂，记不住
+            \item 报错信息看不懂
+            \item 算法原理理解困难
+            \item 编程基础薄弱
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{AI辅助的优势：}
+        \begin{itemize}
+            \item \highlight{快速生成代码框架}
+            \item \highlight{解释错误原因}
+            \item \highlight{提供优化建议}
+            \item \highlight{降低学习门槛}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{本学期AI工具：}
+        \begin{itemize}
+            \item \textbf{Claude Code}：代码生成与解释
+            \item \textbf{通义千问}：中文友好，国内可用
+            \item \textbf{ChatGPT}：通用编程助手
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \begin{block}{课程特色}
+        用AI工具辅助学习，聚焦\textbf{理解原理}而非\textbf{记忆API}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \begin{center}
+        \textbf{下周我们将专门学习如何用AI辅助编程！}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{本学期AI工具使用计划}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{AI工具应用场景：}
+        \begin{enumerate}
+            \item \textbf{Week 2}：AI辅助编程实战
+            \begin{itemize}
+                \item 学习Prompt工程
+                \item 用AI生成人脸检测代码
+            \end{itemize}
+            \item \textbf{Week 3-4}：图像预处理与版面分析
+            \begin{itemize}
+                \item 用AI解释复杂算法
+                \item 调试二值化参数
+            \end{itemize}
+            \item \textbf{Week 5-6}：选择题与判断题识别
+            \begin{itemize}
+                \item 用AI生成代码框架
+                \item 优化识别算法
+            \end{itemize}
+            \item \textbf{Week 7-8}：OCR与手写识别
+            \begin{itemize}
+                \item 用AI理解深度学习模型
+                \item 调试模型训练过程
+            \end{itemize}
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \textbf{AI工具使用规范：}
+        \begin{itemize}
+            \item \textcolor{green!60!black}{\checkmark} 允许：用AI解释概念、调试错误、优化代码
+            \item \textcolor{green!60!black}{\checkmark} 鼓励：用AI生成对比实验、可视化结果
+            \item \textcolor{red}{\times} 禁止：直接复制完整代码、用AI完成全部作业
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \begin{alertblock}{重要原则}
+        理解原理 > 复制代码\\
+        AI是助手，不是替代者
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{引出下周：透视变换的力量}
+    \textbf{场景：}检测到定位点后，如何矫正倾斜的试卷？
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{当前问题：}
+        \begin{itemize}
+            \item 手机拍照难免倾斜
+            \item 试卷可能有透视变形
+            \item 直接处理会降低识别率
+        \end{itemize}
+
+        \textbf{下周解决方案：}
+        \begin{enumerate}
+            \item \textbf{透视变换}：将任意四边形矫正为矩形
+            \item \textbf{特征匹配}：自动找到定位点
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.5]
+                % 原始倾斜图像
+                \begin{scope}[shift={(0,0)}]
+                    \draw[thick, fill=gray!20] (0,0) -- (3,1) -- (4,5) -- (1,4) -- cycle;
+                    \node at (2,2.5) {\tiny 倾斜试卷};
+                    \fill[black] (0.2,0.3) circle (0.1);
+                    \fill[black] (2.8,1.2) circle (0.1);
+                    \fill[black] (3.8,4.7) circle (0.1);
+                    \fill[black] (1.2,3.8) circle (0.1);
+                \end{scope}
+
+                \draw[->, ultra thick, blue] (4.5,2.5) -- (6.5,2.5) node[midway,above] {\tiny 透视变换};
+
+                % 矫正后图像
+                \begin{scope}[shift={(7,0)}]
+                    \draw[thick, fill=white] (0,0) rectangle (4,5);
+                    \node at (2,2.5) {\tiny 矫正面};
+                    \fill[black] (0.2,0.2) rectangle (0.5,0.5);
+                    \fill[black] (3.5,0.2) rectangle (3.8,0.5);
+                    \fill[black] (0.2,4.5) rectangle (0.5,4.8);
+                    \fill[black] (3.5,4.5) rectangle (3.8,4.8);
+                \end{scope}
+            \end{tikzpicture}
+        \end{center}
+
+        \begin{block}{关键技术}
+        \texttt{cv2.getPerspectiveTransform()} + \texttt{cv2.warpPerspective()}
+        \end{block}
+    \end{columns}
+\end{frame}

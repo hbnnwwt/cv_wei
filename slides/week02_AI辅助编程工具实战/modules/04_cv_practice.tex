@@ -1,0 +1,292 @@
+%=============================================================================
+% 模块四：CV 领域深度实战——阅卷系统的第一步 (约 12 页)
+%=============================================================================
+
+\section{CV领域深度实战}
+
+% -----------------------------------------------------------------------------
+% 1. 任务背景
+% -----------------------------------------------------------------------------
+
+\begin{frame}{任务背景：试卷图像的噪声处理}
+	\begin{block}{故事问题}
+		手机拍摄的试卷照片总是有噪点、光照不均，如何自动处理这些问题？
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{常见图像质量问题：}
+		\begin{itemize}
+			\item \textbf{噪声：} 手机传感器产生的随机噪点
+			\item \textbf{光照不均：} 拍摄环境光线不均匀
+			\item \textbf{模糊：} 手抖或对焦不准
+			\item \textbf{透视变形：} 拍摄角度倾斜
+			\item \textbf{阴影：} 遮挡造成的暗区
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{对阅卷系统的影响：}
+		\begin{itemize}
+			\item 二值化效果差 → 填涂识别错误
+			\item 边缘检测不准 → 答题卡定位失败
+			\item 文字识别率低 → 主观题评分困难
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\begin{exampleblock}{本周目标}
+			用 \textbf{AI 辅助} 实现：
+			\begin{enumerate}
+				\item 图像去噪（高斯/中值滤波）
+				\item 透视矫正（透视变换）
+				\item 边缘检测优化
+			\end{enumerate}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 2. 实战 1：引导 AI 写出滤波代码
+% -----------------------------------------------------------------------------
+
+\begin{frame}{实战 1：引导 AI 写出滤波代码}
+	\textbf{任务：} 对比高斯滤波、中值滤波对试卷扫描件的效果
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{第一轮 Prompt：}
+
+		\begin{exampleblock}{基础 Prompt}
+			\small
+			Role: 你是一位图像处理专家
+
+			Task: 请用 Python 和 OpenCV 实现图像去噪
+
+			要求：
+			\begin{itemize}
+				\item 分别实现高斯滤波和中值滤波
+				\item 对比两种方法的效果
+				\item 适用于试卷扫描件的去噪
+			\end{itemize}
+		\end{exampleblock}
+
+		\column{0.5\textwidth}
+		\textbf{第二轮 Prompt（优化）：}
+
+		\begin{exampleblock}{优化 Prompt}
+			\small
+			上面的代码很好，但还需要：
+			\begin{enumerate}
+				\item 添加详细的函数文档（Docstring）
+				\item 解释两种滤波器的适用场景
+				\item 添加可视化对比图
+				\item 处理可能的错误（如文件不存在）
+			\end{enumerate}
+		\end{exampleblock}
+	\end{columns}
+
+	\vspace{0.3cm}
+
+	\begin{block}{关键技巧}
+		\begin{itemize}
+			\item 不要期望一次 Prompt 就完美
+			\item 多轮迭代，逐步细化
+			\item 明确告诉 AI 哪里需要改进
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 3. 实战 2：透视变换
+% -----------------------------------------------------------------------------
+
+\begin{frame}{实战 2：引导 AI 解决透视变换}
+	\begin{block}{挑战}
+		透视变换 (Warp Perspective) 的数学原理复杂，涉及齐次坐标、变换矩阵等概念。
+		\textbf{如何通过 AI 快速实现，而不需要深入数学细节？}
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{第一轮：概念解释}
+
+		\begin{exampleblock}{概念 Prompt}
+			\small
+			请解释 OpenCV 中的透视变换原理：
+			\begin{enumerate}
+				\item 什么是透视变换？
+				\item getPerspectiveTransform 做了什么？
+				\item warpPerspective 做了什么？
+				\item 用简单的比喻解释
+			\end{enumerate}
+		\end{exampleblock}
+
+		\vspace{0.2cm}
+
+		\textbf{AI 的比喻解释：}
+
+		\begin{itemize}
+			\item \textbf{透视变换} = 把斜着拍的照片"拉正"
+			\item \textbf{getPerspectiveTransform} = 计算"怎么拉"
+			\item \textbf{warpPerspective} = 执行"拉"的操作
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{第二轮：代码实现}
+
+		\begin{exampleblock}{实现 Prompt}
+			\small
+			请根据上面的解释，实现一个函数：
+			\begin{itemize}
+				\item 输入：任意角度拍摄的试卷图像
+				\item 输出：矫正为正面视角的图像
+				\item 自动或手动确定试卷的四个角点
+				\item 使用 OpenCV 实现透视矫正
+				\item 添加详细的注释说明
+			\end{itemize}
+		\end{exampleblock}
+
+		\vspace{0.2cm}
+
+		\textbf{关键实现步骤：}
+		\begin{enumerate}
+			\item 预处理（灰度、边缘检测）
+			\item 查找轮廓，筛选最大四边形
+			\item 确定四个角点
+			\item 计算变换矩阵
+			\item 执行透视变换
+		\end{enumerate}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 4. 实战 3：自动识别答题卡边缘
+% -----------------------------------------------------------------------------
+
+\begin{frame}{实战 3：自动识别答题卡边缘（迭代优化）}
+	\textbf{目标：} 通过 3 轮迭代 Prompt，让 AI 从写出简单 Canny 算子到写出鲁棒的轮廓提取逻辑。
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.33\textwidth}
+		\textbf{第一轮：基础实现}
+
+		\begin{alertblock}{基础 Prompt}
+			\small
+			请用 OpenCV 实现答题卡边缘检测。
+		\end{alertblock}
+
+		\vspace{0.2cm}
+
+		\textbf{AI 输出：}
+		\begin{itemize}
+			\item 简单的 Canny 边缘检测
+			\item 查找轮廓
+			\item 可能的问题：
+			      \begin{itemize}
+				      \item 噪点干扰
+				      \item 检测不到完整边缘
+				      \item 参数固定
+			      \end{itemize}
+		\end{itemize}
+
+		\textbf{效果：}⭐⭐☆☆☆
+
+		\column{0.33\textwidth}
+		\textbf{第二轮：优化改进}
+
+		\begin{exampleblock}{优化 Prompt}
+			\small
+			上面的代码检测效果不好，请改进：
+			\begin{enumerate}
+				\item 先进行图像预处理（去噪）
+				\item 使用自适应阈值
+				\item 筛选出最大的四边形
+				\item 处理检测失败的情况
+			\end{enumerate}
+		\end{exampleblock}
+
+		\vspace{0.2cm}
+
+		\textbf{AI 输出：}
+		\begin{itemize}
+			\item 添加了高斯模糊去噪
+			\item 自适应 Canny 阈值
+			\item 面积筛选 + 四边形近似
+			\item 添加错误处理
+		\end{itemize}
+
+		\textbf{效果：}⭐⭐⭐⭐☆
+
+		\column{0.33\textwidth}
+		\textbf{第三轮：鲁棒完善}
+
+		\begin{exampleblock}{完善 Prompt}
+			\small
+			请进一步优化，使其更鲁棒：
+			\begin{enumerate}
+				\item 处理极端拍摄角度
+				\item 处理光照不均和阴影
+				\item 添加透视变换矫正
+				\item 添加可视化调试信息
+				\item 封装成可复用的类
+			\end{enumerate}
+		\end{exampleblock}
+
+		\vspace{0.2cm}
+
+		\textbf{AI 输出：}
+		\begin{itemize}
+			\item 完整的类封装
+			\item CLAHE 预处理
+			\item 多尺度轮廓检测
+			\item 透视变换矫正
+			\item 调试可视化
+		\end{itemize}
+
+		\textbf{效果：}⭐⭐⭐⭐⭐
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 5. 实战任务：人脸检测（从第2周原有内容保留）
+% -----------------------------------------------------------------------------
+
+\begin{frame}[fragile]{实战任务：用AI辅助实现人脸检测}
+	\textbf{Prompt示例：}
+
+	\begin{exampleblock}{人脸检测 Prompt}
+		请用Python和OpenCV实现一个人脸检测程序：
+
+		功能：从图片中检测所有人脸，并用矩形框标注
+
+		输入：图片文件路径
+
+		输出：标注了人脸框的图片
+
+		要求：
+		\begin{itemize}
+			\item 使用OpenCV的Haar级联分类器
+			\item 在每个人脸周围绘制绿色矩形框
+			\item 显示检测到的人脸数量
+			\item 代码有详细中文注释
+		\end{itemize}
+	\end{exampleblock}
+
+	\vspace{0.3cm}
+
+	\textbf{预期输出：} 完整的可运行代码，包含：
+	\begin{enumerate}
+		\item 详细的函数文档（Docstring）
+		\item 中文注释
+		\item 使用示例
+		\item 参数说明
+	\end{enumerate}
+\end{frame}

@@ -1,0 +1,132 @@
+%=============================================================================
+% 模块三：OpenCV 基础与工程坑
+%=============================================================================
+
+\section{OpenCV 基础}
+
+\begin{frame}[fragile]{OpenCV 核心函数详解}
+\begin{lstlisting}[title={图像读取的隐患}]
+import cv2
+
+# 路径千万不能有中文（新手常见错误）
+img = cv2.imread('paper.jpg')
+
+# 检查是否读取成功
+if img is None:
+    print("错误：文件不存在或路径含有中文！")
+
+# 打印维度 (H, W, C)
+print(img.shape)
+\end{lstlisting}
+
+    \begin{block}{常用 Flag}
+        \begin{itemize}
+            \item \texttt{cv2.IMREAD\_COLOR}：加载彩色图（默认）
+            \item \texttt{cv2.IMREAD\_GRAYSCALE}：直接以灰度模式加载
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{工程实战：处理中文路径的"终极方案"}
+    \begin{alertblock}{真实场景}
+        阅卷系统中，学生姓名经常是中文，文件名如：\texttt{张三\_试卷.jpg}\\
+        \texttt{cv2.imread()} 直接读取会失败（返回 None）
+    \end{alertblock}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{问题原因：}
+        \begin{itemize}
+            \item OpenCV 的 C++ 库不支持 Unicode 路径
+            \item 中文路径会乱码
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{错误做法：}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 直接读取，返回 None
+img = cv2.imread('张三_试卷.jpg')
+if img is None:
+    print("读取失败！")
+\end{lstlisting}
+
+        \column{0.5\textwidth}
+        \textbf{正确做法：}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+def imread_chinese(path):
+    """读取中文路径的图片"""
+    img_array = np.fromfile(path, 
+                            dtype=np.uint8)
+    img = cv2.imdecode(img_array, -1)
+    return img
+
+# 使用
+img = imread_chinese('张三_试卷.jpg')
+cv2.imshow('成功！', img)
+\end{lstlisting}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{工程实战：保存中文路径图片}
+    \textbf{配套技巧：}保存时也支持中文路径
+
+    \begin{columns}
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+def imwrite_chinese(path, img):
+    """保存中文路径的图片"""
+    is_success, img_buf = cv2.imencode(
+        ".jpg", img)
+    if is_success:
+        img_buf.tofile(path)
+        return True
+    return False
+
+# 使用
+img = cv2.imread('exam.jpg')
+imwrite_chinese('处理结果_张三.jpg', img)
+print("保存成功！")
+\end{lstlisting}
+
+        \column{0.5\textwidth}
+        \textbf{原理说明：}
+        \begin{enumerate}
+            \item \textbf{imdecode}：从内存中的字节数组解码
+            \item \textbf{imencode + tofile}：编码为字节数组后写入
+        \end{enumerate}
+
+        \vspace{0.3cm}
+        \textbf{阅卷系统应用：}
+        \begin{itemize}
+            \item 批量处理学生试卷
+            \item 生成带学生姓名的结果文件
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Matplotlib 显示与 BGR 转换}
+    为什么用 \texttt{plt.imshow} 显示出来的人脸是青蓝色的？
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+import matplotlib.pyplot as plt
+
+# OpenCV 是 BGR，Matplotlib 是 RGB
+img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+plt.imshow(img_rgb)
+plt.show()
+\end{lstlisting}
+
+    \vspace{0.3cm}
+    \textbf{注意：} 灰度图显示时需要设置 \texttt{cmap='gray'}，否则会变成"原油色"。
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+plt.imshow(gray_img, cmap='gray')
+\end{lstlisting}
+\end{frame}

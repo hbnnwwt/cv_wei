@@ -1,0 +1,306 @@
+%=============================================================================
+% 模块四：核心算法与实战演练
+%=============================================================================
+
+\section{图像滤镜原理}
+
+\begin{frame}[fragile]{滤镜 1：灰度化 (Grayscale)}
+    \textbf{为什么要灰度化？}
+    \begin{itemize}
+        \item 减少计算量（数据量降至 1/3）
+        \item 识别试卷上的文字，颜色信息通常是不必要的
+    \end{itemize}
+    \textbf{原理：} $Gray = R \times 0.299 + G \times 0.587 + B \times 0.114$
+    \\ (为什么绿色权重最高？因为人眼对绿色最敏感。)
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+# 方法1：OpenCV 函数
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 方法2：手动计算（不推荐）
+gray = 0.299 * r + 0.587 * g + 0.114 * b
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{滤镜 2：反色 (Inversion)}
+    \textbf{原理：} $NewValue = 255 - OldValue$
+    \begin{itemize}
+        \item 黑色 (0) $\to$ 白色 (255)
+        \item 白色 (255) $\to$ 黑色 (0)
+    \end{itemize}
+    \textbf{应用：} 增强暗背景下的试卷特征，或者扫描负片。
+
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+# 方法1：NumPy 运算
+inverted = 255 - img
+
+# 方法2：OpenCV 位运算
+inverted = cv2.bitwise_not(img)
+
+# 方法3：NumPy 按位取反
+inverted = np.bitwise_not(img)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{滤镜 3：亮度调整与"溢出"陷阱}
+    \textbf{错误做法：} \texttt{img + 50}
+    \\ 如果像素值是 220，加 50 变成 270。而在 \texttt{uint8} 类型下，270 会变成 \highlight{14} (截断/绕回)，导致图像出现难看的噪点。
+
+\begin{lstlisting}[title={安全写法}]
+# 使用 numpy 的 clip 函数限制范围
+bright_img = np.clip(img.astype(np.int32) + 50, 0, 255).astype(np.uint8)
+
+# 或者使用 OpenCV 内置函数（推荐，速度更快）
+bright_img = cv2.add(img, np.array([50.0]))
+\end{lstlisting}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 代码实战环节
+% -----------------------------------------------------------------------------
+
+\section{代码实战}
+
+\begin{frame}[fragile]{代码实战（1/5）：图像翻转与旋转}
+    \textbf{场景：}阅卷时试卷可能被倒置，需要自动旋转
+
+    \begin{columns}
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+img = cv2.imread('exam.jpg')
+
+# 方法1：NumPy 数组切片
+# 垂直翻转（上下颠倒）
+flip_v = img[::-1, :, :]
+
+# 水平翻转（左右颠倒）
+flip_h = img[:, ::-1, :]
+
+# 水平+垂直翻转（旋转180度）
+flip_both = img[::-1, ::-1, :]
+\end{lstlisting}
+
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 方法2：OpenCV 函数（推荐）
+flip_v = cv2.flip(img, 0)      # 垂直
+flip_h = cv2.flip(img, 1)      # 水平
+flip_both = cv2.flip(img, -1)  # 两者
+
+# 显示对比
+cv2.imshow('Original', img)
+cv2.imshow('Flip V', flip_v)
+cv2.imshow('Flip H', flip_h)
+cv2.waitKey(0)
+\end{lstlisting}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \textbf{性能对比：} NumPy 切片比 cv2.flip 快约 20\%，但 cv2.flip 更易读
+\end{frame}
+
+\begin{frame}[fragile]{代码实战（2/5）：提取答题卡区域（ROI）}
+    \textbf{场景：}从整张试卷中提取答题卡区域
+
+    \begin{columns}
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+exam = cv2.imread('exam.jpg')
+h, w = exam.shape[:2]
+
+# 假设答题卡在右下角
+# 坐标：从宽度的60%到末尾，高度的50%到末尾
+x1, x2 = int(w * 0.6), w
+y1, y2 = int(h * 0.5), h
+
+# 提取 ROI
+roi = exam[y1:y2, x1:x2]
+
+# 保存 ROI
+cv2.imwrite('answer_sheet.jpg', roi)
+
+print("原图大小:", exam.shape)
+print("ROI 大小:", roi.shape)
+\end{lstlisting}
+
+        \column{0.5\textwidth}
+        \textbf{坐标系统回顾：}
+        \begin{itemize}
+            \item 原点在左上角 (0, 0)
+            \item \texttt{img[y1:y2, x1:x2]}
+            \item y 是行（高度），x 是列（宽度）
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.4]
+                \draw[thick, fill=blue!10] (0,0) rectangle (6,4);
+                \node at (3,2) {整张试卷};
+                \draw[thick, fill=red!30] (3.5,0) rectangle (6,2);
+                \node at (4.75,1) {\tiny ROI};
+                \draw[->] (3.5,2) -- (3.5,3) node[above] {\tiny y1};
+                \draw[->] (3.5,0) -- (3.5,-1) node[below] {\tiny y2};
+                \draw[->] (3.5,1) -- (2.5,1) node[left] {\tiny x1};
+                \draw[->] (6,1) -- (7,1) node[right] {\tiny x2};
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{代码实战（3/5）：通道分离与合并}
+    \textbf{场景：}提取特定颜色通道
+
+    \begin{columns}
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+
+img = cv2.imread('exam.jpg')
+
+# 方法1：使用 split 函数
+b, g, r = cv2.split(img)
+
+# 只保留红色通道，其他设为0
+zeros = np.zeros_like(b)
+img_r = cv2.merge([zeros, zeros, r])
+\end{lstlisting}
+
+        \vspace{0.2cm}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 方法2：直接索引（更快）
+img_r = img.copy()
+img_r[:, :, 0] = 0  # B通道
+img_r[:, :, 1] = 0  # G通道
+# R通道保持不变
+
+cv2.imshow('Red Only', img_r)
+cv2.waitKey(0)
+\end{lstlisting}
+
+        \column{0.5\textwidth}
+        \textbf{通道顺序：}
+        \begin{itemize}
+            \item OpenCV: \textbf{BGR}
+            \item matplotlib: \textbf{RGB}
+            \item PIL: \textbf{RGB}
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \begin{alertblock}{常见错误}
+        使用 \texttt{plt.imshow(img)} 显示 OpenCV 图像时，颜色会异常！
+        \end{alertblock}
+
+        \vspace{0.2cm}
+        \textbf{解决方案：}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+plt.imshow(img_rgb)
+\end{lstlisting}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{代码实战（4/5）：阅卷系统核心代码}
+    \textbf{场景：}检测答题卡填涂位置
+
+    \begin{columns}
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+# 1. 读取答题卡区域
+roi = cv2.imread('answer_sheet.jpg',
+                 cv2.IMREAD_GRAYSCALE)
+
+# 2. 二值化
+_, binary = cv2.threshold(roi, 127, 255,
+                          cv2.THRESH_BINARY)
+
+# 3. 定义选项位置
+positions = [
+    (100, 100, 120, 120),  # A
+    (100, 130, 120, 150),  # B
+    (100, 160, 120, 180),  # C
+    (100, 190, 120, 200)   # D
+]
+\end{lstlisting}
+
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 4. 检测每个选项是否被填涂
+answers = []
+for (x1, y1, x2, y2) in positions:
+    option = binary[y1:y2, x1:x2]
+
+    # 计算黑色像素比例
+    black_pixels = np.sum(option == 0)
+    total_pixels = option.size
+    ratio = black_pixels / total_pixels
+
+    # 判断是否填涂（阈值30%）
+    if ratio > 0.3:
+        answers.append('填涂')
+    else:
+        answers.append('未填')
+
+print(answers)
+\end{lstlisting}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \textbf{核心思想：}填涂区域黑色像素占比显著高于未填涂区域
+\end{frame}
+
+\begin{frame}[fragile]{代码实战（5/5）：图像增强对比}
+    \textbf{场景：}答题卡光照不均，需要增强对比度
+
+    \begin{columns}
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+img = cv2.imread('exam.jpg')
+
+# 方法1：线性对比度调整
+# new = alpha * old + beta
+enhanced = cv2.convertScaleAbs(
+    img, alpha=1.5, beta=30
+)
+\end{lstlisting}
+
+        \vspace{0.2cm}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 方法2：直方图均衡化
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+equalized = cv2.equalizeHist(gray)
+\end{lstlisting}
+
+        \column{0.5\textwidth}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 方法3：CLAHE（自适应）
+clahe = cv2.createCLAHE(
+    clipLimit=2.0,
+    tileGridSize=(8,8)
+)
+enhanced_clahe = clahe.apply(gray)
+\end{lstlisting}
+
+        \vspace{0.2cm}
+        \textbf{效果对比：}
+        \begin{itemize}
+            \item \textbf{线性调整}：简单但效果有限
+            \item \textbf{直方图均衡化}：全局优化
+            \item \textbf{CLAHE}：局部自适应，效果最好
+        \end{itemize}
+
+        \vspace{0.2cm}
+        \textbf{阅卷推荐：} CLAHE 适合光照不均场景
+    \end{columns}
+\end{frame}

@@ -1,0 +1,209 @@
+%=============================================================================
+% 模块二：工具链深度拆解——从对话框到 IDE (约 10 页)
+%=============================================================================
+
+\section{AI编程工具全景}
+
+% -----------------------------------------------------------------------------
+% 1. 工具全景图
+% -----------------------------------------------------------------------------
+
+\begin{frame}{AI编程工具全景图}
+	\begin{center}
+		\begin{tikzpicture}
+			\node[draw, fill=blue!20] (web) at (0,0) {Web 界面};
+			\node[draw, fill=green!20] (plugin) at (0,-1.5) {IDE 插件};
+			\node[draw, fill=orange!20] (ide) at (0,-3) {智能 IDE};
+
+			\draw[->, thick] (web) -- (plugin) node[midway, right] {集成度提升};
+			\draw[->, thick] (plugin) -- (ide) node[midway, right] {智能化加深};
+		\end{tikzpicture}
+	\end{center}
+
+	\vspace{0.3cm}
+
+	\begin{block}{选择建议}
+		\begin{itemize}
+			\item \textbf{学习理解：} ChatGPT/Claude（对话深入）
+			\item \textbf{实时编码：} GitHub Copilot/Cursor（IDE集成）
+			\item \textbf{国内使用：} 通义千问/DeepSeek/CodeGeeX
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{主流工具详细对比}
+	\begin{table}
+		\centering
+		\small
+		\begin{tabular}{p{2.5cm}p{3.5cm}p{3cm}p{2.5cm}}
+			\toprule
+			\textbf{工具}    & \textbf{特点}  & \textbf{适用场景} & \textbf{推荐指数} \\
+			\midrule
+			ChatGPT        & 对话能力强，代码生成准确 & 学习、调试、解释      & ⭐⭐⭐⭐⭐         \\
+			Claude         & 代码分析深入       & 代码审查、架构设计     & ⭐⭐⭐⭐⭐         \\
+			GitHub Copilot & IDE集成，实时补全   & 日常编码、快速开发     & ⭐⭐⭐⭐☆         \\
+			Cursor         & AI原生IDE      & 项目开发、重构       & ⭐⭐⭐⭐⭐         \\
+			通义千问           & 中文友好，国内可用    & 中文问题咨询        & ⭐⭐⭐⭐☆         \\
+			DeepSeek       & 编程能力强，开源     & 代码生成、算法实现     & ⭐⭐⭐⭐⭐         \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 2. Cursor 专题实战
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Cursor 专题实战（重中之重）}
+	\begin{center}
+		\Huge \textbf{Cursor = VS Code + AI 原生集成}
+
+		\vspace{0.5cm}
+
+		\normalsize
+		\textcolor{blue}{\url{https://cursor.sh}}
+	\end{center}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{核心快捷键：}
+		\begin{itemize}
+			\item \texttt{Ctrl+K}：原地编辑代码
+			\item \texttt{Ctrl+L}：上下文对话
+			\item \texttt{@Files}：引用项目文件
+			\item \texttt{@Code}：引用代码片段
+			\item \texttt{@Docs}：引用文档
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{强大功能：}
+		\begin{itemize}
+			\item \textbf{代码生成：} 根据注释直接生成代码
+			\item \textbf{代码解释：} 选中代码，一键解释
+			\item \textbf{代码重构：} 智能重命名、提取函数
+			\item \textbf{错误修复：} 自动检测并修复 bug
+			\item \textbf{项目理解：} 全局搜索、跨文件分析
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Cursor 实战演示}
+	\textbf{场景1：原地编辑 (Ctrl+K)}
+	\begin{enumerate}
+		\item 选中要修改的代码
+		\item 按 \texttt{Ctrl+K}
+		\item 输入指令："添加异常处理"
+		\item AI 原地修改代码
+	\end{enumerate}
+
+	\vspace{0.3cm}
+
+	\textbf{场景2：上下文对话 (Ctrl+L)}
+	\begin{enumerate}
+		\item 按 \texttt{Ctrl+L} 打开聊天面板
+		\item 输入："解释这段代码的作用"
+		\item AI 结合上下文给出解释
+	\end{enumerate}
+
+	\vspace{0.3cm}
+
+	\begin{block}{实战技巧}
+		\begin{itemize}
+			\item 多轮对话细化需求
+			\item 结合 @Files 提供上下文
+			\item 选中代码后再提问
+			\item 不满意可以要求重写
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 3. 本地大模型与隐私
+% -----------------------------------------------------------------------------
+
+\begin{frame}{本地大模型与隐私保护}
+	\begin{alertblock}{真实场景}
+		企业/学校要求：代码不能上传到外部服务器！
+	\end{alertblock}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{解决方案：本地部署}
+
+		\vspace{0.3cm}
+
+		\textbf{1. Ollama（推荐）}
+		\begin{itemize}
+			\item 一行命令部署本地模型
+			\item 支持 Llama、DeepSeek、Qwen 等
+			\item 完全离线运行
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{2. LM Studio}
+		\begin{itemize}
+			\item 图形界面，易于使用
+			\item 支持多种模型格式
+			\item 内置聊天界面
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\textbf{3. vLLM}
+		\begin{itemize}
+			\item 高性能推理引擎
+			\item 适合企业级部署
+			\item 支持多卡并行
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 4. 模型对比测试
+% -----------------------------------------------------------------------------
+
+\begin{frame}{不同模型的对比测试}
+	\textbf{测试任务：} 用 Python 和 OpenCV 实现答题卡边界检测
+
+	\vspace{0.3cm}
+
+	\begin{table}
+		\centering
+		\small
+		\begin{tabular}{p{2.5cm}p{3cm}p{3cm}p{3cm}}
+			\toprule
+			\textbf{模型}    & \textbf{代码质量} & \textbf{中文理解} & \textbf{运行成功率} \\
+			\midrule
+			GPT-4o         & ⭐⭐⭐⭐⭐         & ⭐⭐⭐⭐☆         & 95\%           \\
+			Claude 3.5     & ⭐⭐⭐⭐⭐         & ⭐⭐⭐⭐☆         & 93\%           \\
+			DeepSeek-Coder & ⭐⭐⭐⭐☆         & ⭐⭐⭐⭐⭐         & 90\%           \\
+			通义千问2.5        & ⭐⭐⭐⭐☆         & ⭐⭐⭐⭐⭐         & 88\%           \\
+			GPT-3.5        & ⭐⭐⭐☆☆         & ⭐⭐⭐☆☆         & 75\%           \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{GPT-4o/Claude 3.5 优势：}
+		\begin{itemize}
+			\item 代码逻辑最严谨
+			\item 边界情况处理完善
+			\item 参数解释最详细
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{DeepSeek/通义千问 优势：}
+		\begin{itemize}
+			\item 中文理解更自然
+			\item 国内访问更稳定
+			\item 价格更实惠
+		\end{itemize}
+	\end{columns}
+\end{frame}

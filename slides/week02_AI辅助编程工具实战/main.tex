@@ -1,0 +1,78 @@
+%=============================================================================
+% 主控文件：第2周 AI辅助编程工具实战
+% 根据 week1_advice.md 扩展策略重构
+%=============================================================================
+
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 1. 导入宏包与样式
+\input{preamble.tex}
+
+% 2. 学校信息
+\institute{%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../name.png}}\hspace{0.5cm}%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../xiaohui.png}}\hspace{0.3cm}%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
+\title[AI辅助编程工具实战]{第2周：AI辅助编程工具实战}
+\subtitle{怎么让AI帮我写代码？}
+\author{王文通}
+\date{2025-2026 学年}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% 标题页与目录
+% -----------------------------------------------------------------------------
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{本周内容：}
+		\begin{enumerate}
+			\item LLM 时代的编程新范式
+			\item AI 编程工具全景
+			\item Prompt 工程精讲
+			\item CV 领域深度实战
+			\item 调试、重构与安全
+		\end{enumerate}
+
+		\column{0.5\textwidth}
+		\textbf{核心技能：}
+		\begin{itemize}
+			\item 结构化 Prompt 设计（RTF）
+			\item 思维链（Chain-of-Thought）
+			\item 少样本提示（Few-shot）
+			\item 多轮迭代优化
+			\item 代码审查与验证
+		\end{itemize}
+	\end{columns}
+
+	\vspace{0.3cm}
+
+	\begin{block}{本周作业}
+		用 AI 辅助实现 \textbf{答题卡边界检测}，提交完整的 AI 对话记录、代码和测试报告
+	\end{block}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 教学模块
+% -----------------------------------------------------------------------------
+\input{modules/01_paradigm.tex}
+\input{modules/02_tools.tex}
+\input{modules/03_prompt.tex}
+\input{modules/04_cv_practice.tex}
+\input{modules/04_practice.tex}
+\input{modules/05_debug.tex}
+\input{modules/06_summary.tex}
+
+\end{document}

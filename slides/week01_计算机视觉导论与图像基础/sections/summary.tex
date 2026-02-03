@@ -1,0 +1,242 @@
+%=============================================================================
+% 总结与作业
+%=============================================================================
+
+\section{完整流程演示}
+
+\begin{frame}[fragile]{阅卷系统完整流程（1/3）：图像预处理}
+    \textbf{目标：}将拍摄的试卷图像转换为适合处理的格式
+
+    \begin{lstlisting}
+import cv2
+import numpy as np
+
+# 1. 读取图像
+img = cv2.imread('exam_paper.jpg')
+
+# 2. 灰度化
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 3. 去噪
+denoised = cv2.GaussianBlur(gray, (5, 5), 0)
+
+# 4. 对比度增强
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+enhanced = clahe.apply(denoised)
+
+# 5. 二值化
+binary = cv2.adaptiveThreshold(enhanced, 255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv2.THRESH_BINARY, 11, 2)
+    \end{lstlisting}
+
+    \textbf{预处理步骤：}
+    \begin{enumerate}
+        \item \textbf{灰度化}：去除颜色信息，减少数据量
+        \item \textbf{去噪}：去除扫描噪点
+        \item \textbf{对比度增强}：CLAHE 自适应处理
+        \item \textbf{二值化}：分离填涂和纸张
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{阅卷系统完整流程（2/3）：定位答题卡}
+    \textbf{目标：}在试卷中找到答题卡区域
+
+    \begin{lstlisting}
+# 1. 边缘检测
+edges = cv2.Canny(binary, 50, 150)
+
+# 2. 查找轮廓
+contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 3. 筛选矩形轮廓
+for cnt in contours:
+    peri = cv2.arcLength(cnt, True)
+    approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
+    if len(approx) == 4:
+        x, y, w, h = cv2.boundingRect(cnt)
+        answer_sheet = binary[y:y+h, x:x+w]
+        break
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{阅卷系统完整流程（3/3）：识别填涂}
+    \textbf{目标：}识别每个选项是否被填涂
+
+    \begin{lstlisting}
+# 定义每个选项的位置
+options = [
+    (50, 30, 80, 60),   # 第1题 A
+    (90, 30, 120, 60),  # 第1题 B
+]
+
+results = []
+for (x1, y1, x2, y2) in options:
+    option = answer_sheet[y1:y2, x1:x2]
+    black_ratio = np.sum(option == 0) / option.size
+    is_filled = black_ratio > 0.3  # 阈值30%
+    results.append(is_filled)
+    \end{lstlisting}
+
+    \textbf{识别算法优化：}
+    \begin{itemize}
+        \item 阈值 30\% 是经验值，可根据实际情况调整
+        \item 检测是否多选，给出警告
+        \item 未填涂记录，后续人工复核
+    \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 互动测验
+% -----------------------------------------------------------------------------
+
+\section{互动测验}
+
+\begin{frame}[fragile]{快速问答环节}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{问题1：OpenCV默认读取的彩色图像是什么顺序？}
+        \begin{itemize}
+            \item[A] RGB
+            \item[B] \highlight{BGR}（正确）
+            \item[C] HSV
+            \item[D] LAB
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{问题2：如何判断一个图像是否读取成功？}
+        \begin{itemize}
+            \item[A] if img != None
+            \item[B] \highlight{if img is not None}（正确）
+            \item[C] if img.exists()
+            \item[D] if len(img) > 0
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{问题3：uint8类型的像素值范围是？}
+        \begin{itemize}
+            \item[A] 0-1023
+            \item[B] \highlight{0-255}（正确）
+            \item[C] -128-127
+            \item[D] 0-65535
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{问题4：图像像素相加时，如何避免溢出？}
+        \begin{itemize}
+            \item[A] 直接相加
+            \item[B] \highlight{cv2.add() 或 np.clip()}（正确）
+            \item[C] 转为float后相加
+            \item[D] 无需处理
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \begin{center}
+        \highlight{正确率：\uncover<2->{\textbf{100\%} 🎉}}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{小测验时间（2）：代码找错挑战}
+    \textbf{找出以下代码中的3个错误：}
+
+    \begin{lstlisting}
+import cv2
+import numpy as np
+
+# 读取图像
+img = cv2.imread('张三试卷.jpg')  # 错误1
+
+# 亮度增加50
+bright_img = img + 50  # 错误2
+
+# 显示
+plt.imshow(img)  # 错误3
+plt.show()
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+    \begin{block}{答案揭晓}
+        \begin{enumerate}
+            \item \textbf{错误1：} 中文路径问题。需要使用\texttt{imread\_chinese()}函数
+            \item \textbf{错误2：} 直接相加会导致溢出。应该使用\texttt{cv2.add(img, np.array([50.0]))}
+            \item \textbf{错误3：} OpenCV是BGR，matplotlib是RGB。应该先转换\texttt{img = cv2.cvtColor(img, cv2.COLOR\_BGR2RGB)}
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{center}
+        \textbf{修正后的代码：}
+        \begin{lstlisting}
+img = imread_chinese('张三试卷.jpg')
+bright_img = cv2.add(img, np.array([50.0]))
+img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+plt.imshow(img_rgb)
+        \end{lstlisting}
+    \end{center}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 课后作业
+% -----------------------------------------------------------------------------
+
+\section{课后作业}
+
+\begin{frame}[fragile]{课后作业：我的第一个图像处理器}
+    \begin{exampleblock}{作业要求}
+        编写一个 Python 脚本，读取一张照片并生成一张包含 4 张子图的对比图：
+        \begin{enumerate}
+            \item 原图
+            \item 灰度图
+            \item 亮度增强后的图
+            \item 反色后的图
+        \end{enumerate}
+    \end{exampleblock}
+    \textbf{提交方式：} 截图 + 代码
+\end{frame}
+
+\begin{frame}{知识点网络与下周预告}
+    \begin{columns}
+        \column{0.6\textwidth}
+        \textbf{本周核心知识点：}
+        \begin{itemize}
+            \item 计算机视觉基本概念
+            \item 图像的数字表示（矩阵、RGB）
+            \item OpenCV基础操作
+            \item 图像预处理（灰度、二值化、去噪）
+            \item 阅卷系统入门
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{下周预告（Week 2）：AI辅助编程工具实战}
+        \begin{itemize}
+            \item \textbf{ChatGPT/Claude}：学习编程的AI助手
+            \item \textbf{Prompt工程}：如何让AI帮我们写代码
+            \item \textbf{实战演练}：用AI辅助实现人脸检测
+        \end{itemize}
+
+        \column{0.4\textwidth}
+        \begin{block}{跨周链接}
+            \begin{itemize}
+                \item Week 1：图像基础 ⚙️
+                \item Week 2：AI工具 🤖
+                \item Week 3：图像预处理（深度） 🖼️
+                \item Week 4：版面分析 📄
+                \item Week 5：选择题识别 ⭕
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.3cm}
+        \begin{alertblock}{重点提示}
+        Week 2我们将学习如何用\textbf{AI工具}来加速Week 1学到的OpenCV代码开发！
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{总结与问答}
+    \begin{center}
+        \Huge \textbf{Q \& A}
+        \vspace{1cm}
+        \Large 准备好进入计算机视觉的世界了吗？
+    \end{center}
+\end{frame}
