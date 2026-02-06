@@ -1,0 +1,214 @@
+%===========================================================
+% modules/15_text_detection.tex - 文字检测技术
+%===========================================================
+
+\section{文字检测技术}
+
+\begin{frame}{文字检测技术概述}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{文字检测 vs 目标检测：}
+        \begin{itemize}
+            \item 文字：长宽比极端、任意方向
+            \item 目标：形状规则、方向固定
+            \item 文字：密集排列、大小不一
+            \item 目标：稀疏分布、尺度变化
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{文字检测的挑战：}
+        \begin{itemize}
+            \item 多方向、多尺度文字
+            \item 弯曲文字、艺术字体
+            \item 复杂背景、低质量图像
+            \item 密集文字、重叠区域
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{文字检测方法分类：}
+
+        \vspace{0.2cm}
+
+        \textbf{1. 基于回归的方法：}
+        \begin{itemize}
+            \item TextBoxes系列
+            \item EAST
+            \item 直接回归文字框坐标
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{2. 基于分割的方法：}
+        \begin{itemize}
+            \item PixelLink
+            \item PSENet
+            \item DBNet
+            \item 像素级文字区域分割
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{3. 混合方法：}
+        \begin{itemize}
+            \item 检测+分割结合
+            \item 多任务联合训练
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{EAST：基于回归的文字检测}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{EAST核心思想：}
+        \begin{itemize}
+            \item 全卷积网络（FCN）
+            \item 像素级预测
+            \item 直接回归文字框
+            \item 非极大值抑制（NMS）
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{EAST网络结构：}
+        \begin{enumerate}
+            \item \textbf{特征提取}：PVANet / ResNet / VGG
+            \item \textbf{特征融合}：U-Net结构，多尺度融合
+            \item \textbf{输出层}：
+            \begin{itemize}
+                \item Score map：文字/非文字概率
+                \item RBOX：旋转矩形框 $(d_1, d_2, d_3, d_4, \theta)$
+                \item QUAD：四边形框 $(x_1, y_1, ..., x_4, y_4)$
+            \end{itemize}
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \textbf{EAST损失函数：}
+
+        \vspace{0.2cm}
+
+        总损失：$L = L_s + \lambda_g L_g$
+
+        \vspace{0.2cm}
+
+        \textbf{1. 分类损失（Score Map）：}
+        \begin{equation*}
+            L_s = -\frac{1}{N} \sum_{i=1}^{N} [y_i \log(\hat{y}_i) + (1-y_i) \log(1-\hat{y}_i)]
+        \end{equation*}
+
+        \vspace{0.2cm}
+
+        \textbf{2. 几何损失（Geometry）：}
+
+        对于RBOX：
+        \begin{equation*}
+            L_g = L_{iou} + L_{\theta}
+        \end{equation*}
+
+        其中：
+        \begin{itemize}
+            \item $L_{iou}$：IoU损失（预测框与真实框的重叠度）
+            \item $L_{\theta}$：角度损失，$L_{\theta} = 1 - \cos(\theta_{pred} - \theta_{gt})$
+        \end{itemize}
+
+        对于QUAD：
+        \begin{equation*}
+            L_g = \frac{1}{8} \sum_{i=1}^{4} |x_i^{pred} - x_i^{gt}| + |y_i^{pred} - y_i^{gt}|
+        \end{equation*}
+
+        \vspace{0.3cm}
+
+        \textbf{EAST优势：}
+        \begin{itemize}
+            \item 端到端训练，无需候选框
+            \item 速度快：支持实时检测
+            \item 支持多方向文字
+            \item 精度高：在ICDAR数据集表现优秀
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{DBNet：基于可微二值化的文字检测}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{DBNet核心创新：}
+        \begin{itemize}
+            \item 可微二值化（Differentiable Binarization）
+            \item 自适应阈值
+            \item 轻量化网络
+            \item 高精度+高效率
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{传统二值化 vs DBNet：}
+
+        \vspace{0.2cm}
+
+        \textbf{传统方法：}
+        \begin{equation*}
+            B_{i,j} = \begin{cases} 1 & \text{if } P_{i,j} \geq t \\ 0 & \text{otherwise} \end{cases}
+        \end{equation*}
+        其中$t$是固定阈值，\textbf{不可微}。
+
+        \vspace{0.2cm}
+
+        \textbf{DBNet可微二值化：}
+        \begin{equation*}
+            B_{i,j} = \frac{1}{1 + e^{-k(P_{i,j} - T_{i,j})}}
+        \end{equation*}
+        其中：
+        \begin{itemize}
+            \item $P_{i,j}$：概率图（probability map）
+            \item $T_{i,j}$：自适应阈值图（threshold map）
+            \item $k$：放大因子（默认50）
+        \end{itemize}
+
+        \textbf{优势}：可微分，可以端到端训练。
+
+        \column{0.5\textwidth}
+        \textbf{DBNet网络结构：}
+
+        \vspace{0.2cm}
+
+        \begin{enumerate}
+            \item \textbf{Backbone}：ResNet-18/50 或 MobileNetV3
+            \item \textbf{FPN}（特征金字塔网络）：
+            \begin{itemize}
+                \item 融合多尺度特征
+                \item 上采样 + 横向连接
+            \end{itemize}
+            \item \textbf{Head}：
+            \begin{itemize}
+                \item Probability Map Head：预测文字区域概率
+                \item Threshold Map Head：预测自适应阈值
+                \item Binary Map Head：二值化结果
+            \end{itemize}
+        \end{enumerate}
+
+        \vspace{0.3cm}
+
+        \textbf{DBNet损失函数：}
+        \begin{equation*}
+            L = L_s + \alpha \times L_b + \beta \times L_t
+        \end{equation*}
+
+        其中：
+        \begin{itemize}
+            \item $L_s$：Probability Map的BCE损失
+            \item $L_b$：Binary Map的BCE损失
+            \item $L_t$：Threshold Map的L1损失
+            \item $\alpha$, $\beta$：权重系数
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{DBNet优势：}
+        \begin{itemize}
+            \item 速度快：轻量级 backbone
+            \item 精度高：可微二值化
+            \item 鲁棒性强：自适应阈值
+            \item 易于部署：推理简单
+        \end{itemize}
+    \end{columns}
+\end{frame}

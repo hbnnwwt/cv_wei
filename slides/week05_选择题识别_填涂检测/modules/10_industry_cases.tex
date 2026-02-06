@@ -1,0 +1,228 @@
+%===========================================================
+% 10_industry_cases.tex - 行业应用案例
+%===========================================================
+\section{行业应用案例}
+
+\begin{frame}{高考阅卷系统}
+    \textbf{应用背景：}
+    \begin{itemize}
+        \item 每年千万级考生答卷
+        \item 选择题占比60-70\%
+        \item 阅卷周期要求：7-15天
+        \item 准确率要求：>99.9\%
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{技术方案：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{硬件层：}
+        \begin{itemize}
+            \item 高速扫描仪（>100页/分钟）
+            \item 光学标记识别OMR设备
+            \item 自动化传输系统
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{软件层：}
+        \begin{itemize}
+            \item 图像预处理流水线
+            \item 答题卡模板匹配
+            \item 多级质量校验
+            \item 异常人工审核
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{关键技术：}
+    \begin{itemize}
+        \item \textcolor{blue}{定位标记检测}：Timing Marks精确到像素级
+        \item \textcolor{blue}{几何校正}：亚像素级透视变换
+        \item \textcolor{blue}{自适应阈值}：Otsu+局部自适应组合
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{四六级阅卷系统}
+    \textbf{应用特点：}
+    \begin{itemize}
+        \item 答题卡格式复杂（多题型混合）
+        \item 需同步识别客观题+主观题答题卡
+        \item 考号信息密度高
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{技术挑战与解决方案：}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{llp{5cm}}
+        \toprule
+        挑战 & 解决方案 \\
+        \midrule
+        答题卡种类多 & 模板库+自动识别答题卡类型 \\
+        填涂质量参差 & 多级阈值+置信度评估 \\
+        污损/折痕 & 形态学预处理+异常检测 \\
+        擦除痕迹 & 连通域分析+密度分布 \\
+        准确率要求高 & 机器识别+人工审核双重保障 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{性能指标：}
+    \begin{itemize}
+        \item 处理速度：$>$3000张/小时
+        \item 识别准确率：>99.95\%
+        \item 异常率：<0.5\%
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{公务员考试系统}
+    \textbf{应用特点：}
+    \begin{itemize}
+        \item 全国有数百万考生
+        \item 答题卡标准化程度高
+        \item 阅卷周期短（1-2周）
+        \item 公平性要求极高
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{系统架构：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{前端采集：}
+        \begin{itemize}
+            \item 考点扫描设备
+            \item 图像质量检测
+            \item 实时上传云端
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{后端处理：}
+        \begin{itemize}
+            \item 分布式OMR识别
+            \item 质量监控告警
+            \item 异常人工复核
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{数据安全：}
+    \begin{itemize}
+        \item 答题卡全程加密传输
+        \item 识别结果三重校验
+        \item 日志完整可追溯
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{企业培训考试系统}
+    \textbf{应用场景：}
+    \begin{itemize}
+        \item 企业内部培训考核
+        \item 在线教育平台
+        \item 职业技能鉴定
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{技术特点：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{轻量化方案：}
+        \begin{itemize}
+            \item 手机拍照即可
+            \item 无需专用扫描仪
+            \item 云端实时识别
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{鲁棒性设计：}
+        \begin{itemize}
+            \item 自动角度校正
+            \item 光照补偿
+            \item 多种答题卡格式
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{核心技术栈：}
+    \begin{itemize}
+        \item 移动端：OpenCV + iOS/Android
+        \item 服务端：Python + FastAPI
+        \item 部署：Docker + K8s
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{在线考试平台}
+    \textbf{代表性平台：}
+    \begin{itemize}
+        \item 学习通（超星）
+        \item 雨课堂
+        \item 腾讯课堂
+        \item 钉钉在线考试
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{OMR技术应用：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}}
+        \toprule
+        应用场景 & 技术实现 \\
+        \midrule
+        课堂测验 & 手机拍照+实时OMR识别 \\
+        期中/期末考试 & 批量扫描+离线OMR处理 \\
+        作业收集 & 微信小程序+云端识别 \\
+        自动评分 & OMR+OCR混合识别 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{用户体验优化：}
+    \begin{itemize}
+        \item \textcolor{blue}{拍照引导}：实时框取答题卡区域
+        \item \textcolor{blue}{质量检测}：自动提示重拍（模糊、倾斜）
+        \item \textcolor{blue}{即时反馈}：秒级返回识别结果
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{技术对比总结}
+    \begin{table}
+        \centering
+        \tiny
+        \begin{tabular}{lcccc}
+        \toprule
+        应用场景 & 规模 & 准确率要求 & 实时性 & 核心技术 \\
+        \midrule
+        高考阅卷 & 千万级 & >99.9\% & 离线批量 & 高速扫描+专业OMR \\
+        四六级 & 百万级 & >99.95\% & 离线批量 & 多模板+智能预处理 \\
+        公务员考试 & 百万级 & >99.9\% & 离线批量 & 分布式+质量监控 \\
+        企业培训 & 万级 & >99\% & 在线实时 & 手机拍照+云端识别 \\
+        在线平台 & 十万级 & >98\% & 秒级响应 & 移动端+AI增强 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{关键洞察}
+    不同规模和场景的应用，对OMR系统的要求差异巨大：
+    \begin{itemize}
+        \item \textbf{大规模考试}：追求极致准确率和处理效率
+        \item \textbf{在线场景}：追求用户体验和实时响应
+        \item \textbf{企业应用}：追求成本效益和易用性
+    \end{itemize}
+    \end{alertblock}
+\end{frame}

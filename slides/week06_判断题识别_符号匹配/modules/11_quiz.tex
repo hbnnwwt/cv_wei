@@ -1,0 +1,64 @@
+%===========================================================
+% 10_quiz.tex - 课堂Quiz
+%===========================================================
+\section{课堂Quiz}
+
+\begin{frame}{课堂Quiz}
+    \textbf{问题1：} 判断题识别和选择题识别的核心区别是什么？
+
+    \begin{itemize}
+        \item[A] 处理速度不同
+        \item[B] 密度 vs 形状
+        \item[C] 图像大小不同
+        \item[D] 算法复杂度不同
+    \end{itemize}
+
+    \pause
+
+    \textbf{答案：} B\\
+    选择题关注填涂密度，判断题关注符号形状
+\end{frame}
+
+\begin{frame}{课堂Quiz}
+    \textbf{问题2：} 圆度（Circularity）公式正确的是？
+
+    \begin{itemize}
+        \item[A] $C = \frac{Perimeter^2}{4\pi \times Area}$
+        \item[B] $C = \frac{4\pi \times Area}{Perimeter^2}$
+        \item[C] $C = \frac{Area}{Perimeter}$
+        \item[D] $C = \frac{Perimeter}{Area}$
+    \end{itemize}
+
+    \pause
+
+    \textbf{答案：} B\\
+    圆形的圆度=1，其他形状<1
+\end{frame}
+
+\begin{frame}{课堂Quiz}
+    \textbf{问题3：} 凸性为什么可以区分$\checkmark$和$\times$？
+
+    \pause
+
+    \textbf{答案：}
+    \begin{itemize}
+        \item $\checkmark$有明显凹陷（checkmark的钩）
+        \item $\times$近似凸（两直线交叉）
+        \item 凸性 = 轮廓面积/凸包面积
+        \item $\checkmark$的凸性明显小于1，$\times$的凸性接近1
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{课堂Quiz}
+    \textbf{问题4：} 模板匹配的主要缺点是什么？
+
+    \pause
+
+    \textbf{答案：}
+    \begin{itemize}
+        \item 对尺度变化敏感
+        \item 对旋转敏感
+        \item 对形变敏感（手写差异）
+        \item 需要准备足够多的模板
+    \end{itemize}
+\end{frame}

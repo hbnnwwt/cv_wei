@@ -1,0 +1,66 @@
+%===========================================================
+% 07_coding_template.tex - Live Coding: 模板匹配实战
+%===========================================================
+\section{Live Coding: 模板匹配}
+
+\begin{frame}[fragile]{模板匹配实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def match_symbol(roi, templates, threshold=0.7):
+    """
+    使用模板匹配识别符号
+
+    Args:
+        roi: 待识别的区域图像
+        templates: 模板字典 {类型: 模板图像}
+        threshold: 匹配阈值
+
+    Returns:
+        (符号类型, 匹配分数)
+    """
+    best_match = 'unknown'
+    best_score = -1
+
+    for symbol_type, template in templates.items():
+        # 调整模板大小到ROI大小
+        if template.shape[:2] != roi.shape[:2]:
+            template = cv2.resize(template, (roi.shape[1], roi.shape[0]))
+
+        # 模板匹配
+        result = cv2.matchTemplate(roi, template, cv2.TM_CCOEFF_NORMED)
+        score = result[0, 0]
+
+        if score > best_score:
+            best_score = score
+            best_match = symbol_type
+
+    return (best_match, best_score) if best_score >= threshold else ('unknown', best_score)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{多尺度模板匹配}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def multi_scale_match(roi, templates, scales=[0.8, 1.0, 1.2], threshold=0.7):
+    """多尺度模板匹配"""
+    best_match = 'unknown'
+    best_score = -1
+
+    for scale in scales:
+        # 缩放ROI
+        scaled_roi = cv2.resize(roi, None, fx=scale, fy=scale)
+
+        for symbol_type, template in templates.items():
+            # 调整模板大小
+            if template.shape[:2] != scaled_roi.shape[:2]:
+                template = cv2.resize(template, (scaled_roi.shape[1], scaled_roi.shape[0]))
+
+            # 匹配
+            result = cv2.matchTemplate(scaled_roi, template, cv2.TM_CCOEFF_NORMED)
+            score = result[0, 0]
+
+            if score > best_score:
+                best_score = score
+                best_match = symbol_type
+
+    return (best_match, best_score) if best_score >= threshold else ('unknown', best_score)
+    \end{lstlisting}
+\end{frame}

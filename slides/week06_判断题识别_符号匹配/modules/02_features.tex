@@ -1,0 +1,208 @@
+%===========================================================
+% 02_features.tex - 轮廓特征提取理论
+%===========================================================
+\section{轮廓特征提取}
+
+\begin{frame}{为什么选择轮廓特征？}
+    \textbf{轮廓（Contour）的定义：}
+    \begin{itemize}
+        \item 连接所有连续边界点的曲线
+        \item 具有相同的颜色或强度
+        \item 是形状分析的基础
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{轮廓特征的优点：}
+    \begin{itemize}
+        \item 直观反映形状的几何特性
+        \item 对光照变化相对鲁棒
+        \item 计算效率高
+        \item OpenCV提供完善的API支持
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{基础轮廓特征}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{l|l|l}
+        \toprule
+        \textbf{特征} & \textbf{物理意义} & \textbf{OpenCV函数} \\
+        \midrule
+        面积（Area） & 轮廓所围区域大小 & cv2.contourArea() \\
+        周长（Perimeter） & 轮廓边界长度 & cv2.arcLength() \\
+        边界矩形 & 包围轮廓的最小矩形 & cv2.boundingRect() \\
+        最小外接矩形 & 旋转的最小矩形 & cv2.minAreaRect() \\
+        最小外接圆 & 包围轮廓的最小圆 & cv2.minEnclosingCircle() \\
+        凸包 & 包围轮廓的凸多边形 & cv2.convexHull() \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{长宽比与占空比}
+    \textbf{1. 长宽比（Aspect Ratio）}
+    $$AR = \frac{Width}{Height}$$
+
+    \begin{itemize}
+        \item 细长形状：AR较大或较小
+        \item 方形/圆形：AR接近1
+        \item 对号的AR通常大于错号的AR
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{2. 占空比（Extent）}
+    $$Extent = \frac{ContourArea}{BoundingBoxArea}$$
+
+    \begin{itemize}
+        \item 反映轮廓填充边界矩形的程度
+        \item 圆形：接近$\pi/4 \approx 0.785$
+        \item 稀疏形状：值较小
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{圆度（Circularity）}
+    \textbf{定义：}
+    $$C = \frac{4\pi \times Area}{Perimeter^2}$$
+
+    \textbf{物理意义：}
+    \begin{itemize}
+        \item 形状接近圆的程度
+        \item 圆形的圆度 = 1（周长$2\pi r$，面积$\pi r^2$）
+        \item 其他形状的圆度 < 1
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{判断题符号的圆度特征：}
+    \begin{itemize}
+        \item $\bigcirc$：接近1
+        \item $\checkmark$：较低（开口形状，周长大）
+        \item $\times$：更低（两线交叉，周长更大）
+    \end{itemize}
+\end{frame}
+
+%===========================================================
+% 三个理解层级：圆度概念
+%===========================================================
+\begin{frame}{三个理解层级：圆度概念}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{基础概念}
+        \begin{itemize}
+            \item 什么是圆度？
+            \item 圆度的公式是什么？
+            \item 为什么圆度能区分不同符号？
+        \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{可视化演示}
+        \begin{itemize}
+            \item 对比对号、错号、圆圈的圆度值
+            \item 观察圆度值的差异
+            \item 调整阈值观察分类效果
+        \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{扩展应用}
+        \begin{itemize}
+            \item 设计自适应圆度阈值
+            \item 处理不同手写风格的符号
+            \item 优化符号分类准确率
+        \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+    \small
+    \textbf{理解层级建议}：观察者掌握基础概念，使用者完成可视化演示，创造者探索扩展应用
+    \end{center}
+\end{frame}
+
+\begin{frame}{凸性（Convexity）}
+    \textbf{凸包（Convex Hull）：}
+    \begin{itemize}
+        \item 包围轮廓的最小凸多边形
+        \item 类似"橡皮筋"包裹形状
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{凸性定义：}
+    $$Convexity = \frac{ContourArea}{ConvexHullArea}$$
+
+    \textbf{判断题符号的凸性特征：}
+    \begin{itemize}
+        \item $\bigcirc$：接近1（本身就是凸的）
+        \item $\checkmark$：明显小于1（有凹陷）
+        \item $\times$：接近1（近似凸的）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{关键区分点}
+    凸性可以有效区分对号和错号！
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Hu矩（Hu Moments）}
+    \textbf{什么是矩？}
+    \begin{itemize}
+        \item 描述图像分布的统计特征
+        \item 类似于物理学中的"矩"
+        \item 具有旋转、缩放、平移不变性
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{Hu矩的特点：}
+    \begin{itemize}
+        \item 7个不变量
+        \item 对形状变换高度鲁棒
+        \item 适合识别不同角度/大小的符号
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{OpenCV使用：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+moments = cv2.moments(contour)
+hu_moments = cv2.HuMoments(moments)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{特征选择策略}
+    \textbf{区分对号和错号的特征组合：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{圆度优先}
+            \begin{itemize}
+                \item 对号：中等圆度
+                \item 错号：低圆度
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{凸性辅助}
+            \begin{itemize}
+                \item 对号：明显凹陷
+                \item 错号：近似凸
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{特征工程建议：}
+    \begin{itemize}
+        \item 计算多个特征，构建特征向量
+        \item 使用决策树或规则组合判断
+        \item 通过实验确定最优特征组合和阈值
+    \end{itemize}
+\end{frame}

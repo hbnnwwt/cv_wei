@@ -15,10 +15,14 @@
 
 	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
 # 方法1：OpenCV 函数
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# TODO 1: 使用 cv2.cvtColor 将彩色图像转为灰度图
+# 提示：参数为 cv2.COLOR_BGR2GRAY
+gray = cv2.cvtColor(img, __________)
 
 # 方法2：手动计算（不推荐）
-gray = 0.299 * r + 0.587 * g + 0.114 * b
+# TODO 2: 填写正确的权重系数
+# 提示：人眼对绿色最敏感，绿色权重最大
+gray = ____ * r + ____ * g + ____ * b
 \end{lstlisting}
 \end{frame}
 
@@ -32,13 +36,19 @@ gray = 0.299 * r + 0.587 * g + 0.114 * b
 
 	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
 # 方法1：NumPy 运算
-inverted = 255 - img
+# TODO 1: 实现图像反色
+# 提示：反色公式 NewValue = 255 - OldValue
+inverted = ____ - img
 
 # 方法2：OpenCV 位运算
-inverted = cv2.bitwise_not(img)
+# TODO 2: 使用 OpenCV 函数实现反色
+# 提示：使用 cv2.bitwise_not
+inverted = ________________
 
-# 方法3：NumPy 按位取反
-inverted = np.bitwise_not(img)
+# 方法3：NumPy 按位取反（选做）
+# TODO 3: 使用 NumPy 按位取反
+# 提示：使用 np.bitwise_not
+inverted = ________________
 \end{lstlisting}
 \end{frame}
 
@@ -48,10 +58,14 @@ inverted = np.bitwise_not(img)
 
 	\begin{lstlisting}[title={安全写法}]
 # 使用 numpy 的 clip 函数限制范围
-bright_img = np.clip(img.astype(np.int32) + 50, 0, 255).astype(np.uint8)
+# TODO 1: 安全地增加亮度，防止溢出
+# 提示：先转为int32，加50后用np.clip限制到[0,255]，再转回uint8
+bright_img = np.clip(img.astype(np.int32) + ___, ___, ___).astype(______)
 
 # 或者使用 OpenCV 内置函数（推荐，速度更快）
-bright_img = cv2.add(img, np.array([50.0]))
+# TODO 2: 使用 cv2.add 实现安全加法
+# 提示：cv2.add 会自动处理溢出
+bright_img = cv2.add(img, np.array([______]))
 \end{lstlisting}
 \end{frame}
 
@@ -73,14 +87,17 @@ import numpy as np
 img = cv2.imread('exam.jpg')
 
 # 方法1：NumPy 数组切片
-# 垂直翻转（上下颠倒）
-flip_v = img[::-1, :, :]
+# TODO 1: 实现垂直翻转（上下颠倒）
+# 提示：使用切片 [::-1, :, :] 来反转第一个维度（高度）
+flip_v = img[____, :, :]
 
-# 水平翻转（左右颠倒）
-flip_h = img[:, ::-1, :]
+# TODO 2: 实现水平翻转（左右颠倒）
+# 提示：使用切片 [:, ::-1, :] 来反转第二个维度（宽度）
+flip_h = img[:, ____, :]
 
-# 水平+垂直翻转（旋转180度）
-flip_both = img[::-1, ::-1, :]
+# TODO 3: 实现水平+垂直翻转（旋转180度）
+# 提示：同时反转高度和宽度两个维度
+flip_both = img[____, ____, :]
 \end{lstlisting}
 
 		\column{0.5\textwidth}
@@ -100,6 +117,17 @@ cv2.waitKey(0)
 
 	\vspace{0.2cm}
 	\textbf{性能对比：} NumPy 切片比 cv2.flip 快约 20\%，但 cv2.flip 更易读
+
+	\vspace{0.2cm}
+	\begin{tcolorbox}[colback=green!5!white,colframe=green!50!black,title=✅ 预期结果]
+		\small
+		成功运行后，应看到：
+		\begin{itemize}
+			\item 四个窗口同时显示：原图、垂直翻转、水平翻转、180度旋转
+			\item 翻转效果正确（观察文字方向验证）
+			\item 等待按键后窗口关闭
+		\end{itemize}
+	\end{tcolorbox}
 \end{frame}
 
 \begin{frame}[fragile]{代码实战（2/5）：提取答题卡区域（ROI）}
@@ -115,12 +143,15 @@ exam = cv2.imread('exam.jpg')
 h, w = exam.shape[:2]
 
 # 假设答题卡在右下角
-# 坐标：从宽度的60%到末尾，高度的50%到末尾
-x1, x2 = int(w * 0.6), w
-y1, y2 = int(h * 0.5), h
+# TODO 1: 计算 ROI 的坐标范围
+# 提示：答题卡位于右下区域，宽度从60%到末尾
+x1, x2 = int(w * ______), ___
+# 提示：高度从50%到末尾
+y1, y2 = int(h * ______), ___
 
-# 提取 ROI
-roi = exam[y1:y2, x1:x2]
+# TODO 2: 使用 NumPy 切片提取 ROI
+# 提示：图像切片的格式是 img[y_start:y_end, x_start:x_end]
+roi = exam[____:____, ____:____]
 
 # 保存 ROI
 cv2.imwrite('answer_sheet.jpg', roi)
@@ -255,6 +286,18 @@ print(answers)
 
 	\vspace{0.2cm}
 	\textbf{核心思想：}填涂区域黑色像素占比显著高于未填涂区域
+
+	\vspace{0.2cm}
+	\begin{tcolorbox}[colback=green!5!white,colframe=green!50!black,title=✅ 预期结果]
+		\small
+		成功运行后，应输出：
+		\begin{itemize}
+			\item \texttt{['填涂', '未填', '未填', '未填']} （或其他正确状态）
+			\item 填涂位置的 fill\_ratio 应 $>0.6$
+			\item 未填涂位置的 fill\_ratio 应 $<0.2$
+		\end{itemize}
+		\textbf{调试提示：} 打印每个选项的 fill\_ratio，观察数值是否符合预期
+	\end{tcolorbox}
 \end{frame}
 
 \begin{frame}[fragile]{代码实战（5/5）：图像增强对比}
@@ -303,6 +346,110 @@ enhanced_clahe = clahe.apply(gray)
 		\vspace{0.2cm}
 		\textbf{阅卷推荐：} CLAHE 适合光照不均场景
 	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 挑战任务
+% -----------------------------------------------------------------------------
+
+\begin{frame}{🎯 挑战任务：智能裁剪答题卡}
+	\textbf{任务描述：} 给定一张试卷照片，自动识别并裁剪出答题卡区域
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{挑战目标}
+			\begin{itemize}
+				\item 找到答题卡四个角点
+				\item 透视变换矫正
+				\item 输出标准的答题卡图像
+			\end{itemize}
+		\end{block}
+
+		\vspace{0.3cm}
+		\textbf{提示：}
+		\begin{itemize}
+			\item 使用 \texttt{cv2.Canny} 检测边缘
+			\item 使用 \texttt{cv2.findContours} 找轮廓
+			\item 使用 \texttt{cv2.getPerspectiveTransform} 透视变换
+		\end{itemize}
+
+		\column{0.45\textwidth}
+		\begin{alertblock}{难度：⭐⭐⭐}
+			需要综合运用：
+			\begin{itemize}
+				\item 边缘检测
+				\item 轮廓分析
+				\item 几何变换
+			\end{itemize}
+		\end{alertblock}
+
+		\vspace{0.3cm}
+		\textbf{预期结果：}
+		\begin{itemize}
+			\item 输入：任意角度拍摄的试卷照片
+			\item 输出：正面朝上的答题卡图像
+			\item 测试：用自己手机拍的试卷验证
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{🎯 挑战任务：答题卡填涂密度热图}
+	\textbf{任务描述：} 可视化全班答题卡每个选项的填涂频率
+
+	\begin{columns}
+		\column{0.55\textwidth}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 假设有全班同学的答题数据
+# answers[i][j] 表示第i题第j个选项的填涂次数
+answers = [
+    [25, 5, 2, 0],  # 第1题：A最多选
+    [3, 20, 8, 1],  # 第2题：B最多选
+    # ... 更多题目
+]
+
+# TODO：生成热图
+# 1. 转换为numpy数组
+data = np.array(answers)
+
+# 2. 使用plt.imshow显示热图
+# 提示：使用cmap='YlOrRd' colormap
+plt._______(data, cmap='______')
+
+# 3. 添加颜色条
+plt.________()
+
+# 4. 添加题号和选项标签
+plt.xticks([0,1,2,3], ['A','B','C','D'])
+# TODO：添加y轴标签（题号）
+plt.yticks(range(len(data)), [___ for ___ in enumerate(data)])
+
+plt.show()
+\end{lstlisting}
+
+		\column{0.4\textwidth}
+		\begin{block}{教学价值}
+			帮助教师快速发现：
+			\begin{itemize}
+				\item 哪些题目太简单（A选项90%+）
+				\item 哪些题目太困难（分散度高）
+				\item 迷惑选项是否有效（B/C选了多少）
+			\end{itemize}
+		\end{block}
+
+		\vspace{0.3cm}
+		\textbf{预期结果：}
+		\begin{itemize}
+			\item 热图清晰展示填涂分布
+			\item 颜色越红表示填涂越多
+			\item 可用于教学质量分析
+		\end{itemize}
+	\end{columns}
+
+	\vspace{0.2cm}
+	\textbf{AI辅助提示：} 可以问AI："matplotlib如何生成热图并添加colorbar？"
 \end{frame}
 
 % -----------------------------------------------------------------------------
@@ -373,45 +520,54 @@ img, gray, enhanced, binary = \
 	\end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Live Coding：阅卷系统核心检测}
+\begin{frame}[fragile]{Live Coding：阅卷系统核心检测（基础版）}
 	\textbf{功能1：填涂检测}
 	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
 def detect_bubble(binary, position):
-    """检测单个气泡的填涂状态"""
+    """检测单个气泡的填涂状态 - 基础版"""
     x1, y1, x2, y2 = position
 
-    # 提取气泡区域
-    bubble = binary[y1:y2, x1:x2]
+    # TODO 1: 提取气泡区域
+    # 提示：使用NumPy切片提取矩形区域 [y1:y2, x1:x2]
+    bubble = binary[____:____, ____:____]
 
-    # 计算填涂密度
-    black_pixels = np.sum(bubble == 0)
-    total_pixels = bubble.size
+    # TODO 2: 计算填涂密度
+    # 提示：黑色像素值为0，用 np.sum(bubble == 0) 统计
+    black_pixels = _________________
+    total_pixels = ________.____
     fill_ratio = black_pixels / total_pixels
 
-    # 判断状态
-    if fill_ratio > 0.6:
+    # TODO 3: 根据填涂密度判断状态
+    # 提示：>0.6为已填涂，<0.2为未填涂，中间为不确定
+    if ______________:
         return 'filled'
-    elif fill_ratio < 0.2:
+    elif _____________:
         return 'empty'
     else:
         return 'uncertain'
 	\end{lstlisting}
 
 	\vspace{0.2cm}
-	\textbf{功能2：多选检测与警告}
+	\textbf{功能2：多选检测与警告（进阶版选做）}
 	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
 def detect_multiple_choice(binary, positions):
-    """检测多选并警告"""
+    """检测多选并警告 - 进阶版"""
     results = []
+
+    # TODO 1: 遍历所有位置，检测每个气泡状态
+    # 提示：使用 for 循环和之前定义的 detect_bubble 函数
     for pos in positions:
-        state = detect_bubble(binary, pos)
-        results.append(state)
+        state = _________________
+        results.append(______)
 
-    # 统计填涂数量
-    filled_count = sum(1 for r in results if r == 'filled')
+    # TODO 2: 统计填涂数量
+    # 提示：使用 sum 和生成器表达式统计 'filled' 的数量
+    filled_count = sum(___ for r in results if r == _______)
 
+    # TODO 3: 如果填涂数量大于1，打印多选警告
+    # 提示：使用 f-string 输出填涂数量
     if filled_count > 1:
-        print(f"警告：检测到多选（{filled_count}个选项）")
+        print(f"警告：______________________")
 
     return results
 	\end{lstlisting}

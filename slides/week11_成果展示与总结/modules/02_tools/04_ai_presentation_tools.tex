@@ -1,0 +1,203 @@
+%===========================================================
+% 04_ai_presentation_tools.tex - AI辅助演讲准备工具
+%===========================================================
+
+\begin{frame}{AI辅助演讲准备}
+    \textbf{用AI工具提升演讲质量}
+
+    \vspace{0.3cm}
+
+    \textbf{AI工具在演讲准备中的应用：}
+    \begin{itemize}
+        \item \textbf{内容生成}：演讲大纲、开场白、总结语
+        \item \textbf{内容优化}：语言润色、逻辑梳理、精简表达
+        \item \textbf{素材生成}：架构图、流程图、数据可视化
+        \item \textbf{问答准备}：预测问题、准备答案、模拟答辩
+        \item \textbf{排练辅助}：语音分析、语速评估、计时提醒
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{block}{核心理念}
+    AI不是代替你准备演讲，而是帮助你更好地准备演讲
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{用AI生成演讲大纲}
+    \textbf{场景：快速生成5分钟演讲大纲}
+
+    \begin{columns}
+        \column{0.48\textwidth}
+        \textbf{Prompt（RTF框架）：}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny, frame=single]
+角色：技术演讲专家
+任务：为AI阅卷助手项目生成演讲大纲
+格式：按时间分点，标注时间分配
+
+要求：
+1. 总时长5分钟
+2. 开场30秒：Hook听众
+3. 演示3分钟：展示核心功能
+4. 讲解1分钟：技术亮点
+5. 总结30秒：价值与展望
+\end{lstlisting}
+
+        \column{0.48\textwidth}
+        \textbf{AI会生成：}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny, frame=single]
+0:00-0:30 开场引入
+- 问题：期末阅卷耗时
+- 解决：AI阅卷助手
+- Hook：3秒阅卷演示
+
+0:30-3:30 核心演示
+- 图像加载与预处理
+- 答题卡区域定位
+- 填涂识别与评分
+- 结果输出与导出
+
+3:30-4:30 技术亮点
+- 自动阈值调整算法
+- 模块化架构设计
+- 准确率95%+
+
+4:30-5:00 总结展望
+- 核心价值：80%时间节省
+- 未来：支持主观题识别
+\end{lstlisting}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{用AI优化PPT内容}
+    \textbf{场景：让PPT更简洁有效}
+
+    \begin{columns}
+        \column{0.48\textwidth}
+        \textbf{优化前的PPT：}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny, frame=single]
+我们的系统采用了OpenCV进行图像预处理，
+包括高斯滤波、中值滤波、双边滤波等去噪方法，
+然后使用Otsu自适应阈值进行二值化处理，
+接着通过轮廓检测定位答题区域...
+\end{lstlisting}
+
+        \column{0.48\textwidth}
+        \textbf{Prompt：}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny, frame=single]
+将这段PPT内容优化为：
+
+要求：
+1. 每行不超过20字
+2. 使用要点列表
+3. 关键词突出
+4. 适合3秒阅读
+\end{lstlisting}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{AI优化后：}
+    \begin{itemize}
+        \item \textbf{图像预处理}：去噪（高斯/中值/双边）
+        \item \textbf{二值化}：Otsu自适应阈值
+        \item \textbf{区域定位}：轮廓检测算法
+        \item \textbf{识别引擎}：OMR + OCR
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{用AI生成展示素材}
+    \textbf{场景：生成架构图和流程图}
+
+    \begin{columns}
+        \column{0.48\textwidth}
+        \textbf{Prompt：}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny, frame=single]
+用Mermaid语法绘制系统架构图：
+
+系统名称：AI阅卷助手
+
+模块：
+1. 图像预处理模块
+2. 区域检测模块
+3. 识别模块
+4. 评分模块
+5. 结果导出模块
+
+要求：
+- 从上到下流程
+- 清晰的模块划分
+- 简洁的命名
+\end{lstlisting}
+
+        \column{0.48\textwidth}
+        \textbf{AI生成Mermaid代码：}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny, frame=single]
+graph TD
+    A[输入图像] --> B[预处理]
+    B --> C[区域检测]
+    C --> D{识别}
+    D --> E[选择题]
+    D --> F[判断题]
+    E --> G[评分]
+    F --> G
+    G --> H[结果导出]
+\end{lstlisting}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{其他AI生成素材：}
+    \begin{itemize}
+        \item 用AI生成流程图（Mermaid/PlantUML）
+        \item 用AI生成数据可视化建议
+        \item 用AI生成图标和配色方案
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{用AI预测问答}
+    \textbf{场景：准备答辩问题}
+
+    \begin{columns}
+        \column{0.48\textwidth}
+        \textbf{Prompt：}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny, frame=single]
+作为技术专家，请为这个项目生成
+可能的答辩问题：
+
+项目：AI阅卷助手
+功能：选择题和判断题自动识别
+技术栈：OpenCV + PaddleOCR
+准确率：95%
+
+要求：
+1. 生成5-10个问题
+2. 按难度分类
+3. 提供简要答案要点
+\end{lstlisting}
+
+        \column{0.48\textwidth}
+        \textbf{AI会预测：}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny, frame=single]
+基础问题：
+Q: 系统的核心功能是什么？
+A: 自动识别答题卡，输出评分结果
+
+进阶问题：
+Q: 如何提高填涂识别准确率？
+A: 自适应阈值算法+机器学习辅助
+
+深入问题：
+Q: 系统能处理哪些异常情况？
+A: 空白试卷、部分填涂、多选等
+\end{lstlisting}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{答辩准备策略：}
+    \begin{itemize}
+        \item 用AI预测评委可能问的问题
+        \item 准备数据和实验结果支撑
+        \item 诚实面对不足，展示改进方向
+    \end{itemize}
+\end{frame}

@@ -1,0 +1,1 @@
+请审查E:\授课\计算机视觉（微）\kejian\cv_wei\slides\week{i}的tex课件，是否符合E:\授课\计算机视觉（微）\kejian\cv_wei\原则.md

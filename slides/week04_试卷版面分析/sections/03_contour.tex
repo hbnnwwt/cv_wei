@@ -54,6 +54,37 @@
     \end{alertblock}
 \end{frame}
 
+\begin{frame}{三个理解层级：轮廓检测}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \textbf{基础概念：}
+        \begin{itemize}
+            \item 什么是轮廓？
+            \item 轮廓与边缘的区别
+            \item findContours的4个检索模式
+            \item 层级结构的含义
+        \end{itemize}
+
+        \column{0.33\textwidth}
+        \textbf{可视化演示：}
+        \begin{itemize}
+            \item 对比不同检索模式效果
+            \item 观察轮廓层级结构
+            \item 绘制不同颜色的轮廓
+            \item 调整逼近精度参数
+        \end{itemize}
+
+        \column{0.33\textwidth}
+        \textbf{扩展应用：}
+        \begin{itemize}
+            \item 设计轮廓筛选算法
+            \item 处理复杂嵌套轮廓
+            \item 实现通用形状识别
+            \item 优化轮廓检测性能
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
 \begin{frame}[fragile]{findContours API}
     \textbf{函数原型：}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
@@ -226,6 +257,39 @@ print(f"检测到 {len(contours)} 个轮廓")
 cv2.imshow('Contours', output)
 cv2.waitKey(0)
     \end{lstlisting}
+\end{frame}
+
+\begin{frame}{AI辅助学习：向AI提问的技巧}
+    \textbf{场景1：理解Canny算法}
+    \begin{exampleblock}{Prompt示例}
+        请解释Canny边缘检测算法的4个步骤，并用简单的比喻帮助我理解。
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{场景2：调试边缘检测代码}
+    \begin{exampleblock}{Prompt示例}
+        我的Canny边缘检测代码报错了，错误信息是：[错误信息]
+
+        运行环境：Windows 11, Python 3.9.7, OpenCV 4.8.0
+
+        相关代码：[粘贴代码]
+
+        请帮我分析原因并提供解决方案。
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{场景3：优化轮廓检测}
+    \begin{exampleblock}{Prompt示例}
+        我用findContours检测到了很多轮廓，但想找到试卷轮廓。
+
+        筛选条件：
+        1. 面积应该是图像的50%-80%
+        2. 应该是四边形
+
+        请帮我编写筛选代码。
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{轮廓筛选技巧}

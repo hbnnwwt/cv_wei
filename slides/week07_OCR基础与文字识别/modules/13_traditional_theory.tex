@@ -1,0 +1,160 @@
+%===========================================================
+% modules/13_traditional_theory.tex - 传统OCR识别流程理论
+%===========================================================
+
+\section{传统OCR识别流程理论}
+
+\begin{frame}{传统OCR四步流程详解}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第一步：图像预处理}
+        \begin{itemize}
+            \item 灰度化：彩色图转灰度图
+            \item 二值化：Otsu自适应阈值
+            \item 去噪：形态学操作、滤波
+            \item 倾斜校正：霍夫变换、投影法
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{第二步：版面分析}
+        \begin{itemize}
+            \item 连通域分析
+            \item 投影分析
+            \item 分栏检测
+            \item 阅读顺序确定
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{第三步：字符分割}
+        \begin{itemize}
+            \item 行分割：水平投影
+            \item 字分割：垂直投影
+            \item 粘连字符处理
+            \item 断字合并
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{第四步：字符识别}
+        \begin{itemize}
+            \item 特征提取：HOG、LBP、投影
+            \item 分类器：模板匹配、KNN、SVM
+            \item 后处理：语言模型、词典校正
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{图像预处理技术详解}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{1. 灰度化方法：}
+        \begin{itemize}
+            \item 加权平均法：$Gray = 0.299R + 0.587G + 0.114B$
+            \item 最大值法：$Gray = max(R, G, B)$
+            \item 平均值法：$Gray = (R + G + B) / 3$
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{2. 二值化方法：}
+        \begin{itemize}
+            \item 全局阈值：固定阈值分割
+            \item Otsu算法：自动计算最优阈值
+            \item 自适应阈值：局部阈值处理
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{3. 倾斜校正方法：}
+        \begin{itemize}
+            \item 投影法：寻找最小投影方差角度
+            \item 霍夫变换：检测直线角度
+            \item 傅里叶变换：频域分析
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{4. 去噪方法：}
+        \begin{itemize}
+            \item 中值滤波：去除椒盐噪声
+            \item 高斯滤波：平滑处理
+            \item 形态学操作：开运算、闭运算
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{特征提取与分类器设计}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{特征提取方法：}
+
+        \vspace{0.2cm}
+
+        \textbf{1. 统计特征：}
+        \begin{itemize}
+            \item 投影直方图
+            \item 轮廓特征
+            \item 网格特征
+            \item Zernike矩
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{2. 结构特征：}
+        \begin{itemize}
+            \item 端点、交叉点
+            \item 笔画方向
+            \item 环、洞特征
+            \item 拓扑结构
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{3. 变换域特征：}
+        \begin{itemize}
+            \item 傅里叶描述子
+            \item 小波特征
+            \item HOG特征
+            \item LBP特征
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{分类器设计：}
+
+        \vspace{0.2cm}
+
+        \textbf{1. 模板匹配：}
+        \begin{itemize}
+            \item 最近邻匹配
+            \item 相关性匹配
+            \item 归一化匹配
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{2. K近邻（KNN）：}
+        \begin{itemize}
+            \item 距离度量：欧氏距离、马氏距离
+            \item K值选择
+            \item 加权KNN
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{3. 支持向量机（SVM）：}
+        \begin{itemize}
+            \item 核函数选择
+            \item 参数优化
+            \item 多分类策略
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{4. 神经网络：}
+        \begin{itemize}
+            \item MLP多层感知机
+            \item 卷积神经网络
+            \item 训练策略
+        \end{itemize}
+    \end{columns}
+\end{frame}

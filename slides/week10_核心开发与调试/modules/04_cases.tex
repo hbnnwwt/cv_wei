@@ -1,0 +1,372 @@
+%===========================================================
+% 模块04：案例分析与互动 (5-8页)
+%===========================================================
+
+\section{案例分析与互动}
+
+%----------------------------------------------------------
+\subsection{真实系统开发案例}
+%----------------------------------------------------------
+
+\begin{frame}{案例1：小型阅卷系统开发}
+    \textbf{项目背景：}
+    \begin{itemize}
+        \item 范围：单班级，30-50份试卷
+        \item 题型：选择题（20题）+ 判断题（10题）
+        \item 时间：2周开发周期
+        \item 团队：3名学生
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{架构设计：}
+    \begin{itemize}
+        \item 单机版Python应用
+        \item OpenCV + NumPy处理图像
+        \item CSV格式存储结果
+        \item 命令行界面
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{经验总结：}
+    \begin{itemize}
+        \item 先做原型验证核心算法
+        \item 用真实试卷数据测试
+        \item 预留参数调整接口
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例2：企业级阅卷系统开发}
+    \textbf{项目背景：}
+    \begin{itemize}
+        \item 范围：全校考试，单次10,000+份试卷
+        \item 题型：选择题、判断题、填空题、简答题
+        \item 时间：3个月开发周期
+        \item 团队：8人（前后端、算法、测试）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{架构设计：}
+    \begin{itemize}
+        \item 微服务架构（识别服务、评分服务、存储服务）
+        \item 消息队列处理批量任务
+        \item 分布式存储（图片、结果）
+        \item Web管理界面 + REST API
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例对比与启示}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{维度} & \textbf{小型系统} & \textbf{企业级系统} \\
+            \midrule
+            架构复杂度 & 单体应用 & 微服务 \\
+            开发周期 & 2周 & 3个月 \\
+            团队规模 & 3人 & 8人 \\
+            代码规范 & 基本规范 & 严格规范+审查 \\
+            测试覆盖 & 关键功能测试 & 全面测试+自动化 \\
+            部署方式 & 手动运行 & CI/CD自动化 \\
+            监控运维 & 日志查看 & 完整监控告警 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{关键启示：}
+    \begin{itemize}
+        \item 规模决定架构，不要过度设计
+        \item 小型项目也要考虑扩展性
+        \item 自动化是规模化的关键
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{常见问题与解决方案}
+%----------------------------------------------------------
+
+\begin{frame}[fragile]{性能瓶颈诊断}
+    \textbf{问题：处理一张试卷需要30秒}
+
+    \vspace{0.3cm}
+
+    \textbf{诊断过程：}
+    \begin{enumerate}
+        \item \textbf{定位瓶颈}：使用cProfile发现75\%时间在OCR
+        \item \textbf{分析原因}：每次调用都重新加载模型
+        \item \textbf{解决方案}：模型单例化，只加载一次
+        \item \textbf{优化效果}：处理时间从30s降到3s
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 优化前：每次创建新实例
+def recognize_text(image):
+    ocr = PaddleOCR()  # 耗时操作
+    return ocr.ocr(image)
+
+# 优化后：单例模式
+_ocr_instance = None
+def get_ocr():
+    global _ocr_instance
+    if _ocr_instance is None:
+        _ocr_instance = PaddleOCR()
+    return _ocr_instance
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{内存泄漏排查}
+    \textbf{问题：批量处理时内存持续增长，最终崩溃}
+
+    \vspace{0.3cm}
+
+    \textbf{诊断过程：}
+    \begin{enumerate}
+        \item 使用\texttt{tracemalloc}跟踪内存分配
+        \item 发现图像数组未释放
+        \item 确认是循环中加载了大量高分辨率图片
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{解决方案：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def process_batch(image_paths):
+    for path in image_paths:
+        # 使用上下文管理器确保资源释放
+        with ImageProcessor(path) as processor:
+            result = processor.process()
+            save_result(result)
+        # 显式垃圾回收
+        if processed_count % 100 == 0:
+            gc.collect()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{并发访问问题}
+    \textbf{问题：多线程处理时出现随机错误}
+
+    \vspace{0.3cm}
+
+    \textbf{根本原因：}
+    \begin{itemize}
+        \item OpenCV部分函数非线程安全
+        \item 共享状态被多个线程修改
+        \item 资源竞争导致数据损坏
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{解决方案：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+from concurrent.futures import ProcessPoolExecutor
+import multiprocessing as mp
+
+def process_images_parallel(image_paths, max_workers=4):
+    """使用进程池而非线程池"""
+    # OpenCV更适合多进程
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        results = list(executor.map(process_single, image_paths))
+    return results
+
+# 或者使用队列+工作进程模式
+def worker(input_queue, output_queue):
+    while True:
+        task = input_queue.get()
+        if task is None:
+            break
+        result = process_single(task)
+        output_queue.put(result)
+    \end{lstlisting}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{课堂互动与Quiz}
+%----------------------------------------------------------
+
+\begin{frame}[fragile]{代码重构挑战}
+    \textbf{挑战1：改进这个函数}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def process(data):
+    if data is not None:
+        if len(data) > 0:
+            result = []
+            for i in range(len(data)):
+                if data[i] > 0:
+                    result.append(data[i] * 2)
+            if len(result) > 0:
+                return sum(result) / len(result)
+    return 0
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{问题：}
+    \begin{enumerate}
+        \item 这段代码有哪些坏味道？
+        \item 如何重构使其更清晰？
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Bug诊断Quiz}
+    \textbf{下面的代码有什么问题？}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+class Recognizer:
+    def __init__(self):
+        self.threshold = 0.5
+        self.results = []  # 注意这里！
+
+    def recognize(self, image):
+        result = self._process(image)
+        self.results.append(result)
+        return result
+
+# 使用
+rec1 = Recognizer()
+rec2 = Recognizer()
+rec1.recognize(img1)
+print(rec2.results)  # 竟然也有数据？！
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{答案：} 可变默认参数陷阱！\texttt{self.results = []} 在类定义时创建，所有实例共享同一列表。
+\end{frame}
+
+\begin{frame}[fragile]{最佳实践投票}
+    \textbf{以下哪种做法更好？}
+
+    \vspace{0.3cm}
+
+    \textbf{选项A：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def process(image):
+    try:
+        return recognize(image)
+    except:
+        return None
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{选项B：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def process(image):
+    if image is None:
+        raise ValueError("图像不能为空")
+    try:
+        return recognize(image)
+    except RecognitionError as e:
+        logger.error("识别失败: %s", e)
+        raise ProcessingError("处理失败") from e
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{经验分享讨论}
+    \textbf{讨论话题：}
+
+    \begin{enumerate}
+        \item \textbf{最难忘的Bug}：你遇到最难排查的问题是什么？
+
+        \item \textbf{重构经历}：是否有过"拯救烂代码"的经历？
+
+        \item \textbf{调试技巧}：有什么独门调试技巧？
+
+        \item \textbf{工具推荐}：最喜欢的开发工具是什么？
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{分享格式：}
+    \begin{itemize}
+        \item 问题描述（1分钟）
+        \item 解决过程（2分钟）
+        \item 经验教训（1分钟）
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+% 课堂Quiz（新增）
+%----------------------------------------------------------
+
+\subsection{课堂Quiz}
+
+\begin{frame}{课堂Quiz 1：识别Code Smell}
+    \textbf{以下函数有什么问题？（单选）}
+
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            \begin{block}{代码}
+\begin{Shaded}
+def p(img, thresh=127, mode=1,
+      debug=False):
+    # 处理图片
+    # 50行代码...
+    # 如果调试模式
+    if debug:
+        print("处理中...")
+    return result
+\end{Shaded}
+            \end{block}
+        \end{column}
+        \begin{column}{0.4\textwidth}
+            \begin{block}{选项}
+                A. 语法错误
+
+                B. 参数太多
+
+                C. 函数名不规范
+
+                D. 以上都是
+            \end{block}
+
+            \\vspace{0.5cm}
+
+            \textbf{答案：D}\\$\newline$
+            (函数名p应改为process\_image，参数过多应封装为配置类)
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{课堂Quiz 2：异常处理}
+    \textbf{以下异常处理方式最好的是？}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{选项A}
+\begin{Shaded}
+try:
+    f()
+except:
+    pass
+\end{Shaded}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{选项B}
+\begin{Shaded}
+try:
+    f()
+except ValueError as e:
+    logger.error(e)
+    raise
+except Exception:
+    logger.exception()
+\end{Shaded}
+        \end{column}
+    \end{columns}
+
+    \begin{block}{}
+        \textbf{答案：B}\\$\newline$
+        原因：1. 不捕获所有异常（避免掩盖bug）\\
+        2. 记录错误信息\\
+        3. 重新抛出异常让上层处理
+    \end{block}
+\end{frame}

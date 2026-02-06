@@ -46,29 +46,34 @@
 
 \section{课后作业}
 
-\begin{frame}{课后作业}
+\begin{frame}{课后作业：三级任务设计}
     \begin{block}{题目}
         实现试卷版面分析，标注三种题型区域
     \end{block}
 
-    \textbf{要求：}
-    \begin{enumerate}
-        \item 使用 Canny 边缘检测找到试卷边界
-        \item 使用 findContours 检测轮廓
-        \item 使用投影法分析试卷结构
-        \item 标注出选择题、判断题、简答题区域
-        \item 提交标注结果的可视化图像
-    \end{enumerate}
+    \vspace{0.3cm}
+
+    \textbf{基础任务（60分，必做）：}
+    \begin{itemize}
+        \item[25分] 使用 Canny 边缘检测找到试卷边界
+        \item[25分] 使用 findContours 检测轮廓并筛选试卷轮廓
+        \item[10分] 标注出选择题、判断题、简答题的大致区域
+    \end{itemize}
 
     \vspace{0.2cm}
 
-    \textbf{评分标准：}
+    \textbf{拓展任务（20分，选做）：}
     \begin{itemize}
-        \item 边缘检测：20分
-        \item 轮廓检测：20分
-        \item 区域定位：30分
-        \item 可视化效果：20分
-        \item 代码质量：10分
+        \item[10分] 实现自适应Canny阈值选择（auto\_canny函数）
+        \item[10分] 使用多边形逼近判断试卷是否为四边形
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{挑战任务（20分，选做）：}
+    \begin{itemize}
+        \item[10分] 设计通用版面分析算法，处理多种试卷版式
+        \item[10分] 使用投影法分析试卷结构，自动划分题目区域
     \end{itemize}
 \end{frame}
 

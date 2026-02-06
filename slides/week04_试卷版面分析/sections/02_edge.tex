@@ -183,7 +183,45 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Canny 代码实现}
+\begin{frame}{三个理解层级：Canny边缘检测}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \textbf{基础概念：}
+        \begin{itemize}
+            \item 什么是Canny边缘检测？
+            \item Canny的4个步骤是什么？
+            \item 为什么Canny被称为最优边缘检测算法？
+        \end{itemize}
+
+        \column{0.33\textwidth}
+        \textbf{可视化演示：}
+        \begin{itemize}
+            \item 对比不同阈值的效果
+            \item 观察边缘检测结果
+            \item 调整参数观察变化
+        \end{itemize}
+
+        \column{0.33\textwidth}
+        \textbf{扩展应用：}
+        \begin{itemize}
+            \item 设计自适应Canny函数
+            \item 处理不同光照的试卷
+            \item 优化边缘检测效果
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助编程：Canny边缘检测}
+    \begin{block}{AI辅助提示}
+        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助你实现Canny边缘检测。
+
+        \textbf{Prompt示例：}
+        \texttt{请用Python和OpenCV实现Canny边缘检测，并解释每个参数的含义。}
+    \end{block}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 使用AI助手完成以下代码
+# Prompt: 请用Python和OpenCV实现Canny边缘检测
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 import cv2
 import numpy as np

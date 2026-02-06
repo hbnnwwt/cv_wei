@@ -1,0 +1,261 @@
+%=============================================================================
+% 模块七：案例分析与互动 (约 8 页)
+% 根据 week2_reconstruct.md 新增
+%=============================================================================
+
+\section{案例分析与互动}
+
+% -----------------------------------------------------------------------------
+% 1. 优秀Prompt案例分析 (2-3页)
+% -----------------------------------------------------------------------------
+
+\begin{frame}{优秀Prompt案例分析：图像处理Prompt优化}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{alertblock}{[\times] 原始Prompt（模糊）}
+			帮我写个代码处理图像。
+		\end{alertblock}
+
+		\vspace{0.3cm}
+
+		\textbf{问题分析：}
+		\begin{itemize}
+			\item 没有定义角色
+			\item 任务模糊
+			\item 没有格式要求
+			\item 没有约束条件
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\begin{exampleblock}{[\checkmark] 优化后的Prompt（具体）}
+			\textbf{角色：}你是一位有10年经验的计算机视觉工程师，精通OpenCV。
+
+			\vspace{0.2cm}
+
+			\textbf{任务：}请编写一个Python函数，实现答题卡图像的自适应二值化。
+
+			\vspace{0.2cm}
+
+			\textbf{格式：}
+			\begin{itemize}
+				\item 提供完整的、可运行的代码
+				\item 包含详细的函数文档
+			\end{itemize}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{优秀Prompt案例分析：算法实现Prompt优化}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{alertblock}{[\times] 原始Prompt（缺少上下文）}
+			实现一个排序算法。
+		\end{alertblock}
+
+		\vspace{0.3cm}
+
+		\textbf{问题分析：}
+		\begin{itemize}
+			\item 没有指定算法类型
+			\item 没有数据规模要求
+			\item 没有性能约束
+			\item 缺少示例
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\begin{exampleblock}{[\checkmark] 优化后的Prompt（有示例）}
+			\textbf{角色：}你是一位算法工程师。
+
+			\vspace{0.2cm}
+
+			\textbf{任务：}实现一个快速排序算法。
+
+			\vspace{0.2cm}
+
+			\textbf{约束：}
+			\begin{itemize}
+				\item 时间复杂度 O(n log n)
+				\item 空间复杂度 O(log n)
+			\end{itemize}
+
+			\vspace{0.2cm}
+
+			\textbf{示例：}
+			\begin{itemize}
+				\item 输入: [3, 6, 8, 10, 1, 2, 1]
+				\item 输出: [1, 1, 2, 3, 6, 8, 10]
+			\end{itemize}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 2. 常见错误分析与解决 (2-3页)
+% -----------------------------------------------------------------------------
+
+\begin{frame}{常见错误分析与解决：Prompt太模糊}
+	\begin{alertblock}{[\times] 问题Prompt}
+		帮我写代码。
+	\end{alertblock}
+
+	\vspace{0.3cm}
+
+	\textbf{分析原因：}
+	\begin{itemize}
+		\item 缺少角色设定
+		\item 缺少任务描述
+		\item 缺少约束条件
+		\item AI无法确定具体需求
+	\end{itemize}
+
+	\vspace{0.3cm}
+
+	\begin{exampleblock}{[\checkmark] 解决方案}
+		\textbf{添加角色：}你是一位Python开发者。
+
+		\vspace{0.2cm}
+
+		\textbf{明确任务：}请帮我写一个读取CSV文件的Python函数。
+
+		\vspace{0.2cm}
+
+		\textbf{增加约束：}
+		\begin{itemize}
+			\item 使用pandas库
+			\item 处理文件不存在的情况
+			\item 返回DataFrame对象
+		\end{itemize}
+	\end{exampleblock}
+\end{frame}
+
+\begin{frame}{常见错误分析与解决：Prompt太复杂}
+	\begin{alertblock}{[\times] 问题Prompt}
+		你是一位有5年OpenCV经验、精通Python和C++、熟悉深度学习和机器学习的工程师，请用Python和OpenCV实现一个完整的智能阅卷系统，包括图像采集、预处理、版面分析、OCR识别、评分输出等所有模块，要求代码有详细注释、性能优化、异常处理、单元测试、文档生成...
+	\end{alertblock}
+
+	\vspace{0.3cm}
+
+	\textbf{分析原因：}
+	\begin{itemize}
+		\item Prompt过长
+		\item 信息过载
+		\item AI容易混淆
+		\item 一次性要求太多
+	\end{itemize}
+
+	\vspace{0.3cm}
+
+	\begin{exampleblock}{[\checkmark] 解决方案}
+		\textbf{拆分为多个子任务：}
+
+		\vspace{0.2cm}
+
+		\textbf{任务1：}请先设计智能阅卷系统的整体架构。
+
+		\vspace{0.2cm}
+
+		\textbf{任务2：}基于上述架构，实现图像预处理模块。
+
+		\vspace{0.2cm}
+
+		\textbf{任务3：}继续实现版面分析模块。
+
+		\vspace{0.2cm}
+
+		\textbf{逐步实现} $\rightarrow$ \textbf{逐步优化} $\rightarrow$ \textbf{最终完善}
+	\end{exampleblock}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 3. 课堂互动与Quiz (1-2页)
+% -----------------------------------------------------------------------------
+
+\begin{frame}{实时互动环节}
+	\begin{exampleblock}{互动方式建议}
+		\begin{itemize}
+			\item \textbf{问卷星实时投票}：使用手机扫码参与，实时显示统计结果
+			\item \textbf{代码拼图游戏}：将打乱的代码片段重新排序，小组竞赛
+			\item \textbf{错误找茬挑战}：展示有问题的代码，集体找出bug
+		\end{itemize}
+	\end{exampleblock}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{问题1：好的Prompt应该包含哪些要素？}
+		\begin{itemize}
+			\item[A] 角色设定
+			\item[B] 任务描述
+			\item[C] 约束条件
+			\item[D] \textbf{以上都是} [\checkmark]
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\textbf{问题2：以下哪种Prompt更适合调试？}
+		\begin{itemize}
+			\item[A] "代码错了，帮我修"
+			\item[B] \textbf{"错误信息是xxx，请分析原因并提供解决方案"} [\checkmark]
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{问题3：AI生成的代码一定正确吗？}
+		\begin{itemize}
+			\item[A] 一定正确
+			\item[B] \textbf{不一定正确，需要验证和测试} [\checkmark]
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\textbf{问题4：以下哪种情况说明Prompt太模糊？}
+		\begin{itemize}
+			\item[A] AI生成了完全符合需求的代码
+			\item[B] \textbf{AI反复询问具体需求，或生成的代码与期望差距很大} [\checkmark]
+		\end{itemize}
+	\end{columns}
+
+	\vspace{0.5cm}
+
+	\begin{center}
+		\highlight{使用问卷星扫码投票，实时显示全班正确率}
+	\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{代码找错挑战}
+	\begin{exampleblock}{找出以下Prompt中的3个问题}
+		\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+帮我写个代码。
+
+实现一个系统。
+
+要完整的。
+
+快点。
+		\end{lstlisting}
+	\end{exampleblock}
+
+	\vspace{0.3cm}
+
+	\begin{block}{答案揭晓}
+		\begin{enumerate}
+			\item \textbf{问题1：缺少角色设定}
+			\begin{itemize}
+				\item 没有告诉AI它应该扮演什么角色
+				\item 解决方案：添加"你是一位Python开发者"
+			\end{itemize}
+
+			\item \textbf{问题2：任务描述模糊}
+			\begin{itemize}
+				\item "实现一个系统"太笼统
+				\item 解决方案：具体说明"实现一个智能阅卷系统，包含图像采集、预处理、OCR识别模块"
+			\end{itemize}
+
+			\item \textbf{问题3：缺少约束条件}
+			\begin{itemize}
+				\item 没有格式、技术栈、时间等约束
+				\item 解决方案：添加"使用Python和OpenCV，代码要有详细注释，性能要优化"
+			\end{itemize}
+		\end{enumerate}
+	\end{block}
+\end{frame}

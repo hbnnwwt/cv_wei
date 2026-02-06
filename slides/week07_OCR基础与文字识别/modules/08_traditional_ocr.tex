@@ -1,0 +1,123 @@
+%===========================================================
+% modules/08_traditional_ocr.tex - 传统OCR识别实战
+%===========================================================
+
+\section{传统OCR识别实战}
+
+\begin{frame}{传统OCR识别流程概述}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{传统OCR四步走：}
+        \begin{enumerate}
+            \item \textbf{预处理}：图像增强、二值化、去噪
+            \item \textbf{版面分析}：文字区域定位、分栏
+            \item \textbf{字符分割}：行分割、字分割
+            \item \textbf{字符识别}：特征提取、分类器
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \textbf{各阶段关键技术：}
+        \begin{itemize}
+            \item 预处理：灰度化、二值化、倾斜校正
+            \item 版面分析：投影分析、连通域分析
+            \item 分割：投影分割、连通域分割
+            \item 识别：模板匹配、特征分类
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{图像预处理实战（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+def traditional_ocr_preprocess(image_path):
+    """传统OCR图像预处理"""
+    # TODO: 使用AI助手补全代码
+    # 提示词："OpenCV读取图像并转为灰度图"
+
+    # TODO: 读取图像
+    image = cv2.____(image_path)
+
+    # TODO: 转为灰度图
+    gray = cv2.cvtColor(____, ____)
+
+    # TODO: 二值化（提示词："Otsu自动阈值二值化OpenCV"）
+    _, binary = cv2.threshold(____, 0, 255, ____)
+
+    # TODO: 去噪（提示词："OpenCV形态学开运算去除噪点"）
+    kernel = np.ones((____, ____), np.uint8)
+    denoised = cv2.morphologyEx(____, _____, kernel)
+
+    return denoised
+    \end{lstlisting}
+
+    \begin{alertblock}{AI辅助提示}
+        不知道cv2函数的参数？\textbf{选中函数名，按Ctrl+K问AI：}
+        "cv2.morphologyEx的参数含义和常用取值是什么？"
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{版面分析与文字区域定位（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def layout_analysis(binary_image):
+    """版面分析：定位文字区域"""
+    # TODO: 使用AI助手补全代码
+    # 提示词："OpenCV查找轮廓定位文字区域"
+
+    # TODO: 查找轮廓（提示词："cv2.findContours查找外轮廓"）
+    contours, _ = cv2.findContours(
+        _____,
+        cv2._____,  # TODO: 只检测外轮廓
+        cv2._____    # TODO: 简单近似方法
+    )
+
+    text_regions = []
+    for contour in contours:
+        # TODO: 获取边界框（提示词："cv2.boundingRect获取轮廓边界框"）
+        x, y, w, h = cv2._____(contour)
+
+        # TODO: 过滤条件（提示词："根据宽高比和面积过滤非文字区域"）
+        if _____ and _____:  # TODO: 设置合理阈值
+            text_regions.append((x, y, w, h))
+
+    return text_regions
+    \end{lstlisting}
+
+    \begin{alertblock}{AI辅助调试}
+        轮廓检测结果不对？\textbf{把代码和图像一起发给AI：}
+        "这段代码检测文字区域效果很差，能帮我分析原因并提供改进建议吗？"
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{字符分割与识别（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def segment_and_recognize(text_region, binary_image):
+    """字符分割与识别"""
+    # TODO: 使用AI助手补全代码
+    # 提示词："OpenCV投影法分割文字行和字符"
+
+    x, y, w, h = text_region
+
+    # TODO: 提取区域图像
+    region = binary_image[y:y+h, _____]
+
+    # TODO: 水平投影分割行（提示词："numpy计算水平投影分割文字行"）
+    h_projection = np._____(_____, axis=1)
+    row_ranges = _____  # TODO: 根据投影值找出文字行范围
+
+    characters = []
+    for row_start, row_end in row_ranges:
+        row_image = region[row_start:row_end, :]
+
+        # TODO: 垂直投影分割字符（提示词："垂直投影分割单个字符"）
+        v_projection = np._____(_____, axis=0)
+        char_ranges = _____
+
+        for char_start, char_end in char_ranges:
+            char_image = row_image[:, char_start:char_end]
+            characters.append(char_image)
+
+    return characters
+    \end{lstlisting}
+\end{frame}

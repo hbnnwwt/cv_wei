@@ -1,0 +1,323 @@
+%===========================================================
+% main.tex - 主控文件
+%===========================================================
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 导入配置文件
+\input{preamble.tex}
+
+% 学校信息（包含 logo 图片）
+\institute{%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../name.png}}\hspace{0.5cm}%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../xiaohui.png}}\hspace{0.3cm}%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
+\begin{document}
+
+%===========================================================
+% 标题页与目录
+%===========================================================
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \textbf{本周内容：}
+        \begin{itemize}
+            \item OCR技术概述
+            \item PaddleOCR快速上手
+            \item 试卷文字识别实战
+            \item OCR优化技巧
+            \item 课堂思考与作业
+        \end{itemize}
+
+        \column{0.55\textwidth}
+        \textbf{学期项目：AI阅卷助手}
+        \begin{enumerate}
+            \item 图像采集与预处理
+            \item 答题卡定位（Timing Marks）
+            \item 填涂检测与识别
+            \item 手写文字 OCR
+            \item 成绩统计与输出
+        \end{enumerate}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周时间分配（160分钟 = 3学时）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第1学时（45分钟）：}
+        \begin{itemize}
+            \item[00:00-00:15] 理论讲解：OCR技术概述（15min）
+            \item[00:15-00:35] 实践：PaddleOCR安装与使用（20min）
+            \item[00:35-00:45] 讨论与答疑（10min）
+        \end{itemize}
+
+        \textbf{第2学时（45分钟）：}
+        \begin{itemize}
+            \item[00:45-01:05] Live Coding：试卷文字识别（20min）
+            \item[01:05-01:30] 实践：标题和题号提取（25min）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{第3学时（70分钟）：}
+        \begin{itemize}
+            \item[01:30-01:50] 理论讲解：OCR优化技巧（20min）
+            \item[01:50-02:15] 实践：图像预处理优化（25min）
+            \item[02:15-02:35] 互动测验（20min）
+            \item[02:35-02:45] 总结与作业（10min）
+        \end{itemize}
+
+        \vspace{0.5cm}
+        \begin{alertblock}{时间控制提示}
+        如果进度落后，建议跳过"挑战任务"
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周分组策略}
+    \textbf{分组原则：}
+    \begin{itemize}
+        \item 每4人为一组
+        \item 确保不同专业背景混合
+        \item 建议包含：理工科、文科、无编程基础、有编程基础
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{角色分工：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{角色} & \textbf{职责} & \textbf{适合} \\
+            \midrule
+            组长 & 统筹协调、进度管理 & 组织能力强的 \\
+            算法实现者 & 实现OCR代码、图像处理 & 有编程基础的 \\
+            参数调优者 & 调整识别参数、优化效果 & 细心负责的 \\
+            测试者 & 收集测试用例、报告问题 & 细心负责的 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{本周协作任务}
+        用PaddleOCR识别试卷中的印刷文字，提取标题和题号
+    \end{block}
+\end{frame}
+
+\begin{frame}{预备知识检查}
+    \textbf{在开始学习OCR之前，请确认你已掌握以下基础知识：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{Python基础：}
+        \begin{itemize}
+            \item 函数定义与调用
+            \item 列表和字典操作
+            \item 基本文件I/O
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{OpenCV基础：}
+        \begin{itemize}
+            \item 图像读取与显示
+            \item 颜色空间转换（BGR→灰度）
+            \item 基本图像操作
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{NumPy基础：}
+        \begin{itemize}
+            \item 数组创建与索引
+            \item 基本数学运算
+            \item 数组形状操作
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{正则表达式基础：}
+        \begin{itemize}
+            \item 基本匹配模式
+            \item 字符类和量词
+            \item re模块基本使用
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{发现自己有知识缺口？}
+        \begin{itemize}
+            \item 课前：花15分钟快速浏览相关教程
+            \item 课中：向组内同学请教
+            \item 课后：使用AI助手（如Cursor）随时提问
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{智能阅卷系统全景图}
+    \textbf{本周OCR模块在整个系统中的位置和关联：}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.3cm,
+            box/.style={rectangle, draw=blue!60, fill=blue!5, rounded corners, minimum width=2.5cm, minimum height=0.8cm, font=\small, align=center},
+            current/.style={rectangle, draw=red!60, fill=red!10, rounded corners, minimum width=2.5cm, minimum height=0.8cm, font=\small, align=center, very thick},
+            arrow/.style={->, thick}
+        ]
+            % 行1：输入
+            \node[box] (input) {图像采集\\（相机/扫描仪）};
+
+            % 行2：预处理
+            \node[box, below=0.5cm of input] (pre) {图像预处理\\（去噪/增强）};
+
+            % 行3：定位
+            \node[box, below=0.5cm of pre] (loc) {答题卡定位\\（Timing Marks）};
+
+            % 行4：识别
+            \node[box, below left=0.5cm and 0.3cm of loc] (choice) {选择题\\识别};
+            \node[box, below=0.5cm of loc] (tf) {判断题\\识别};
+            \node[current, below right=0.5cm and 0.3cm of loc] (ocr) {印刷文字\\OCR};
+
+            % 行5：高级
+            \node[box, dashed, below=0.5cm of ocr] (hand) {手写文字\\识别（下周）};
+
+            % 行6：输出
+            \node[box, below=0.5cm of hand] (stat) {成绩统计\\与输出};
+
+            % 连接箭头
+            \draw[arrow] (input) -- (pre);
+            \draw[arrow] (pre) -- (loc);
+            \draw[arrow] (loc) -- (choice);
+            \draw[arrow] (loc) -- (tf);
+            \draw[arrow] (loc) -- (ocr);
+            \draw[arrow] (choice) |- (stat);
+            \draw[arrow] (tf) -- (stat);
+            \draw[arrow] (ocr) -- (hand);
+            \draw[arrow] (hand) -- (stat);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.2cm}
+
+    \begin{block}{本周任务的核心价值}
+        印刷文字OCR是手写识别的\textbf{前置基础}——只有先准确识别印刷的"标准文字"，才能为识别手写"非标准文字"奠定算法基础和数据对比基准。
+    \end{block}
+\end{frame}
+
+\begin{frame}{预备知识（课前5分钟视频）}
+    \textbf{必须观看的视频内容：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{视频1：OCR基本流程（2分钟）}
+        \begin{enumerate}
+            \item 输入：图像采集
+            \item 检测：文字区域定位
+            \item 识别：字符分类
+            \item 输出：文本结果
+        \end{enumerate}
+
+        \vspace{0.3cm}
+
+        \textbf{视频2：深度学习入门（3分钟）}
+        \begin{itemize}
+            \item 神经网络：模拟人脑神经元
+            \item 卷积运算：提取图像特征
+            \item 训练与推理：模型学习与使用
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{关键概念速记：}
+        \begin{description}
+            \item[CNN] 卷积神经网络，用于提取图像特征
+            \item[RNN] 循环神经网络，处理序列数据
+            \item[CTC] 连接时序分类，解决序列对齐问题
+            \item[Transformer] 自注意力架构，当前最先进方法
+        \end{description}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{课前测试}
+        观看视频后，回答：
+        \begin{itemize}
+            \item OCR的四个主要步骤是什么？
+            \item CNN和RNN分别用于什么任务？
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{多屏协同设计}
+    \textbf{本课程采用多屏协同教学方式：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{主屏（左侧）：理论讲解}
+        \begin{itemize}
+            \item PPT幻灯片
+            \item 概念和原理讲解
+            \item 图像和代码展示
+            \item 互动测验
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{侧屏（右侧）：实时演示}
+        \begin{itemize}
+            \item PaddleOCR代码实时演示
+            \item 文字识别效果展示
+            \item 参数调整实时反馈
+            \item 调试过程展示
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{移动设备互动}
+        使用手机参与互动测验（问卷星）
+    \end{block}
+\end{frame}
+
+%===========================================================
+% 教学模块
+%===========================================================
+\input{modules/01_intro.tex}
+\input{modules/02_ocr_overview.tex}
+\input{modules/03_paddleocr.tex}
+\input{modules/04_practice.tex}
+\input{modules/05_optimization.tex}
+\input{modules/06_quiz.tex}
+\input{modules/07_debug_helper.tex}
+\input{modules/08_traditional_ocr.tex}
+\input{modules/10_paddleocr_advanced.tex}
+\input{modules/11_dl_ocr.tex}
+\input{modules/13_traditional_theory.tex}
+\input{modules/14_dl_theory.tex}
+\input{modules/15_text_detection.tex}
+\input{modules/16_ctc.tex}
+\input{modules/17_ocr_overview_detailed.tex}
+\input{modules/18_ocr_classification.tex}
+\input{modules/19_applications.tex}
+
+%===========================================================
+% 总结与作业
+%===========================================================
+\input{sections/summary.tex}
+
+\end{document}

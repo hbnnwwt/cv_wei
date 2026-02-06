@@ -1,0 +1,87 @@
+%===========================================================
+% 04_ml_methods.tex - 机器学习方法
+%===========================================================
+\section{机器学习方法}
+
+\begin{frame}{为什么需要机器学习？}
+    \textbf{特征法的局限：}
+    \begin{itemize}
+        \item 需要手工设计特征和规则
+        \item 对复杂符号难以设计有效规则
+        \item 泛化能力有限
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{机器学习的优势：}
+    \begin{itemize}
+        \item 自动学习特征组合
+        \item 泛化能力强
+        \item 可以处理更复杂的符号
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{传统机器学习方法}
+    \textbf{1. KNN（K近邻分类器）}
+    \begin{itemize}
+        \item 简单直观
+        \item 无需训练过程
+        \item 适合小数据集
+    \end{itemize}
+
+    \textbf{2. SVM（支持向量机）}
+    \begin{itemize}
+        \item 适合高维特征
+        \item 泛化能力强
+        \item 对小样本效果好
+    \end{itemize}
+
+    \textbf{3. 决策树}
+    \begin{itemize}
+        \item 可解释性强
+        \item 类似手工规则的自动化
+        \item 适合特征工程
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{深度学习方法}
+    \textbf{CNN（卷积神经网络）：}
+    \begin{itemize}
+        \item 自动提取特征
+        \item 准确率最高
+        \item 需要大量训练数据
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{轻量级网络设计：}
+    \begin{itemize}
+        \item LeNet-5：经典小型CNN
+        \item MobileNet：移动端优化
+        \item 自定义浅层CNN
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{实际应用建议}
+    对于判断题识别，传统方法已足够。深度学习适合更复杂的符号识别场景。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{方法选择建议}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{l l l}
+        \toprule
+        \textbf{场景} & \textbf{推荐方法} & \textbf{原因} \\
+        \midrule
+        标准印刷符号 & 模板匹配 & 简单高效 \\
+        手写规范符号 & 轮廓特征+规则 & 特征明显 \\
+        手写多样符号 & SVM/KNN & 泛化能力强 \\
+        复杂手写符号 & 深度学习 & 准确率最高 \\
+        \bottomrule
+        \end{tabular}
+        \caption{不同场景的方法选择}
+    \end{table}
+\end{frame}

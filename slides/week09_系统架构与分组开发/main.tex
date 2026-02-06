@@ -1,0 +1,204 @@
+%===========================================================
+% main.tex - 主控文件
+%===========================================================
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 导入配置文件
+\input{preamble.tex}
+
+% 学校信息（包含 logo 图片）
+\institute{%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../name.png}}\hspace{0.5cm}%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../xiaohui.png}}\hspace{0.3cm}%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
+\begin{document}
+
+%===========================================================
+% 标题页与目录
+%===========================================================
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \textbf{本周内容：}
+        \begin{itemize}
+            \item 项目回顾：已学模块快速串联
+            \item 系统架构设计：分层架构与管道模式
+            \item 模块接口设计规范
+            \item 图像处理流水线实战
+            \item AI辅助编程工具实战
+            \item 团队协作与Git工作流
+            \item 调试工具与项目框架
+        \end{itemize}
+
+        \column{0.55\textwidth}
+        \textbf{Live Coding实战：}
+        \begin{enumerate}
+            \item 搭建项目框架（AI辅助）
+            \item 实现图像处理流水线
+            \item Git分支管理与协作
+            \item 调试工具函数使用
+            \item 团队分组与任务分配
+        \end{enumerate}
+
+        \vspace{0.3cm}
+        \begin{block}{本周目标}
+            搭建开发环境，完成70\%项目框架，开始模块开发
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{预备知识}
+    \begin{block}{课前5分钟视频}
+        \textbf{观看}: 软件架构基础、Python面向对象编程、Git基本操作
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{本周需要的前置知识：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{软件工程基础}: 什么是架构、模块化思想
+            \item \textbf{Python面向对象}: 类、继承、接口概念
+            \item \textbf{Git基础}: add、commit、push操作
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{没有基础？}
+        \begin{itemize}
+            \item 课前观看预备知识视频
+            \item 课堂上先观察架构图
+            \item 小组讨论时向组员请教
+            \item 课后查阅推荐资源
+        \end{itemize}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{不同背景的学习建议：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{8cm}}
+            \toprule
+            \textbf{专业背景} & \textbf{学习建议} \\
+            \midrule
+            CS/EE专业 & 深入理解SOLID原则，尝试应用设计模式 \\
+            数学/物理专业 & 关注架构的数学建模，理解模块依赖关系 \\
+            其他专业 & 从架构图入手，理解模块分工，重点是团队协作 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{本周时间分配（135分钟 = 3学时）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第1学时（45分钟）：}
+        \begin{itemize}
+            \item[00:00-00:05] 项目回顾（5min）
+            \item[00:05-00:15] 架构设计概述（10min）
+            \item[00:15-00:25] 分层架构与管道模式（10min）
+            \item[00:25-00:40] Live Coding：搭建项目框架（15min）
+            \item[00:40-00:45] 小组讨论：确定分工（5min）
+        \end{itemize}
+
+        \textbf{课间休息（10分钟）：}
+        \begin{itemize}
+            \item[00:45-00:55] 休息与交流
+        \end{itemize}
+
+        \textbf{第2学时（40分钟）：}
+        \begin{itemize}
+            \item[00:55-01:15] Live Coding：流水线实现（20min）
+            \item[01:15-01:30] 实践环节：学生跟随编写（15min）
+            \item[01:30-01:35] 小结与检查点（5min）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{第3学时（40分钟）：}
+        \begin{itemize}
+            \item[01:35-01:50] AI辅助编程演示（15min）
+            \item[01:50-02:05] 分组任务分配（15min）
+            \item[02:05-02:10] 调试工具快速演示（5min）
+            \item[02:10-02:15] 总结与作业（5min）
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \begin{block}{课后延伸}
+        \begin{itemize}
+            \item Git工作流：观看视频教程（课后）
+            \item 案例分析：阅读材料（课后）
+            \item 代码规范：参考文档（课后）
+        \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+        \begin{alertblock}{时间控制提示}
+        Live Coding为核心（占50\%以上），理论讲解精简，重点在动手实践
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周分组策略}
+    \textbf{分组原则：}
+    \begin{itemize}
+        \item 每组3-4人
+        \item 包含不同专业背景
+        \item 设立组长和技术负责人
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{角色分工：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{角色} & \textbf{职责} & \textbf{适合} \\
+            \midrule
+            组长 & 统筹协调、进度管理 & 组织能力强的 \\
+            技术负责人 & 架构设计、核心算法 & CS/EE专业 \\
+            模块开发A & 选择题+判断题实现 & 有编程基础的 \\
+            模块开发B & 简答题+评分实现 & 有编程基础的 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{本周协作任务}
+        搭建开发环境，开始模块开发（至少完成选择题框架）
+    \end{block}
+\end{frame}
+
+%===========================================================
+% 扩充版教学模块
+%===========================================================
+\input{modules/00_background_expanded.tex}     % 背景知识铺垫（扩充版）
+\input{modules/07_patterns_extended.tex}        % 架构设计模式与SOLID（扩充版）
+\input{modules/08_pipeline_extended.tex}        % 图像处理流水线实战（扩充版）
+\input{modules/09_engine_extended.tex}          % 模块化识别引擎实战（扩充版）
+\input{modules/05_development.tex}              % 开发指导
+\input{modules/10_teamwork_extended.tex}        % 团队协作开发实战（扩充版）
+\input{modules/11_cases_extended.tex}           % 案例分析与互动（扩充版）
+
+%===========================================================
+% 总结与作业
+%===========================================================
+\input{sections/summary.tex}
+
+\end{document}

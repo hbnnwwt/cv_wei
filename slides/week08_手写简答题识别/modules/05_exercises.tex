@@ -1,0 +1,500 @@
+%===========================================================
+% 05_exercises.tex - 思考题与作业
+%===========================================================
+
+\section{思考题与作业}
+
+\begin{frame}{课堂思考题}
+    \begin{block}{问题1：手写识别挑战}
+        \begin{itemize}
+            \item 为什么手写识别比印刷识别难？
+            \item 连笔字如何处理？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{问题2：模型选择}
+        \begin{itemize}
+            \item 什么时候用PaddleOCR？什么时候用TrOCR？
+            \item 如何平衡准确率和速度？
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{课堂互动Quiz - 手写识别技术选择}
+    \begin{block}{Quiz 1：单选题 - OCR工具选择}
+        \textbf{场景：}需要识别一份手写简答题试卷，要求准确率90\%以上，服务器有GPU。
+
+        \vspace{0.2cm}
+
+        \textbf{最佳选择是？}
+
+        \begin{enumerate}[A.]
+            \item 传统模板匹配方法
+            \item PaddleOCR + 预处理优化
+            \item 仅使用TrOCR，不做预处理
+            \item 手工录入所有答案
+        \end{enumerate}
+
+        \vspace{0.2cm}
+
+        \textbf{正确答案：B}
+
+        \textit{解析：PaddleOCR对中文支持好，配合预处理可以达到90\%+准确率。}
+    \end{block}
+\end{frame}
+
+\begin{frame}{课堂互动Quiz - 对比分析}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Quiz 2：多选题 - PaddleOCR vs TrOCR}
+                关于PaddleOCR和TrOCR的比较，以下说法正确的是：
+
+                \vspace{0.2cm}
+
+                \begin{enumerate}[(1)]
+                    \item PaddleOCR对中文手写体支持更好
+                    \item TrOCR更适合英文手写识别
+                    \item PaddleOCR部署更简单
+                    \item TrOCR不需要文本行检测
+                    \item PaddleOCR支持更多预处理选项
+                \end{enumerate}
+
+                \vspace{0.2cm}
+
+                \textbf{正确答案：(1)(2)(4)(5)}
+            \end{block}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Quiz 3：排序题 - 预处理步骤}
+                将以下预处理步骤按正确顺序排列：
+
+                \vspace{0.2cm}
+
+                \begin{itemize}
+                    \item[A] 去噪
+                    \item[B] 二值化
+                    \item[C] 灰度化
+                    \item[D] 对比度增强
+                \end{itemize}
+
+                \vspace{0.3cm}
+
+                \textbf{正确顺序：C → A → D → B}
+
+                \vspace{0.3cm}
+
+                \textit{解释：}
+                \begin{enumerate}
+                    \item 先转灰度
+                    \item 去噪避免增强噪声
+                    \item 增强对比度
+                    \item 最后二值化
+                \end{enumerate}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{课堂互动Quiz - 实时投票}
+    \begin{block}{投票1：你认为手写识别最大的挑战是？}
+        \begin{columns}
+            \begin{column}{0.6\textwidth}
+                \begin{enumerate}[A.]
+                    \item 字体风格差异大（草书vs楷书）
+                    \item 书写质量参差不齐
+                    \item 中文同音字太多
+                    \item 计算资源限制
+                \end{enumerate}
+
+                \vspace{0.3cm}
+
+                \textit{请举手或使用在线投票工具选择你的答案}
+            \end{column}
+            \begin{column}{0.4\textwidth}
+                \begin{tikzpicture}
+                    \pie[rotate=90, text=legend, radius=1.5]{
+                        40/字体风格差异,
+                        30/书写质量,
+                        20/同音字问题,
+                        10/计算资源
+                    }
+                \end{tikzpicture}
+
+                \vspace{0.2cm}
+
+                \footnotesize\textit{示例投票结果}
+            \end{column}
+        \end{columns}
+    \end{block}
+\end{frame}
+
+\begin{frame}{参数调优实验挑战 - 对比实验设计}
+    \begin{block}{挑战1：不同预处理参数对比}
+        \textbf{实验目标：}找到最优的预处理参数组合
+
+        \vspace{0.2cm}
+
+        \textbf{实验设计：}
+
+        \begin{table}
+            \centering
+            \small
+            \begin{tabular}{c|ccc|c}
+                \toprule
+                \textbf{实验组} & \textbf{去噪强度} & \textbf{CLAHE clip} & \textbf{二值化方式} & \textbf{OCR准确率} \\
+                \midrule
+                A & 无 & - & 简单阈值 & ? \\
+                B & h=10 & 2.0 & OTSU & ? \\
+                C & h=15 & 3.0 & OTSU & ? \\
+                D & h=20 & 4.0 & 自适应 & ? \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+
+        \textbf{任务：}在提供的测试图片上运行各组参数，记录OCR准确率，找出最优参数组合。
+    \end{block}
+\end{frame}
+
+\begin{frame}{参数调优实验挑战 - 模型参数调优}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{挑战2：PaddleOCR参数调优}
+                \textbf{可调参数：}
+
+                \begin{itemize}
+                    \item \texttt{det\_limit\_side\_len}: 检测尺寸限制
+                    \item \texttt{det\_db\_thresh}: DB阈值
+                    \item \texttt{det\_db\_box\_thresh}: 文本框阈值
+                    \item \texttt{rec\_batch\_num}: 识别批大小
+                    \item \texttt{drop\_score}: 置信度过滤阈值
+                \end{itemize}
+
+                \vspace{0.2cm}
+
+                \textbf{实验任务：}
+                \begin{enumerate}
+                    \item 固定其他参数
+                    \item 每次只调整一个参数
+                    \item 记录识别准确率变化
+                    \item 绘制参数-准确率曲线
+                \end{enumerate}
+            \end{block}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{挑战3：TrOCR beam size调优}
+                \textbf{什么是beam search？}
+
+                \textit{束搜索是一种解码策略，在每个时间步保留得分最高的k个候选序列，平衡搜索质量和效率。}
+
+                \vspace{0.2cm}
+
+                \textbf{beam size对结果的影响：}
+
+                \begin{table}
+                    \centering
+                    \small
+                    \begin{tabular}{c|cc}
+                        \toprule
+                        \textbf{beam size} & \textbf{准确率} & \textbf{速度} \\
+                        \midrule
+                        1 (贪婪) & 较低 & 最快 \\
+                        5 & 中等 & 较快 \\
+                        10 & 较高 & 中等 \\
+                        20 & 最高 & 较慢 \\
+                        \bottomrule
+                    \end{tabular}
+                \end{table}
+
+                \vspace{0.2cm}
+
+                \textbf{实验任务：}
+                \begin{enumerate}
+                    \item 在相同测试集上
+                    \item 测试beam size = [1, 5, 10, 20]
+                    \item 记录准确率和推理时间
+                    \item 绘制trade-off曲线
+                    \item 找出最佳平衡点
+                \end{enumerate}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{案例分析：识别失败诊断}
+    \begin{block}{案例1：粘连字符识别失败}
+        \begin{columns}
+            \begin{column}{0.4\textwidth}
+                \fbox{\parbox{0.9\textwidth}{
+                    \centering
+                    \vspace{1cm}
+                    [手写"国国"粘连]\\[0.5cm]
+                    识别结果: "國"\\[0.3cm]
+                    正确结果: "国国"\\[0.5cm]
+                    \vspace{1cm}
+                }}
+            \end{column}
+            \begin{column}{0.6\textwidth}
+                \textbf{失败原因分析：}
+                \begin{enumerate}
+                    \item \textbf{过度粘连：}两个字笔画交叉过多
+                    \item \textbf{预处理不足：}二值化阈值不合适
+                    \item \textbf{分割失败：}字符分割算法无法区分
+                    \item \textbf{模型局限：}训练集中粘连样本少
+                \end{enumerate}
+
+                \vspace{0.3cm}
+
+                \textbf{改进方案：}
+                \begin{itemize}
+                    \item 优化预处理参数，增强对比度
+                    \item 使用笔画宽度变换(SWT)辅助分割
+                    \item 尝试过度分割+合并策略
+                    \item 对粘连样本进行数据增强训练
+                \end{itemize}
+            \end{column}
+        \end{columns}
+    \end{block}
+\end{frame}
+
+\begin{frame}{案例分析：识别失败诊断（续）}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{案例2：潦草字迹识别失败}
+                \fbox{\parbox{0.85\textwidth}{
+                    \centering
+                    \vspace{0.5cm}
+                    [潦草手写"解决问题"]\\[0.3cm]
+                    识别: "觖央问趣"\\[0.3cm]
+                    正确: "解决问题"\\[0.5cm]
+                }}
+
+                \textbf{原因分析：}
+                \begin{itemize}
+                    \item 连笔过多，笔画断裂
+                    \item 字形变形严重
+                    \item 笔画顺序不规律
+                \end{itemize}
+
+                \textbf{改进方案：}
+                \begin{itemize}
+                    \item 使用更强的去噪和对比度增强
+                    \item 尝试骨架提取辅助识别
+                    \item 结合上下文语义校正
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{案例3：背景干扰识别失败}
+                \fbox{\parbox{0.85\textwidth}{
+                    \centering
+                    \vspace{0.5cm}
+                    [带横线的答题纸]\\[0.3cm]
+                    识别: "一答案一"\\[0.3cm]
+                    正确: "答案"\\[0.5cm]
+                }}
+
+                \textbf{原因分析：}
+                \begin{itemize}
+                    \item 横线与文字粘连
+                    \item 二值化后横线未去除
+                    \item 预处理未针对横线优化
+                \end{itemize}
+
+                \textbf{改进方案：}
+                \begin{itemize}
+                    \item 使用形态学操作去除横线
+                    \item 霍夫变换检测并擦除直线
+                    \item 自适应阈值处理横线区域
+                    \item 使用深度学习去噪模型
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{学生讨论与分享}
+    \begin{block}{讨论题目}
+        \textbf{1. 识别失败案例分享}
+        \begin{itemize}
+            \item 你在使用OCR时遇到过什么问题？
+            \item 是如何解决的？
+            \item 有什么经验可以分享？
+        \end{itemize}
+
+        \textbf{2. 改进方案设计}
+        \begin{itemize}
+            \item 针对刚才的案例，你有什么改进想法？
+            \item 如何在准确率和速度之间取得平衡？
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{分享规则}
+        \begin{enumerate}
+            \item 每组派代表分享一个案例（2分钟）
+            \item 其他组可以补充或提问
+            \item 最后老师总结点评
+        \end{enumerate}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{最佳实践投票与讨论}
+    \begin{block}{投票1：不同场景下的工具选择}
+        \textbf{场景1：}处理1000份手写简答题试卷，要求准确率高，服务器有GPU。
+
+        \begin{columns}
+            \begin{column}{0.6\textwidth}
+                \begin{itemize}
+                    \item[A] PaddleOCR + 完整预处理
+                    \item[B] TrOCR + 简单预处理
+                    \item[C] 商业API（百度/腾讯OCR）
+                    \item[D] 自己训练专用模型
+                \end{itemize}
+            \end{column}
+            \begin{column}{0.4\textwidth}
+                \textbf{推荐：A或D}
+
+                \vspace{0.3cm}
+
+                \textit{大量数据时，专用模型效果最佳；快速部署选PaddleOCR。}
+            \end{column}
+        \end{columns}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{block}{投票2：实际部署经验}
+        \textbf{问题：}在生产环境中，你最常遇到的OCR问题是？
+
+        \begin{columns}
+            \begin{column}{0.6\textwidth}
+                \begin{itemize}
+                    \item[A] 识别准确率不够高
+                    \item[B] 推理速度太慢
+                    \item[C] 预处理参数难调
+                    \item[D] 模型部署复杂
+                    \item[E] 数据安全和隐私
+                \end{itemize}
+            \end{column}
+            \begin{column}{0.4\textwidth}
+                \textbf{经验分享：}
+
+                \vspace{0.3cm}
+
+                \textit{欢迎有实际部署经验的同学分享你的解决方案和踩坑经历！}
+            \end{column}
+        \end{columns}
+    \end{block}
+\end{frame}
+
+\begin{frame}{常见问题讨论}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Q1: 如何提高潦草字迹的识别率？}
+                \textbf{解决方案：}
+                \begin{itemize}
+                    \item 增强预处理（CLAHE去噪）
+                    \item 使用骨架提取辅助
+                    \item 结合上下文语义校正
+                    \item 对潦草样本数据增强
+                \end{itemize}
+            \end{block}
+
+            \vspace{0.2cm}
+
+            \begin{block}{Q2: 识别速度太慢怎么办？}
+                \textbf{优化方案：}
+                \begin{itemize}
+                    \item 降低输入图像分辨率
+                    \item 使用更小的模型（Mobile版）
+                    \item 批处理多张图片
+                    \item GPU加速或使用TensorRT
+                    \item 缓存常用结果
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Q3: 如何去除答题纸的横线干扰？}
+                \textbf{解决方案：}
+                \begin{itemize}
+                    \item 霍夫变换检测直线并擦除
+                    \item 形态学开运算去除横线
+                    \item 使用in painting修复
+                    \item 训练专门的去线模型
+                \end{itemize}
+            \end{block}
+
+            \vspace{0.2cm}
+
+            \begin{block}{Q4: 粘连字符如何分割？}
+                \textbf{解决方案：}
+                \begin{itemize}
+                    \item 垂直投影+动态阈值
+                    \item 最小生成树(MST)分割
+                    \item 使用笔画宽度变换
+                    \item 基于深度学习的分割
+                    \item 过度分割+合并策略
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目}
+        实现简答题手写识别模块
+    \end{block}
+
+    \textbf{要求：}
+    \begin{enumerate}
+        \item 使用PaddleOCR或TrOCR识别手写文字
+        \item 实现图像预处理优化（至少包含灰度化、去噪、对比度增强、二值化）
+        \item 实现文本行分割（水平投影法或连通域分析）
+        \item 识别手写答案内容并分析识别准确率
+        \item 撰写实验报告，包含参数调优过程和结果分析
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    \textbf{评分标准：}
+    \begin{itemize}
+        \item 模型配置与调用：20分
+        \item 预处理实现：25分
+        \item 文本行分割：20分
+        \item 识别效果与分析：25分
+        \item 实验报告质量：10分
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第9周：系统架构与分组开发}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{把所有模块组合起来}
+
+        \vspace{0.3cm}
+
+        你将学会：
+        \begin{itemize}
+            \item 系统架构设计
+            \item 模块集成方法
+            \item 团队协作开发
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{课程设计开始！}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+    \end{center}
+\end{frame}

@@ -1,0 +1,205 @@
+%===========================================================
+% 02_demo_practice.tex - Demo演示实战
+%===========================================================
+
+\subsection{Demo演示实战}
+
+\begin{frame}{Demo实战：演示脚本设计}
+    \textbf{设计你的Demo脚本}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Demo脚本模板}
+    \begin{enumerate}
+        \item \textbf{场景介绍}（10秒）
+            \begin{itemize}
+                \item "这是一张数学答题卡..."
+                \item "我们将演示完整识别流程..."
+            \end{itemize}
+
+        \item \textbf{输入展示}（10秒）
+            \begin{itemize}
+                \item 展示原始答题卡图像
+                \item 说明图像质量、填涂情况
+            \end{itemize}
+
+        \item \textbf{处理演示}（2分钟）
+            \begin{itemize}
+                \item 步骤1：图像预处理（去噪、二值化）
+                \item 步骤2：答题卡定位
+                \item 步骤3：区域分割
+                \item 步骤4：填涂识别
+                \item 步骤5：结果输出
+            \end{itemize}
+
+        \item \textbf{结果展示}（30秒）
+            \begin{itemize}
+                \item 展示识别结果
+                \item 与正确答案对比
+                \item 展示准确率
+            \end{itemize}
+
+        \item \textbf{亮点展示}（10秒）
+            \begin{itemize}
+                \item 展示特殊场景处理
+                \item 展示错误处理机制
+            \end{itemize}
+    \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Demo实战：演示环境准备}
+    \textbf{Demo环境检查清单}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{硬件准备：}
+        \begin{itemize}
+            \item[$\square$] 笔记本电脑充满电
+            \item[$\square$] 准备电源适配器
+            \item[$\square$] 测试投影仪连接
+            \item[$\square$] 准备翻页器/鼠标
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{软件准备：}
+        \begin{itemize}
+            \item[$\square$] 代码已提交并拉取最新
+            \item[$\square$] 虚拟环境已激活
+            \item[$\square$] 依赖包已安装
+            \item[$\square$] 测试数据就绪
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{演示数据：}
+        \begin{itemize}
+            \item[$\square$] 准备多组测试图像
+            \item[$\square$] 正常场景案例
+            \item[$\square$] 边缘场景案例
+            \item[$\square$] 错误场景（备用）
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{备用方案：}
+        \begin{itemize}
+            \item[$\square$] 录制演示视频
+            \item[$\square$] 准备截图PPT
+            \item[$\square$] 本地服务器运行
+            \item[$\square$] 离线模式准备
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{演示前必做}
+    提前10分钟到教室，测试实际设备！
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Demo实战：关键代码演示}
+    \textbf{展示核心逻辑，不是所有代码}
+
+    \vspace{0.3cm}
+
+    \begin{block}{选择性展示代码}
+    \begin{itemize}
+        \item \textbf{要展示}：核心算法、关键函数
+        \item \textbf{不要展示}：配置文件、工具函数
+    \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{exampleblock}{示例：展示填涂识别核心逻辑}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+def detect_fill(image, region):
+    """检测指定区域的填涂情况"""
+    # 提取区域
+    roi = extract_region(image, region)
+
+    # 二值化
+    _, binary = cv2.threshold(roi, 127, 255, cv2.THRESH_BINARY)
+
+    # 计算填涂比例
+    filled_ratio = np.sum(binary == 0) / binary.size
+
+    # 判断是否填涂
+    is_filled = filled_ratio > 0.4
+
+    return is_filled, filled_ratio
+\end{lstlisting}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Demo实战：处理技术故障}
+    \textbf{当Demo出问题时...}
+
+    \vspace{0.3cm}
+
+    \begin{block}{常见问题与应对}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{问题} & \textbf{应对方案} & \textbf{态度} \\
+            \midrule
+            代码报错 & 切换到备份代码/视频 & 冷静 \\
+            识别失败 & 解释这是边缘案例 & 诚实 \\
+            网络故障 & 使用离线模式 & 从容 \\
+            时间不够 & 跳到关键演示 & 灵活 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{应对原则：}
+    \begin{itemize}
+        \item \textbf{不要慌张}：技术问题很正常
+        \item \textbf{幽默化解}："看来我们的AI有点害羞"
+        \item \textbf{备用方案}：立即切换到Plan B
+        \item \textbf{继续演讲}：用语言弥补演示缺失
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Demo实战：突出技术亮点}
+    \textbf{让Demo更有说服力}
+
+    \vspace{0.3cm}
+
+    \textbf{展示技巧：}
+    \begin{itemize}
+        \item \textbf{对比展示}：
+            \begin{itemize}
+                \item 处理前 vs 处理后
+                \item 传统方法 vs 你的方法
+                \item 失败案例 vs 成功案例
+            \end{itemize}
+
+        \item \textbf{数据说话}：
+            \begin{itemize}
+                \item "准确率从85\%提升到95\%"
+                \item "处理速度从3秒优化到0.5秒"
+                \item "支持5种不同类型的答题卡"
+            \end{itemize}
+
+        \item \textbf{突出创新}：
+            \begin{itemize}
+                \item "我们创新性地使用了..."
+                \item "这个方案解决了...难题"
+                \item "相比现有方案，我们的优势是..."
+            \end{itemize}
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{避免}
+    过度承诺、夸大效果、隐瞒不足
+    \end{alertblock}
+\end{frame}

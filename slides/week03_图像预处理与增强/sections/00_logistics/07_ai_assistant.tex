@@ -1,0 +1,190 @@
+%===========================================================
+% 07_ai_assistant.tex - AI辅助编程说明
+%===========================================================
+
+\section{AI辅助编程}
+
+\begin{frame}{AI编程工具回顾}
+    \textbf{Week 2核心工具：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{Cursor}
+            \begin{itemize}
+                \item VS Code增强版
+                \item AI自动补全
+                \item 自然语言生成代码
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{Claude Code}
+            \begin{itemize}
+                \item 命令行AI助手
+                \item 文件操作专家
+                \item 问题诊断能手
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{本节课AI应用场景：}
+    \begin{itemize}
+        \item 理解卷积运算原理
+        \item 生成对比实验代码
+        \item 调试滤波参数
+        \item 优化预处理流程
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助：理解概念}
+    \textbf{示例1：理解卷积运算}
+
+    \vspace{0.2cm}
+
+    \textbf{Prompt：}
+    \begin{lstlisting}
+"请用通俗的语言解释什么是卷积运算，为什么它能用于图像去噪？
+用3x3矩阵的例子说明"
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{示例2：理解滤波器区别}
+    \begin{lstlisting}
+"高斯滤波和中值滤波有什么区别？分别适合什么类型的噪声？
+用表格对比说明"
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{提示}
+        理解概念时，可以让AI"用通俗语言解释"、"用例子说明"。
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助：生成代码}
+    \textbf{示例1：生成去噪代码}
+
+    \vspace{0.2cm}
+
+    \textbf{Prompt（RTF框架）：}
+    \begin{lstlisting}
+# Role
+你是一个OpenCV图像处理专家
+
+# Task
+编写一个函数，对试卷图像进行去噪处理：
+1. 使用中值滤波（kernel=5）
+2. 计算并返回PSNR值
+3. 包含完整的注释
+
+# Format
+返回Python代码，使用cv2和numpy
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{示例2：生成对比代码}
+    \begin{lstlisting}
+"生成Python代码，对比高斯滤波和中值滤波对椒盐噪声的效果，
+使用matplotlib并排显示结果"
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助：调试代码}
+    \textbf{示例1：调试错误}
+    \begin{lstlisting}
+# 错误代码
+img = cv2.imread('exam.jpg')
+_, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+# 报错：error: (-215:Assertion failed)
+
+# Prompt
+"这段代码报错error: (-215:Assertion failed)，请帮我找出问题并修正"
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{示例2：优化参数}
+    \begin{lstlisting}
+"CLAHE处理后对比度过高，文字细节丢失，应该如何调整参数？
+当前参数：clipLimit=2.0, tileGridSize=(8,8)"
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{AI调试三部曲}
+        1. 描述问题 + 粘贴代码 $\rightarrow$ AI分析
+        2. 理解AI的建议 $\rightarrow$ 判断是否正确
+        3. 测试修复方案 $\rightarrow$ 验证效果
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助：参数调优}
+    \textbf{场景：} 自适应阈值效果不理想
+
+    \vspace{0.2cm}
+
+    \textbf{Prompt：}
+    \begin{lstlisting}
+# 背景
+试卷光照不均，使用自适应阈值二值化后，部分区域文字丢失
+
+# 当前参数
+blockSize=15, C=2
+
+# 问题
+1. 暗区域文字消失
+2. 亮区域噪声过多
+
+# 请求
+请分析问题原因，并给出参数调优建议，解释每个参数的作用
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{AI可能的分析：}
+    \begin{itemize}
+        \item blockSize太小导致局部过度敏感
+        \item C值太大导致阈值偏高
+        \item 建议增大blockSize到21-31
+        \item 建议减小C值到1-2
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{本周Prompt模板汇总}
+    \textbf{模板1：理解概念}
+    \begin{lstlisting}
+"请用通俗的语言解释[概念]，[具体要求]"
+    \end{lstlisting}
+
+    \textbf{模板2：生成代码}
+    \begin{lstlisting}
+"用OpenCV实现[功能]，参数设置为[值]，包含详细注释"
+    \end{lstlisting}
+
+    \textbf{模板3：调试问题}
+    \begin{lstlisting}
+"这段代码[描述问题]：[粘贴代码]，请帮我[具体要求]"
+    \end{lstlisting}
+
+    \textbf{模板4：参数调优}
+    \begin{lstlisting}
+"[功能]效果不理想，当前参数[列出]，请分析原因并建议调优方案"
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{最佳实践}
+        \begin{itemize}
+            \item 提供足够的背景信息
+            \item 明确你想要的结果
+            \item 要求AI解释原因
+            \item 验证AI给出的答案
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}

@@ -1,8 +1,16 @@
 %===========================================================
-% 05_binary_coding.tex - 二值化实战代码
+% 05_binary_coding.tex - 二值化实战代码（TODO框架）
 %===========================================================
 
-\begin{frame}[fragile]{二值化完整流程}
+\begin{frame}[fragile]{二值化代码框架}
+    \begin{alertblock}{AI辅助提示}
+        使用Cursor/Claude Code可以快速生成以下代码：
+        \begin{itemize}
+            \item "用OpenCV实现自适应阈值二值化"
+            \item "对比全局阈值、Otsu和自适应阈值的效果"
+        \end{itemize}
+    \end{alertblock}
+
     \begin{lstlisting}[basicstyle=\ttfamily\tiny]
 import cv2
 import numpy as np
@@ -12,18 +20,51 @@ def binarize_exam(img_path, method='adaptive'):
     试卷二值化处理
     method: 'global', 'otsu', 'adaptive'
     """
-    # 读取图像
+    # TODO 1: 读取图像（灰度模式）
+    # 提示：使用 cv2.imread(img_path, 0)
+    img = ____
+
+    if method == 'global':
+        # TODO 2: 全局阈值二值化
+        # 提示：cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+        _, binary = cv2.threshold(____, ____, ____, ____)
+
+    elif method == 'otsu':
+        # TODO 3: Otsu自动阈值
+        # 提示：添加 cv2.THRESH_OTSU 标志
+        _, binary = cv2.threshold(____, ____, ____, ____)
+
+    elif method == 'adaptive':
+        # TODO 4: 自适应阈值（推荐用于试卷）
+        # 提示：cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        #       cv2.THRESH_BINARY_INV, blockSize, C)
+        binary = cv2.adaptiveThreshold(____, ____, ____, ____, ____, ____)
+
+    return binary
+
+# 使用
+result = binarize_exam('exam.jpg', method='adaptive')
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{完整参考代码（课后查看）}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+def binarize_exam(img_path, method='adaptive'):
+    """完整版二值化函数"""
+    # 读取图像（灰度模式）
     img = cv2.imread(img_path, 0)
 
     if method == 'global':
+        # 全局阈值
         _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
 
     elif method == 'otsu':
+        # Otsu自动阈值
         _, binary = cv2.threshold(img, 0, 255,
             cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
     elif method == 'adaptive':
-        # 推荐用于试卷
+        # 自适应阈值（推荐用于手机拍照的试卷）
         binary = cv2.adaptiveThreshold(
             img, 255,
             cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -33,38 +74,41 @@ def binarize_exam(img_path, method='adaptive'):
 
     return binary
 
-# 使用
-result = binarize_exam('exam.jpg', method='adaptive')
-cv2.imwrite('exam_binary.jpg', result)
+# 三种方法对比
+img = cv2.imread('exam.jpg', 0)
+global_bin = binarize_exam('exam.jpg', 'global')
+otsu_bin = binarize_exam('exam.jpg', 'otsu')
+adaptive_bin = binarize_exam('exam.jpg', 'adaptive')
     \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{三种方法对比展示}
+\begin{frame}[fragile]{参数调优实验}
+    \textbf{自适应阈值参数调优：}
+
     \begin{lstlisting}[basicstyle=\ttfamily\tiny]
-import matplotlib.pyplot as plt
+# TODO: 实验不同的blockSize和C值
+# blockSize必须是奇数，值越大考虑的邻域越大
+# C值是从均值减去的常数，值越大阈值越高
 
-# 读取图像
-img = cv2.imread('exam.jpg', 0)
-
-# 三种二值化方法
-_, global_bin = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
-_, otsu_bin = cv2.threshold(img, 0, 255,
-    cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-adaptive_bin = cv2.adaptiveThreshold(img, 255,
+# 参数组1：默认参数
+binary1 = cv2.adaptiveThreshold(img, 255,
     cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
     cv2.THRESH_BINARY_INV, 15, 2)
 
-# 对比显示
-fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-axes[0,0].imshow(img, cmap='gray')
-axes[0,0].set_title('原图')
-axes[0,1].imshow(global_bin, cmap='gray')
-axes[0,1].set_title('全局阈值')
-axes[1,0].imshow(otsu_bin, cmap='gray')
-axes[1,0].set_title('Otsu')
-axes[1,1].imshow(adaptive_bin, cmap='gray')
-axes[1,1].set_title('自适应阈值（推荐）')
-plt.show()
+# TODO 2: 尝试调整参数
+# 如果文字太细：增大blockSize或减小C
+# 如果噪声太多：减小blockSize或增大C
+binary2 = cv2.adaptiveThreshold(img, 255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv2.THRESH_BINARY_INV, ____, ____)
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \textbf{参数调优Prompt示例：}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+"自适应阈值二值化后，试卷暗区域文字消失了，应该如何调整参数？
+当前：blockSize=15, C=2"
     \end{lstlisting}
 \end{frame}
 
@@ -91,4 +135,35 @@ plt.show()
             \item \textbf{参数推荐}：blockSize=15, C=2-5
         \end{itemize}
     \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{代码找茬环节}
+    \textbf{找出以下代码的错误：}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
+# 有错误的代码
+def binarize_exam(img_path):
+    img = cv2.imread(img_path)  # 错误1
+    _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+    return binary
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{错误清单：}
+    \begin{enumerate}
+        \item \textbf{错误1}：\texttt{imread}默认读取彩色图，应加参数\texttt{0}读取灰度图
+        \item \textbf{错误2}：\texttt{threshold}需要灰度图，彩色图会报错
+        \item \textbf{错误3}：试卷识别应该用\texttt{THRESH\_BINARY\_INV}（反转黑白）
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{修正后的代码：}
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
+def binarize_exam(img_path):
+    img = cv2.imread(img_path, 0)  # 读取灰度图
+    _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+    return binary
+    \end{lstlisting}
 \end{frame}

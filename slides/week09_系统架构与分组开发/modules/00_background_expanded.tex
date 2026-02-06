@@ -1,0 +1,771 @@
+%===========================================================
+% 00_background_expanded.tex - 背景知识铺垫（扩充版）
+%===========================================================
+
+\section{项目回顾：已学模块串联}
+
+\begin{frame}{智能阅卷系统全景}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.9, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=0.8cm, align=center},
+            arrow/.style={->, thick, blue}]
+
+            \node[box, fill=green!20] (input) at (0,0) {图像输入};
+            \node[box, fill=blue!15] (preprocess) at (3,0) {预处理};
+            \node[box, fill=blue!15] (layout) at (6,0) {版面分析};
+            \node[box, fill=orange!15] (choice) at (9,0) {选择题};
+            \node[box, fill=orange!15] (judge) at (12,0) {判断题};
+            \node[box, fill=orange!15] (essay) at (15,0) {简答题};
+            \node[box, fill=red!15] (output) at (18,0) {评分输出};
+
+            \draw[arrow] (input) -- (preprocess);
+            \draw[arrow] (preprocess) -- (layout);
+            \draw[arrow] (layout) -- (choice);
+            \draw[arrow] (layout) -- (judge);
+            \draw[arrow] (layout) -- (essay);
+            \draw[arrow] (choice) -- (output);
+            \draw[arrow] (judge) -- (output);
+            \draw[arrow] (essay) -- (output);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{本周任务：} 将所有模块整合，构建完整系统
+\end{frame}
+
+\begin{frame}{已学模块快速回顾}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{基础模块（第1-4周）：}
+        \begin{itemize}
+            \item 图像基础：像素、通道、颜色空间
+            \item 预处理：去噪、增强、二值化
+            \item 几何变换：透视矫正
+            \item 版面分析：边缘检测、轮廓提取
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{识别模块（第5-8周）：}
+        \begin{itemize}
+            \item 选择题：填涂检测、像素密度
+            \item 判断题：符号识别、模板匹配
+            \item 简答题：OCR识别、PaddleOCR
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{本周目标}
+        将散落的模块组装成完整的智能阅卷系统
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{项目架构演进}
+    \textbf{从"单文件"到"模块化"：}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            % Before: Monolithic
+            \node[draw, rectangle, fill=red!15, minimum width=3cm, minimum height=2cm, rounded corners] (mono) at (0,0) {
+                \begin{small}
+                main.py\\
+                \hline
+                load\_image()\\
+                preprocess()\\
+                detect()\\
+                recognize()\\
+                ...
+                \end{small}
+            };
+            \node[below=0.2cm of mono] {\textbf{单文件（混乱）}};
+
+            % Arrow
+            \node at (4,0) {\Huge$\rightarrow$};
+
+            % After: Modular
+            \node[draw, rectangle, fill=green!15, minimum width=1.5cm, minimum height=1.5cm, rounded corners] (mod1) at (7,0) {preprocess\\.py};
+            \node[draw, rectangle, fill=green!15, minimum width=1.5cm, minimum height=1.5cm, rounded corners] (mod2) at (9.5,0) {layout\\.py};
+            \node[draw, rectangle, fill=green!15, minimum width=1.5cm, minimum height=1.5cm, rounded corners] (mod3) at (12,0) {recognition\\.py};
+
+            \node[draw, rectangle, fill=blue!15, minimum width=4cm, minimum height=0.8cm, rounded corners] (main) at (9.5,-2) {main.py (框架)};
+
+            \draw[-] (mod1) -- (main);
+            \draw[-] (mod2) -- (main);
+            \draw[-] (mod3) -- (main);
+            \node[below=0.2cm of main] {\textbf{模块化（清晰）}};
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\section{软件系统架构概述}
+
+\begin{frame}{什么是软件架构？}
+    \begin{definition}[软件架构]
+        软件架构是系统的高级结构，包括软件元素、元素的外部可见属性，以及元素之间的关系。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{架构的核心要素：}
+    \begin{itemize}
+        \item \textbf{组件（Components）}：系统的功能单元，如模块、服务、类库
+        \item \textbf{连接器（Connectors）}：组件之间的交互机制，如API调用、消息传递、事件
+        \item \textbf{配置（Configuration）}：组件和连接器的拓扑结构，即系统的组织方式
+        \item \textbf{约束（Constraints）}：设计和实现的规则，如技术选型、性能要求、安全规范
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{架构 vs 设计}
+        架构关注"系统由什么组成"和"它们如何交互"；设计关注"如何实现每个组件"。
+        架构是蓝图，设计是施工图。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{架构决策的层次}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.85, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=4cm, minimum height=0.8cm, align=center},
+            arrow/.style={->, thick}]
+
+            \node[box, fill=green!20] (business) at (0,0) {业务架构\\业务能力、流程};
+            \node[box, fill=blue!20] (data) at (0,-1.2) {数据架构\\数据模型、存储};
+            \node[box, fill=yellow!20] (app) at (0,-2.4) {应用架构\\模块划分、接口};
+            \node[box, fill=red!20] (tech) at (0,-3.6) {技术架构\\技术选型、部署};
+
+            \draw[arrow] (business) -- (data);
+            \draw[arrow] (data) -- (app);
+            \draw[arrow] (app) -- (tech);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{各层次决策内容：}
+    \begin{itemize}
+        \item 业务架构：确定系统要解决什么问题，业务流程如何
+        \item 数据架构：确定数据如何组织、存储、流转
+        \item 应用架构：确定系统如何分解为可管理的模块
+        \item 技术架构：确定使用什么技术栈，如何部署
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{架构设计的重要性}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{好的架构带来：}
+        \begin{itemize}
+            \item 易于理解和维护
+            \item 便于团队协作
+            \item 支持系统演化
+            \item 降低技术风险
+            \item 提高开发效率
+            \item 支持快速迭代
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{糟糕的架构导致：}
+        \begin{itemize}
+            \item 技术债务累积
+            \item 修改牵一发而动全身
+            \item 团队协作困难
+            \item 系统难以扩展
+            \item 维护成本高昂
+            \item 新人难以入手
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{架构决策的影响}
+        架构决策一旦做出，后期修改成本极高。前期投入时间设计架构是值得的。
+        记住：修房子时改地基比建好后拆墙成本高得多。
+    \end{block}
+\end{frame}
+
+\begin{frame}{架构设计原则：SOLID}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{clp{5.5cm}}
+            \toprule
+            \textbf{原则} & \textbf{名称} & \textbf{核心思想} \\
+            \midrule
+            S & 单一职责 & 一个类只负责一件事 \\
+            O & 开闭原则 & 对扩展开放，对修改关闭 \\
+            L & 里氏替换 & 子类可以替换父类 \\
+            I & 接口隔离 & 客户端不应该依赖它不需要的接口 \\
+            D & 依赖倒置 & 依赖抽象，而非具体实现 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{实际应用}
+        \begin{itemize}
+            \item SRP：图像预处理类只负责预处理，不负责识别
+            \item OCP：新增识别算法时，不修改现有代码
+            \item LSP：所有识别器可以互换使用
+            \item ISP：按需定义小接口，而非大接口
+            \item DIP：识别引擎依赖抽象接口，而非具体算法
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{架构设计原则：KISS \& DRY}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{KISS原则}
+            \textbf{K}eep \textbf{I}t \textbf{S}hort and \textbf{S}imple
+
+            \vspace{0.3cm}
+            \begin{itemize}
+                \item 简单优于复杂
+                \item 避免过度设计
+                \item 选择最直接的解决方案
+                \item 代码应易于理解
+                \item 警惕"聪明的"代码
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{DRY原则}
+            \textbf{D}on't \textbf{R}epeat \textbf{Y}ourself
+
+            \vspace{0.3cm}
+            \begin{itemize}
+                \item 消除重复代码
+                \item 单一事实来源
+                \item 变化只需修改一处
+                \item 提高可维护性
+                \item 抽象重复逻辑
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textbf{简单是终极的复杂 —— 达芬奇}
+    \end{center}
+\end{frame}
+
+\begin{frame}{架构风格分类}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{4cm}p{5cm}}
+            \toprule
+            \textbf{架构风格} & \textbf{特点} & \textbf{适用场景} \\
+            \midrule
+            单体架构 & 所有功能在一个应用中 & 小型项目、快速原型 \\
+            分层架构 & 按层次组织 & 企业应用、Web应用 \\
+            微服务架构 & 服务拆分、独立部署 & 大型系统、团队协作 \\
+            事件驱动 & 基于事件通信 & 实时系统、流处理 \\
+            管道-过滤器 & 数据流处理 & 数据处理、编译器 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{选择建议}
+        没有最好的架构，只有最适合的架构。根据团队规模、项目复杂度、维护周期选择。
+        对于我们的智能阅卷系统，建议采用分层+管道过滤器混合架构。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{架构风格：分层架构详解}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.8, transform shape,
+            box/.style={draw, rectangle, rounded corners, minimum width=3.5cm, minimum height=0.8cm, align=center}]
+            \node[box, fill=blue!20] (ui) at (0,0) {表现层 (UI/API)};
+            \node[box, fill=green!20] (biz) at (0,-1.3) {业务层 (Services)};
+            \node[box, fill=yellow!20] (domain) at (0,-2.6) {领域层 (Domain)};
+            \node[box, fill=red!20] (data) at (0,-3.9) {数据层 (Repository)};
+
+            \draw[->, thick] (ui) -- (biz);
+            \draw[->, thick] (biz) -- (domain);
+            \draw[->, thick] (domain) -- (data);
+            \draw[->, thick] (data) -- (domain);
+            \draw[->, thick] (domain) -- (biz);
+            \draw[->, thick] (biz) -- (ui);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{分层架构的优点：}
+    \begin{itemize}
+        \item 关注点分离，职责清晰
+        \item 易于测试（每层可独立测试）
+        \item 便于维护（修改一层不影响其他层）
+        \item 支持替换（如更换数据库）
+        \item 新人容易理解代码结构
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{架构风格：微服务架构}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.75, transform shape,
+            box/.style={draw, rectangle, rounded corners, minimum width=2cm, minimum height=0.8cm, align=center},
+            arrow/.style={->, thick}]
+
+            \node[box, fill=blue!15] (gateway) at (0,0) {API网关};
+            \node[box, fill=green!15] (upload) at (-4,-2) {上传服务};
+            \node[box, fill=green!15] (process) at (-1.5,-2) {预处理服务};
+            \node[box, fill=green!15] (recognize) at (1.5,-2) {识别服务};
+            \node[box, fill=green!15] (grade) at (4,-2) {评分服务};
+            \node[box, fill=red!15] (db1) at (-4,-4) {DB};
+            \node[box, fill=red!15] (db2) at (1.5,-4) {DB};
+            \node[box, fill=red!15] (db3) at (4,-4) {DB};
+
+            \draw[arrow] (gateway) -- (upload);
+            \draw[arrow] (gateway) -- (process);
+            \draw[arrow] (gateway) -- (recognize);
+            \draw[arrow] (gateway) -- (grade);
+            \draw[arrow] (upload) -- (db1);
+            \draw[arrow] (recognize) -- (db2);
+            \draw[arrow] (grade) -- (db3);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{微服务特点：}
+    \begin{itemize}
+        \item 每个服务独立部署、独立扩展
+        \item 服务间通过API通信
+        \item 每个服务可以有独立的数据库
+        \item 技术选型可以不同
+        \item 适合大型团队
+    \end{itemize}
+
+    \begin{alertblock}{注意}
+        微服务不是银词。对于小团队，单体应用往往更高效。
+        阅卷系统当前阶段建议用单体，分层清晰即可。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{架构风格：管道-过滤器架构}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.75, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=1.8cm, minimum height=1cm}]
+
+            \node[box, fill=green!20] (source) at (0,0) {数据源};
+            \node[box] (f1) at (2.5,0) {Filter 1};
+            \node[box] (f2) at (5,0) {Filter 2};
+            \node[box] (f3) at (7.5,0) {Filter 3};
+            \node[box, fill=red!20] (sink) at (10,0) {数据汇};
+
+            \draw[->, thick] (source) -- (f1) node[midway, above] {Pipe};
+            \draw[->, thick] (f1) -- (f2) node[midway, above] {Pipe};
+            \draw[->, thick] (f2) -- (f3) node[midway, above] {Pipe};
+            \draw[->, thick] (f3) -- (sink);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{管道-过滤器特点：}
+    \begin{itemize}
+        \item 数据流驱动，单向流动
+        \item 每个过滤器独立，可复用
+        \item 易于扩展，新增过滤器
+        \item 支持并行处理
+        \item 天然适合图像处理流程
+    \end{itemize}
+
+    \textbf{我们的应用：}
+    \begin{center}
+        图像输入 $\to$ 去噪 $\to$ 增强 $\to$ 二值化 $\to$ 矫正 $\to$ 版面分析
+    \end{center}
+\end{frame}
+
+\begin{frame}{架构风格：事件驱动架构}
+    \begin{definition}[事件驱动架构]
+        系统组件通过发布和订阅事件进行通信，实现松耦合的交互模式。
+    \end{definition}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.75, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2cm, minimum height=0.8cm, align=center}]
+
+            \node[box, fill=green!20] (pub) at (0,0) {事件发布者};
+            \node[box, fill=yellow!20] (bus) at (4,0) {事件总线};
+            \node[box, fill=red!15] (sub1) at (7,-1.5) {订阅者1};
+            \node[box, fill=red!15] (sub2) at (7,0) {订阅者2};
+            \node[box, fill=red!15] (sub3) at (7,1.5) {订阅者3};
+
+            \draw[->, thick] (pub) -- (bus) node[midway, above] {事件};
+            \draw[->, thick] (bus) -- (sub1);
+            \draw[->, thick] (bus) -- (sub2);
+            \draw[->, thick] (bus) -- (sub3);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{适用场景：}
+    \begin{itemize}
+        \item 异步处理：如图像处理完成后通知评分模块
+        \item 解耦系统：发布者和订阅者互不感知
+        \item 多端同步：Web、移动端同时接收更新
+        \item 审计追踪：所有事件可记录
+    \end{itemize}
+\end{frame}
+
+\section{智能阅卷系统架构分析}
+
+\begin{frame}{智能阅卷系统的业务场景}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{主要用户：}
+        \begin{itemize}
+            \item 教师：上传试卷、查看结果、导出成绩
+            \item 学生：查看成绩、提交复查申请
+            \item 管理员：系统管理、用户管理
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{用户痛点：}
+        \begin{itemize}
+            \item 人工阅卷耗时费力
+            \item 容易出现人工错误
+            \item 统计报表生成麻烦
+            \item 无法追溯阅卷过程
+        \end{itemize}
+    \end{columns}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!10, minimum width=2cm, minimum height=0.8cm}]
+            \node[box] (upload) at (0,0) {上传试卷};
+            \node[box] (process) at (0,-1.2) {图像处理};
+            \node[box] (analyze) at (0,-2.4) {版面分析};
+            \node[box] (recog) at (0,-3.6) {内容识别};
+            \node[box] (grade) at (0,-4.8) {自动评分};
+            \node[box] (export) at (0,-6) {结果导出};
+
+            \draw[->, thick] (upload) -- (process);
+            \draw[->, thick] (process) -- (analyze);
+            \draw[->, thick] (analyze) -- (recog);
+            \draw[->, thick] (recog) -- (grade);
+            \draw[->, thick] (grade) -- (export);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{系统功能需求分析}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{核心功能：}
+        \begin{itemize}
+            \item 图像导入与格式转换
+            \item 图像预处理（去噪、矫正）
+            \item 答题卡区域定位
+            \item 选择题自动识别
+            \item 判断题符号识别
+            \item 简答题文字识别
+            \item 答案比对与评分
+            \item 成绩统计与导出
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{辅助功能：}
+        \begin{itemize}
+            \item 标准答案管理
+            \item 人工复核接口
+            \item 识别结果校对
+            \item 批量处理
+            \item 历史记录查询
+            \item 权限管理
+            \item 日志记录
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{非功能性需求}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{3cm}p{6cm}}
+            \toprule
+            \textbf{需求类型} & \textbf{具体要求} & \textbf{实现策略} \\
+            \midrule
+            性能 & 单张试卷<3秒 & 算法优化、并行处理、缓存 \\
+            准确率 & 选择题>99\% & 多算法融合、人工复核机制 \\
+            可扩展性 & 支持新题型 & 插件化架构、模块化设计 \\
+            可用性 & 7x24小时 & 容错设计、异常恢复 \\
+            安全性 & 数据加密 & 传输加密、访问控制 \\
+            可维护性 & 易于升级 & 清晰文档、单元测试 \\
+            可用性 & 简单易用 & 清晰UI、完善帮助 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{block}{性能要求详解}
+        \begin{itemize}
+            \item 图像预处理：<500ms/张
+            \item 区域定位：<300ms/张
+            \item 识别响应：<1.5s/题
+            \item 评分汇总：<200ms
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{典型智能阅卷系统架构案例}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, minimum width=2.5cm, minimum height=0.8cm, align=center}]
+            % 客户端层
+            \node[box, fill=blue!15] (web) at (-3,0) {Web客户端};
+            \node[box, fill=blue!15] (mobile) at (0,0) {移动端};
+            \node[box, fill=blue!15] (desktop) at (3,0) {桌面端};
+
+            % API网关层
+            \node[box, fill=green!15] (gateway) at (0,-1.5) {API网关\\负载均衡};
+
+            % 服务层
+            \node[box, fill=yellow!15] (upload) at (-4,-3) {上传服务};
+            \node[box, fill=yellow!15] (process) at (-1.5,-3) {处理服务};
+            \node[box, fill=yellow!15] (recognize) at (1.5,-3) {识别服务};
+            \node[box, fill=yellow!15] (grade) at (4,-3) {评分服务};
+
+            % 数据层
+            \node[box, fill=red!15] (storage) at (-2,-4.5) {文件存储};
+            \node[box, fill=red!15] (db) at (2,-4.5) {数据库};
+
+            % 连接线
+            \draw[->] (web) -- (gateway);
+            \draw[->] (mobile) -- (gateway);
+            \draw[->] (desktop) -- (gateway);
+            \draw[->] (gateway) -- (upload);
+            \draw[->] (gateway) -- (process);
+            \draw[->] (gateway) -- (recognize);
+            \draw[->] (gateway) -- (grade);
+            \draw[->] (upload) -- (storage);
+            \draw[->] (process) -- (storage);
+            \draw[->] (recognize) -- (db);
+            \draw[->] (grade) -- (db);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+    \small 这是一个典型的分层微服务架构，支持水平扩展和高可用。
+\end{frame}
+
+\begin{frame}{案例对比分析}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{3cm}p{3.5cm}p{3cm}}
+            \toprule
+            \textbf{维度} & \textbf{小型系统} & \textbf{中型系统} & \textbf{大型系统} \\
+            \midrule
+            用户规模 & <1000 & 1000-10万 & 10万+ \\
+            试卷量级 & 10份/天 & 1万份/天 & 100万份/天 \\
+            架构风格 & 单体分层 & 微服务 & 分布式微服务 \\
+            部署方式 & 单机部署 & 集群部署 & 云原生 \\
+            识别算法 & 模板匹配 & 机器学习 & 深度学习 \\
+            扩展性 & 低 & 中 & 高 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{alertblock}{选型建议}
+        学生课程项目建议采用：单体分层架构 + 管道过滤器模式
+        足够简单支撑当前需求，同时为未来扩展预留空间。
+    \end{alertblock}
+\end{frame}
+
+\section{团队协作与分组开发}
+
+\begin{frame}{敏捷开发方法论简介}
+    \begin{definition}[敏捷开发]
+        敏捷开发是一种以人为核心、迭代、循序渐进的软件开发方法。强调快速交付、持续改进和适应变化。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{敏捷宣言四大价值观：}
+    \begin{enumerate}
+        \item 个体和互动 高于 流程和工具
+        \item 工作的软件 高于 详尽的文档
+        \item 客户合作 高于 合同谈判
+        \item 响应变化 高于 遵循计划
+    \end{enumerate}
+
+    \begin{block}{常用敏捷方法}
+        \begin{itemize}
+            \item \textbf{Scrum}：迭代开发、每日站会、冲刺计划
+            \item \textbf{Kanban}：可视化工作流、限制在制品
+            \item \textbf{XP}：极限编程、结对编程、测试驱动
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Scrum核心概念}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.8, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=0.8cm, align=center}]
+
+            \node[box, fill=green!20] (sprint) at (0,0) {Sprint (2-4周)};
+            \node[box, fill=yellow!20] (planning) at (-3,-1.5) {Sprint计划会};
+            \node[box, fill=yellow!20] (daily) at (0,-1.5) {每日站会};
+            \node[box, fill=yellow!20] (review) at (3,-1.5) {评审会};
+            \node[box, fill=red!20] (retro) at (0,-3) {回顾会};
+
+            \draw[->, thick] (planning) -- (sprint);
+            \draw[->, thick] (daily) -- (sprint);
+            \draw[->, thick] (sprint) -- (review);
+            \draw[->, thick] (review) -- (retro);
+            \draw[->, thick] (retro) -- (planning) node[midway, left] {改进};
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{Scrum角色：}
+    \begin{itemize}
+        \item Product Owner：产品负责人，定义需求优先级
+        \item Scrum Master：流程专家，保证流程执行
+        \item Team：开发团队，执行开发工作
+    \end{itemize}
+
+    \textbf{核心工件：}
+    \begin{itemize}
+        \item Product Backlog：产品待办列表
+        \item Sprint Backlog：冲刺待办列表
+        \item Increment：可交付的增量
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Kanban可视化看板}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.8, transform shape,
+            col/.style={draw, rectangle, fill=gray!10, minimum width=3cm, minimum height=5cm, align=center},
+            item/.style={anchor=west, font=\small}]
+
+            \node[col] (todo) at (0,0) {
+                \textbf{待办}\\[2mm]
+                任务A\\
+                任务B\\
+                任务C
+            };
+            \node[col] (doing) at (4,0) {
+                \textbf{进行中}\\[2mm]
+                任务D
+            };
+            \node[col] (review) at (8,0) {
+                \textbf{审查中}\\[2mm]
+                任务E
+            };
+            \node[col] (done) at (12,0) {
+                \textbf{已完成}\\[2mm]
+                任务F\\
+                任务G
+            };
+
+            \draw[->, thick, blue] (todo) -- (doing);
+            \draw[->, thick, blue] (doing) -- (review);
+            \draw[->, thick, blue] (review) -- (done);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{Kanban核心原则：}
+    \begin{itemize}
+        \item 可视化工作流
+        \item 限制在制品（WIP Limit）
+        \item 管理流动
+        \item 持续改进
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{团队协作工具与流程}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{版本控制：}
+        \begin{itemize}
+            \item Git：分布式版本控制
+            \item GitHub/GitLab：代码托管
+            \item 分支策略：Git Flow / GitHub Flow
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{项目管理：}
+        \begin{itemize}
+            \item Jira：企业级项目管理
+            \item Trello：轻量级看板
+            \item Notion：知识库+任务管理
+        \end{itemize}
+    \end{columns}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{沟通协作：}
+        \begin{itemize}
+            \item Slack/飞书：即时通讯
+            \item 腾讯会议：视频会议
+            \item 石墨文档：协作文档
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{CI/CD工具：}
+        \begin{itemize}
+            \item GitHub Actions
+            \item Jenkins
+            \item GitLab CI
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{代码规范与版本控制}
+    \textbf{Python代码规范（PEP 8）：}
+    \begin{itemize}
+        \item 缩进：4个空格（不要用Tab）
+        \item 行宽：每行不超过79字符
+        \item 命名：模块小写、类驼峰、函数下划线
+        \item 注释：文档字符串、行内注释
+        \item 导入：每行一个导入、按标准库/第三方/本地分组
+    \end{itemize}
+
+    \begin{block}{Git提交规范}
+        \begin{itemize}
+            \item feat：新功能
+            \item fix：修复bug
+            \item docs：文档更新
+            \item style：格式调整
+            \item refactor：重构
+            \item test：测试相关
+            \item chore：构建/工具
+        \end{itemize}
+    \end{block}
+
+    \textbf{Git工作流最佳实践：}
+    \begin{enumerate}
+        \item 功能开发从develop分支创建feature分支
+        \item 提交信息清晰描述变更内容
+        \item 代码审查（Code Review）后再合并
+        \item 定期同步主分支，解决冲突尽早
+        \item 标签标记重要版本
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{团队沟通与冲突解决}
+    \begin{block}{有效沟通原则}
+        \begin{itemize}
+            \item \textbf{清晰表达}：明确目标、背景、期望
+            \item \textbf{主动同步}：定期汇报进度、暴露问题
+            \item \textbf{倾听反馈}：理解他人观点、接受建议
+            \item \textbf{文档留痕}：重要决策书面记录
+        \end{itemize}
+    \end{block}
+
+    \textbf{常见冲突及解决：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{7cm}}
+            \toprule
+            \textbf{冲突类型} & \textbf{解决策略} \\
+            \midrule
+            技术方案分歧 & 数据说话、原型验证、投票决定 \\
+            任务分配不均 & 明确角色、轮换任务、互相帮助 \\
+            代码风格不一致 & 统一规范、自动化检查、互相审查 \\
+            进度延误 & 及时沟通、调整计划、寻求帮助 \\
+            资源竞争 & 优先级排序、错峰使用 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}

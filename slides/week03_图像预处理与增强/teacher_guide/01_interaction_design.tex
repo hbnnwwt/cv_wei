@@ -1,0 +1,247 @@
+%===========================================================
+% 教师版讲义 - 互动环节设计
+%===========================================================
+
+\section{互动环节设计}
+
+\begin{frame}{互动环节总览}
+    \textbf{本课程设计的互动环节：}
+
+    \vspace{0.3cm}
+
+    \begin{table}
+        \centering
+        \begin{tabular}{llp{6cm}l}
+            \toprule
+            \textbf{类型} & \textbf{环节名称} & \textbf{内容} & \textbf{时间} \\
+            \midrule
+            实时投票 & 去噪方法选择 & 根据噪声类型选择滤波器 & 5分钟 \\
+            代码找茬 & 二值化代码 & 找出threshold函数的错误 & 10分钟 \\
+            TODO挑战 & 自动矫正 & 用AI补全透视变换代码 & 10分钟 \\
+            成果分享 & 最佳效果 & 展示处理结果、投票评选 & 10分钟 \\
+            快速问答 & 知识回顾 & 核心概念快速确认 & 5分钟 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{互动原则}
+        \begin{itemize}
+            \item 每个互动环节不超过10分钟
+            \item 紧密结合当前讲授内容
+            \item 鼓励全员参与
+            \item 及时反馈点评
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{互动1：去噪方法选择投票}
+    \textbf{时间：} 09:50-10:00（第1课时末）
+
+    \vspace{0.3cm}
+
+    \textbf{场景描述：}
+    \begin{itemize}
+        \item 试卷有明显的黑白噪点（椒盐噪声）
+        \item 需要选择最合适的去噪方法
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{投票选项：}
+    \begin{enumerate}
+        \item A. 高斯滤波
+        \item B. 中值滤波
+        \item C. 双边滤波
+        \item D. 非局部均值
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{实施步骤：}
+    \begin{enumerate}
+        \item 展示噪声图像效果
+        \item 发起问卷星投票
+        \item 学生扫码投票
+        \item 公布结果、讲解答案
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{正确答案：B. 中值滤波}
+        椒盐噪声的特点是随机黑白点，中值滤波能有效去除。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{互动2：代码找茬}
+    \textbf{时间：} 11:05-11:15（第2课时中）
+
+    \vspace{0.3cm}
+
+    \textbf{任务：找出代码中的错误}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
+# 有错误的代码
+def binarize_exam(img_path):
+    img = cv2.imread(img_path)  # 错误1
+    _, binary = cv2.threshold(img, 127, 255,
+                              cv2.THRESH_BINARY)
+    return binary
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{错误清单：}
+    \begin{enumerate}
+        \item \textbf{错误1}：\texttt{imread}默认读取彩色图，应加参数\texttt{0}
+        \item \textbf{错误2}：\texttt{threshold}需要灰度图
+        \item \textbf{错误3}：试卷识别应该用\texttt{THRESH\_BINARY\_INV}
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{实施方式：}
+    \begin{itemize}
+        \item 小组讨论2分钟
+        \item 抢答得分
+        \item 集体修正代码
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{互动3：TODO挑战（AI辅助）}
+    \textbf{时间：} 12:10-12:20（第3课时中）
+
+    \vspace{0.3cm}
+
+    \textbf{任务：用AI补全代码}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
+def order_points(pts):
+    """
+    将四个点按左上、右上、右下、左下排序
+    """
+    # TODO 1: 按x坐标排序，分为左右两组
+    x_sorted = pts[np.argsort(_____), :]
+
+    # TODO 2: 左边按y排序（上→下）
+    left = x_sorted[:2, :]
+    left = left[np.argsort(left[_____, :]), :]
+
+    # TODO 3: 右边按y排序（上→下）
+    right = x_sorted[2:, :]
+    right = right[np.argsort(right[_____, :]), :]
+
+    # TODO 4: 返回正确顺序
+    return np.array([left[0], right[0], right[1], left[1]])
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{实施方式：}
+    \begin{itemize}
+        \item 学生用Cursor/Claude Code补全TODO
+        \item 对比不同AI的答案
+        \item 讲评最佳方案
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{互动4：成果分享}
+    \textbf{时间：} 11:25-11:35（第2课时末）
+
+    \vspace{0.3cm}
+
+    \textbf{任务：展示处理效果，评选最佳}
+
+    \vspace{0.3cm}
+
+    \textbf{评选标准：}
+    \begin{enumerate}
+        \item 去噪效果（30分）：噪声去除程度
+        \item 细节保留（30分）：文字清晰度
+        \item 整体美观（20分）：视觉效果
+        \item 创新性（20分）：方法或参数创新
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{实施流程：}
+    \begin{enumerate}
+        \item 每组展示处理结果（1分钟）
+        \item 全班投票评选（问卷星）
+        \item 教师点评亮点
+        \item 颁发"最佳效果奖"
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{投票提示}
+        扫码查看各组效果，为你认为最佳的处理结果投票！
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{互动5：快速问答}
+    \textbf{时间：} 插入在任意理论讲解后
+
+    \vspace{0.3cm}
+
+    \textbf{问题示例：}
+    \begin{enumerate}
+        \item 高斯滤波适合哪种噪声？
+        \item CLAHE的全称是什么？
+        \item Otsu方法的全局阈值有什么特点？
+        \item 自适应阈值最适合什么场景？
+        \item 透视变换需要几个点？
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{实施方式：}
+    \begin{itemize}
+        \item 快速抢答
+        \item 或使用问卷星快速收集
+        \item 答对者加分
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{设计原则}
+        \begin{itemize}
+            \item 问题要简单直接
+            \item 答案可在课件中找到
+            \item 目的是巩固概念理解
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{问卷星题目模板}
+    \textbf{投票1：去噪方法选择}
+
+    \vspace{0.2cm}
+
+    试卷有明显的黑白噪点，应该选择哪种去噪方法？
+
+    \begin{itemize}
+        \item[$\square$] A. 高斯滤波
+        \item[$\square$] B. 中值滤波
+        \item[$\square$] C. 双边滤波
+        \item[$\square$] D. 非局部均值
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{投票2：最佳效果评选}
+
+    \vspace{0.2cm}
+
+    哪一组的预处理效果最好？（扫码查看各组效果图）
+
+    \begin{itemize}
+        \item[$\square$] 第1组
+        \item[$\square$] 第2组
+        \item[$\square$] 第3组
+        \item[$\square$] 第4组
+        \item[$\square$] 第5组
+        \item[$\square$] 第6组
+    \end{itemize}
+\end{frame}

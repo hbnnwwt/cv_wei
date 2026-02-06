@@ -1,0 +1,207 @@
+%===========================================================
+% modules/11_dl_ocr.tex - 深度学习OCR模型实战
+%===========================================================
+
+\section{深度学习OCR模型实战}
+
+\begin{frame}{深度学习OCR架构演进}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{OCR架构三代演进：}
+        \begin{enumerate}
+            \item \textbf{第一代：CNN+全连接}
+            \begin{itemize}
+                \item 单字识别
+                \item 固定输入尺寸
+                \item LeNet-5, AlexNet
+            \end{itemize}
+            \item \textbf{第二代：CNN+RNN+CTC}
+            \begin{itemize}
+                \item 序列识别
+                \item 端到端训练
+                \item CRNN, CTPN
+            \end{itemize}
+            \item \textbf{第三代：Transformer}
+            \begin{itemize}
+                \item 自注意力机制
+                \item 视觉-语言预训练
+                \item TrOCR, SRN
+            \end{itemize}
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[
+                node distance=0.8cm,
+                box/.style={rectangle, draw=blue!60, fill=blue!10, rounded corners, minimum width=4cm, minimum height=0.6cm, font=\scriptsize},
+                arrow/.style={->, thick, blue!60}
+            ]
+                \node[box] (cnn) {CNN特征提取};
+                \node[box, below=of cnn] (rnn) {RNN序列建模};
+                \node[box, below=of rnn] (ctc) {CTC解码};
+                \node[box, below=of ctc] (out) {文本输出};
+
+                \draw[arrow] (cnn) -- (rnn);
+                \draw[arrow] (rnn) -- (ctc);
+                \draw[arrow] (ctc) -- (out);
+            \end{tikzpicture}
+
+            \vspace{0.5cm}
+
+            \textit{\footnotesize CRNN架构流程图}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{PyTorch实现CRNN模型（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import torch
+import torch.nn as nn
+
+class CRNN(nn.Module):
+    """CRNN: CNN + RNN + CTC for OCR"""
+
+    def __init__(self, img_height, nc, nclass, nh):
+        super(CRNN, self).__init__()
+
+        # TODO: 使用AI助手完成CNN特征提取层
+        # 提示词："PyTorch实现VGG风格的CNN特征提取，
+        # 用于OCR图像特征提取，包含卷积层、BatchNorm、ReLU、MaxPool"
+
+        self.cnn = nn.Sequential(
+            # TODO: 第1层卷积
+            nn.Conv2d(nc, 64, kernel_size=____, padding=____),
+            nn.BatchNorm2d(____),
+            nn.ReLU(____),
+            nn.MaxPool2d(____, ____),
+
+            # TODO: 第2层卷积
+            nn.Conv2d(____, 128, kernel_size=____, padding=____),
+            ____,  # TODO: 添加BatchNorm和ReLU
+            nn.MaxPool2d(____, ____),
+
+            # TODO: 继续添加更多卷积层...
+        )
+
+        # TODO: 计算CNN输出尺寸
+        # 提示词："计算CNN输出尺寸用于确定RNN输入维度"
+        self.rnn_input_size = self._calculate_rnn_input(img_height)
+
+        # TODO: 使用AI助手完成RNN层
+        # 提示词："PyTorch实现双向LSTM用于OCR序列建模"
+        self.rnn = nn.LSTM(
+            input_size=self.rnn_input_size,
+            hidden_size=____,      # TODO: 隐藏层大小
+            num_layers=____,       # TODO: LSTM层数
+            bidirectional=____,    # TODO: 是否双向
+            batch_first=____       # TODO: batch维度位置
+        )
+
+        # TODO: 完成输出层
+        self.fc = nn.Linear(____, ____)  # TODO: 输入和输出维度
+
+    def forward(self, x):
+        # TODO: 使用AI助手完成前向传播
+        # 提示词："PyTorch实现CRNN前向传播流程"
+
+        # CNN特征提取
+        conv = self.cnn(x)
+        batch, channel, height, width = conv.size()
+
+        # TODO: 调整维度为RNN输入格式
+        conv = conv.view(batch, ____, ____)  # (batch, width, channel*height)
+        conv = conv.permute(____, ____, ____)  # (width, batch, features)
+
+        # RNN序列建模
+        recurrent, _ = self.rnn(conv)
+
+        # TODO: 全连接层输出
+        T, b, h = recurrent.size()
+        t_rec = recurrent.view(T * b, h)
+        output = self.fc(t_rec)
+        output = output.view(T, b, -1)
+
+        return output
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{CTC Loss与解码（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import torch
+import torch.nn as nn
+
+class CTCLossWrapper(nn.Module):
+    """CTC Loss for OCR"""
+
+    def __init__(self, blank=0, reduction='mean'):
+        super().__init__()
+        # TODO: 使用AI助手完成CTC Loss
+        # 提示词："PyTorch CTCLoss参数说明和使用方法"
+        self.ctc_loss = nn.CTCLoss(
+            blank=____,           # TODO: 空白符索引
+            reduction=____,       # TODO: 缩减方式
+            zero_infinity=____    # TODO: 是否将无穷大损失置零
+        )
+
+    def forward(self, logits, targets, input_lengths, target_lengths):
+        """
+        Args:
+            logits: (T, N, C) - 模型输出
+            targets: (N, S) - 目标序列
+            input_lengths: (N,) - 输入序列长度
+            target_lengths: (N,) - 目标序列长度
+        """
+        # TODO: 计算CTC Loss
+        # 提示词："PyTorch CTCLoss输入格式要求"
+        log_probs = torch.log_softmax(____, dim=____)
+        loss = self.ctc_loss(____, ____, ____, ____)
+        return loss
+
+
+def ctc_greedy_decoder(logits, blank=0):
+    """CTC贪心解码"""
+    # TODO: 使用AI助手完成CTC解码
+    # 提示词："CTC贪心解码算法实现步骤"
+
+    # 获取最大概率的类别
+    preds = torch.argmax(____, dim=____)  # (T, N)
+
+    decoded = []
+    for batch_idx in range(preds.size(1)):
+        seq = preds[:, batch_idx].tolist()
+
+        # TODO: 合并重复字符
+        collapsed = []
+        for i, char in enumerate(seq):
+            if ____ and ____ != ____:  # TODO: 非空且不等于前一个
+                collapsed.append(____)
+
+        decoded.append(collapsed)
+
+    return decoded
+
+
+def ctc_beam_search_decoder(logits, beam_width=5, blank=0):
+    """CTC束搜索解码（高级）"""
+    # TODO: 使用AI助手实现束搜索
+    # 提示词："CTC束搜索解码算法实现"
+
+    # 初始化beam
+    beams = [(____, 0)]  # (序列, 分数)
+
+    for t in range(logits.size(0)):
+        candidates = []
+
+        for seq, score in beams:
+            for c in range(logits.size(1)):
+                # TODO: 计算新的序列和分数
+                new_seq = ____(seq, c)
+                new_score = ____ + ____(logits[t, c])
+                candidates.append((____, ____))
+
+        # TODO: 保留top-k
+        beams = sorted(candidates, key=lambda x: x[1], reverse=True)[:____]
+
+    return beams[0]
+    \end{lstlisting}
+\end{frame}

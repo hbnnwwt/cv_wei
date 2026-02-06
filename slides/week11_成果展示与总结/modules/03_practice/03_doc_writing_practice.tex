@@ -1,0 +1,208 @@
+%===========================================================
+% 03_doc_writing_practice.tex - 项目文档撰写实战
+%===========================================================
+
+\subsection{项目文档撰写实战}
+
+\begin{frame}{文档实战：README编写}
+    \textbf{README是项目的门面}
+
+    \vspace{0.3cm}
+
+    \begin{block}{标准README结构}
+    \begin{enumerate}
+        \item \textbf{项目标题}：简洁有力
+        \item \textbf{项目简介}：1-2句话说明功能
+        \item \textbf{功能特性}：列出核心功能
+        \item \textbf{安装指南}：如何运行项目
+        \item \textbf{使用说明}：基本使用方法
+        \item \textbf{项目结构}：代码组织说明
+        \item \textbf{技术栈}：使用的技术和工具
+        \item \textbf{贡献指南}：如何参与开发
+        \item \textbf{许可证}：开源协议
+    \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{本周项目README模板}
+    \small
+    \# AI阅卷助手\\
+    \textbf{基于OpenCV和PaddleOCR的自动阅卷系统}\\
+    本项目能自动识别选择题和判断题，支持多种答题卡格式...
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{文档实战：技术文档撰写}
+    \textbf{技术文档的类型与要点}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{1. 架构设计文档}
+        \begin{itemize}
+            \item 系统整体架构
+            \item 模块划分
+            \item 数据流向
+            \item 接口定义
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{2. API接口文档}
+        \begin{itemize}
+            \item 函数签名
+            \item 参数说明
+            \item 返回值
+            \item 使用示例
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{3. 部署文档}
+        \begin{itemize}
+            \item 环境要求
+            \item 依赖安装
+            \item 配置说明
+            \item 部署步骤
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{4. 用户手册}
+        \begin{itemize}
+            \item 功能说明
+            \item 操作步骤
+            \item 常见问题
+            \item 故障排查
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{文档编写原则}
+    \begin{itemize}
+        \item 面向读者：清楚文档写给谁看
+        \item 由浅入深：从概览到细节
+        \item 图文并茂：用图表辅助说明
+        \item 保持更新：代码改了文档也要改
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{文档实战：API文档示例}
+    \textbf{清晰的API文档示例}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{示例：填涂检测函数文档}
+\begin{lstlisting}[language=Python]
+def detect_fill(image: np.ndarray,
+                region: tuple,
+                threshold: float = 0.4) -> tuple[bool, float]:
+    """
+    检测答题卡指定区域的填涂情况
+
+    Args:
+        image: 输入图像（灰度图）
+        region: 检测区域 (x, y, w, h)
+        threshold: 判断阈值，默认0.4
+
+    Returns:
+        (is_filled, ratio): 是否填涂及填涂比例
+
+    Example:
+        >>> is_filled, ratio = detect_fill(img, (10, 10, 20, 20))
+        >>> print(f"填涂比例: {ratio:.2%}")
+    """
+\end{lstlisting}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{文档实战：代码注释规范}
+    \textbf{好的代码自带文档}
+
+    \vspace{0.3cm}
+
+    \begin{block}{注释三要素}
+    \begin{enumerate}
+        \item \textbf{为什么}：解释为什么这样写，而非写了什么
+        \item \textbf{注意事项}：标明边界条件、特殊情况
+        \item \textbf{示例}：复杂逻辑附带使用示例
+    \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{注释示例对比：}
+    \begin{columns}
+        \column{0.48\textwidth}
+        \begin{alertblock}{\small 不好的注释}
+\begin{verbatim}
+# 二值化
+_, binary = cv2.threshold(
+    img, 127, 255,
+    cv2.THRESH_BINARY
+)
+
+# 判断填涂
+if ratio > 0.4:
+    result = True
+\end{verbatim}
+        \end{alertblock}
+
+        \column{0.48\textwidth}
+        \begin{exampleblock}{\small 好的注释}
+\begin{verbatim}
+# 自适应阈值：处理光照不均
+# OTSU算法自动选择最佳阈值
+_, binary = cv2.threshold(
+    img, 0, 255,
+    cv2.THRESH_BINARY | cv2.THRESH_OTSU
+)
+
+# 阈值0.4：基于实验确定
+# 可根据实际填涂深度调整
+if ratio > 0.4:
+    result = True
+\end{verbatim}
+        \end{exampleblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{文档实战：知识沉淀}
+    \textbf{将经验转化为团队财富}
+
+    \vspace{0.3cm}
+
+    \textbf{本周项目的知识沉淀：}
+    \begin{enumerate}
+        \item \textbf{技术博客}
+            \begin{itemize}
+                \item 记录开发过程
+                \item 分享踩坑经验
+                \item 总结最佳实践
+            \end{itemize}
+
+        \item \textbf{团队Wiki}
+            \begin{itemize}
+                \item 开发环境配置
+                \item 常见问题FAQ
+                \item 代码规范说明
+            \end{itemize}
+
+        \item \textbf{代码注释与文档}
+            \begin{itemize}
+                \item 完善的README
+                \item 详细的API文档
+                \item 清晰的代码注释
+            \end{itemize}
+
+        \item \textbf{分享材料}
+            \begin{itemize}
+                \item 技术分享PPT
+                \item 演示视频
+                \item 使用教程
+            \end{itemize}
+    \end{enumerate}
+\end{frame}

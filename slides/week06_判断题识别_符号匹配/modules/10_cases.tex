@@ -1,0 +1,93 @@
+%===========================================================
+% 09_cases.tex - 案例分析
+%===========================================================
+\section{案例分析}
+
+\begin{frame}{案例1：标准符号识别}
+    \textbf{场景：} 考试答题卡上的标准打印符号
+
+    \vspace{0.3cm}
+
+    \textbf{特点：}
+    \begin{itemize}
+        \item 符号清晰规范
+        \item 位置准确
+        \item 无噪声干扰
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{推荐方案：} 轮廓特征法
+
+    \textbf{识别率：} 99\%+
+\end{frame}
+
+\begin{frame}{案例2：手写符号识别}
+    \textbf{场景：} 学生手写的判断题符号
+
+    \vspace{0.3cm}
+
+    \textbf{挑战：}
+    \begin{itemize}
+        \item 符号大小不一
+        \item 形状变化较大
+        \item 可能有修改痕迹
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{推荐方案：}
+    \begin{itemize}
+        \item 优先：多尺度模板匹配
+        \item 备选：SVM分类器
+    \end{itemize}
+
+    \textbf{识别率：} 85-95\%
+\end{frame}
+
+\begin{frame}{案例3：模糊符号处理}
+    \textbf{场景：} 擦除修改后留下的模糊符号
+
+    \vspace{0.3cm}
+
+    \textbf{挑战：}
+    \begin{itemize}
+        \item 多个符号重叠
+        \item 符号不完整
+        \item 特征不明显
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{处理策略：}
+    \begin{enumerate}
+        \item 检测多个轮廓
+        \item 对每个轮廓分别识别
+        \item 根据置信度选择结果
+        \item 低置信度标记为"人工审核"
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{识别失败案例分析}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{alertblock}{常见失败原因}
+            \begin{itemize}
+                \item 符号太轻（阈值问题）
+                \item 符号被遮挡
+                \item 多个符号重叠
+                \item 扫描质量问题
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{block}{解决方案}
+            \begin{itemize}
+                \item 自适应阈值
+                \item 形态学处理
+                \item 多轮廓检测
+                \item 预处理增强
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}

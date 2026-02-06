@@ -1,0 +1,178 @@
+%===========================================================
+% 00_logistics.tex - 课程后勤
+%===========================================================
+\section{课程准备}
+
+\begin{frame}{三个理解层级：本周学习路径}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \textbf{基础概念：}
+        \begin{itemize}
+            \item 什么是OMR？
+            \item 像素密度的概念
+            \item 形态学基本运算
+            \item 连通域的原理
+        \end{itemize}
+
+        \column{0.33\textwidth}
+        \textbf{可视化演示：}
+        \begin{itemize}
+            \item 对比填涂与未填涂的密度差异
+            \item 观察形态学处理效果
+            \item 连通域标记可视化
+            \item 调整阈值观察识别效果
+        \end{itemize}
+
+        \column{0.33\textwidth}
+        \textbf{扩展应用：}
+        \begin{itemize}
+            \item 设计自适应OMR识别器
+            \item 处理不同填涂程度答题卡
+            \item 优化识别准确率
+            \item 实现完整阅卷系统
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textcolor{blue}{\textit{每个知识点都按照"理解→观察→创造"的层次递进}}
+    \end{center}
+\end{frame}
+
+\begin{frame}{预备知识（课前5分钟视频）}
+    \begin{block}{本周需要的前置知识}
+        \begin{itemize}
+            \item \textbf{二值图像的基本操作}
+                \begin{itemize}
+                    \item 什么是二值图像？
+                    \item 阈值处理：全局阈值 vs 自适应阈值
+                \end{itemize}
+            \item \textbf{形态学运算原理}
+                \begin{itemize}
+                    \item 腐蚀（Erosion）与膨胀（Dilation）
+                    \item 开运算与闭运算
+                \end{itemize}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textcolor{blue}{\textbf{[课前视频]}} 扫码观看5分钟预备知识视频
+    \end{center}
+\end{frame}
+
+\begin{frame}{三种学习路径}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{观察者}
+            \begin{itemize}
+                \item 理解OMR原理
+                \item 看教师演示
+                \item 完成基础思考题
+            \end{itemize}
+            \textcolor{gray}{适合：无编程基础}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{使用者}
+            \begin{itemize}
+                \item 运行示例代码
+                \item 调整参数观察效果
+                \item 完成核心任务
+            \end{itemize}
+            \textcolor{blue}{推荐：大多数学生}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{创造者}
+            \begin{itemize}
+                \item 修改算法逻辑
+                \item 优化阈值策略
+                \item 实现挑战任务
+            \end{itemize}
+            \textcolor{green}{挑战：有编程基础}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{分组与角色}
+    \textbf{分组原则（4人/组）：}
+    \begin{itemize}
+        \item 不同专业背景混合
+        \item 至少1人有编程基础
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{角色分工：}
+    \begin{description}
+        \item[组长] 协调进度，分配任务
+        \item[技术负责人] 把关代码质量
+        \item[模块开发A] 负责形态学与定位
+        \item[模块开发B] 负责检测与识别
+    \end{description}
+\end{frame}
+
+\begin{frame}{AI辅助编程本周重点}
+    \begin{block}{用AI理解复杂概念}
+        \begin{itemize}
+            \item \aihint{} "请用直观的比喻解释形态学腐蚀和膨胀"
+            \item \aihint{} "什么是连通域？如何用图像找连通区域？"
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{用AI生成代码框架}
+        \begin{itemize}
+            \item \aihint{} "帮我创建一个ChoiceRecognizer类，包含calculate_density方法"
+            \item \aihint{} "如何用OpenCV统计二值图像中的白色像素数量？"
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{AI调试技巧}
+        \begin{enumerate}
+            \item 贴出完整的错误信息（Traceback）
+            \item 说明你的代码意图
+            \item 请AI解释可能的原因
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}{多屏协同设计}
+    \textbf{教室布局与屏幕分工：}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{主屏（理论）}
+            \begin{itemize}
+                \item 核心概念讲解
+                \item 算法原理展示
+                \item 知识点梳理
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{侧屏（演示）}
+            \begin{itemize}
+                \item 实时代码演示
+                \item AI辅助编程展示
+                \item 处理效果对比
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{设备（互动）}
+            \begin{itemize}
+                \item Quiz实时答题
+                \item 代码片段查看
+                \item 小组讨论记录
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{动静结合原则}
+    每个知识点：理论讲解（15min）$\to$ 代码演示（15min）$\to$ 实践操作（15min）
+    \end{alertblock}
+\end{frame}

@@ -1,0 +1,146 @@
+%===========================================================
+% 04_localization.tex - 填涂区域定位
+%===========================================================
+\section{填涂区域定位}
+
+\begin{frame}{定位方法对比}
+    \begin{table}
+        \centering
+        \begin{tabular}{p{0.45\textwidth}|p{0.45\textwidth}}
+        \toprule
+        \textbf{方法1：固定位置法} & \textbf{方法2：轮廓检测法（推荐）} \\
+        \midrule
+        适合标准答题卡 & 自动适应不同版面 \\
+        预先定义选项坐标 & 通过连通域分析找气泡 \\
+        实现简单 & 实现复杂但灵活 \\
+        怕扫描偏移 & 有一定鲁棒性 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{方法1：固定位置法}
+    \textbf{思路：} 假设答题卡位置固定，直接用坐标裁剪
+
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现固定位置法定位选项，解释它的优缺点"
+    \end{block}
+
+    \begin{block}{实现}
+    \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+# 预定义的选项位置 (x, y, width, height)
+option_positions = [
+    [(100, 200, 30, 30), (150, 200, 30, 30), ...],  # 第1题
+    [(100, 250, 30, 30), (150, 250, 30, 30), ...],  # 第2题
+    ...
+]
+
+# 提取第1题第A选项
+x, y, w, h = option_positions[0][0]
+roi = image[y:y+h, x:x+w]
+    \end{lstlisting}
+    \end{block}
+
+    \begin{alertblock}{缺点}
+    扫描/拍摄偏移会导致定位失败
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{方法2：轮廓检测法}
+    \textbf{思路：} 用轮廓检测找到所有气泡，按位置分组
+
+    \begin{block}{实现流程}
+    \begin{enumerate}
+        \item 二值化图像
+        \item 查找轮廓：\texttt{cv2.findContours}
+        \item 筛选轮廓：面积、形状
+        \item 按Y坐标分组（同一题）
+        \item 按X坐标排序（A、B、C、D顺序）
+    \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{轮廓检测基础}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请用OpenCV的findContours函数实现轮廓检测，解释RETR_EXTERNAL和CHAIN_APPROX_SIMPLE参数的含义"
+    \end{block}
+
+    \begin{block}{OpenCV轮廓查找}
+    \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+# 二值化
+_, binary = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY_INV)
+
+# 查找轮廓
+contours, hierarchy = cv2.findContours(
+    binary,
+    cv2.RETR_EXTERNAL,  # 只检测外轮廓
+    cv2.CHAIN_APPROX_SIMPLE  # 压缩轮廓
+)
+
+print(f"找到 {len(contours)} 个轮廓")
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{轮廓特征提取}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请用OpenCV提取轮廓特征，包括外接矩形、面积、周长，并实现筛选条件"
+    \end{block}
+
+    \begin{block}{常用轮廓特征}
+    \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+for contour in contours:
+    # 外接矩形
+    x, y, w, h = cv2.boundingRect(contour)
+
+    # 面积
+    area = cv2.contourArea(contour)
+
+    # 周长
+    perimeter = cv2.arcLength(contour, closed=True)
+
+    # TODO: 筛选气泡状的轮廓（可使用AI助手完成）
+    if 500 < area < 5000 and 0.7 < w/h < 1.3:
+        bubbles.append((x, y, w, h))
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Live Coding：选项区域定位}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现locate_options函数，用轮廓检测定位答题卡上所有选项区域，并按位置分组"
+    \end{block}
+
+    \begin{block}{任务：定位答题卡上的所有选项}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def locate_options(image_path):
+    """定位所有选项区域"""
+    # 读取图像
+    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+    # TODO: 二值化
+    _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+
+    # TODO: 查找轮廓
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # TODO: 筛选气泡
+    options = []
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        area = cv2.contourArea(cnt)
+
+        # 筛选条件：面积、形状
+        if 500 < area < 5000 and 0.7 < w/h < 1.3:
+            options.append((x, y, w, h))
+
+    # TODO: 按位置分组（同一题的选项在一组）
+    options.sort(key=lambda b: b[1])  # 按Y排序
+    # TODO: 返回分组后的选项位置
+    return options
+    \end{lstlisting}
+    \end{block}
+\end{frame}

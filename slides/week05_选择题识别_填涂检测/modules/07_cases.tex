@@ -1,0 +1,196 @@
+%===========================================================
+% 07_cases.tex - 真实案例分析
+%===========================================================
+\section{真实案例分析}
+
+\begin{frame}{案例1：标准答题卡}
+    \textbf{场景描述：}
+    \begin{itemize}
+        \item 标准答题卡，填涂完整
+        \item 使用2B铅笔填涂
+        \item 扫描质量良好
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{预期结果：}
+    \begin{itemize}
+        \item 识别准确率：\textcolor{green}{> 99\%}
+        \item 密度值范围：0.5 - 0.8
+        \item 形态学处理效果：不明显（但无害）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{代码演示：}
+    \begin{itemize}
+        \item 直接使用基础算法即可
+        \item 阈值设为0.3效果最佳
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例2：填涂质量较差}
+    \textbf{场景描述：}
+    \begin{itemize}
+        \item 铅笔填涂很轻
+        \item 填涂范围不完整
+        \item 有擦除痕迹
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{挑战与解决方案：}
+    \begin{table}
+        \centering
+        \begin{tabular}{l|l|l}
+        \toprule
+        挑战 & 原因 & 解决方案 \\
+        \midrule
+        密度值偏低 & 填涂轻 & 降低阈值或使用闭运算 \\
+        有孔洞 & 填涂不连续 & 形态学闭运算填充 \\
+        误判未填涂 & 密度低于阈值 & 自适应阈值策略 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{代码优化：}
+    \begin{itemize}
+        \item 使用闭运算：\texttt{cv2.morphologyEx(..., cv2.MORPH\_CLOSE, kernel)}
+        \item 自适应阈值：\texttt{threshold = np.mean(densities)}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例3：有污损的答题卡}
+    \textbf{场景描述：}
+    \begin{itemize}
+        \item 纸张有折痕
+        \item 有墨水污渍
+        \item 扫描有噪点
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{挑战与解决方案：}
+    \begin{table}
+        \centering
+        \begin{tabular}{l|l|l}
+        \toprule
+        挑战 & 原因 & 解决方案 \\
+        \midrule
+        误判为填涂 & 污渍被计入 & 开运算去除小噪点 \\
+        密度异常高 & 大面积污渍 & 面积筛选 + 形状检查 \\
+        连通域过多 & 噪点干扰 & 连通域面积过滤 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{代码优化：}
+    \begin{itemize}
+        \item 开运算去噪：\texttt{cv2.morphologyEx(..., cv2.MORPH\_OPEN, kernel)}
+        \item 组合处理：先开运算去噪，再闭运算填充
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例4：多选题识别}
+    \textbf{场景描述：}
+    \begin{itemize}
+        \item 多选题，可能有多个选项填涂
+        \item 需要识别所有填涂的选项
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{算法调整：}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现多选题识别函数，需要识别所有填涂的选项并返回答案列表"
+    \end{block}
+
+    \begin{block}{多选题识别}
+    \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+def recognize_multiple_choice(densities, threshold=0.3):
+    """识别多选题"""
+    answers = []
+    for i, density in enumerate(densities):
+        if density >= threshold:
+            answers.append(chr(ord('A') + i))
+    return answers if answers else None
+
+# 示例：输出 "AC" 表示选择了A和C
+    \end{lstlisting}
+    \end{block}
+
+    \textbf{注意事项：}
+    \begin{itemize}
+        \item 多选题的阈值可能需要调高（避免误判）
+        \item 需要考虑"全选"的特殊情况
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例5：倾斜扫描的答题卡}
+    \textbf{场景描述：}
+    \begin{itemize}
+        \item 扫描/拍摄时答题卡倾斜
+        \item 选项位置发生偏移
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{解决方案：几何校正}
+    \begin{enumerate}
+        \item \textbf{检测定位标记}（Timing Marks）
+        \item \textbf{计算变换矩阵}（透视变换）
+        \item \textbf{校正图像}
+        \item \textbf{按固定位置提取选项}
+    \end{enumerate}
+
+    \textbf{代码提示：}
+    \begin{itemize}
+        \item 使用第4周学到的透视变换技术
+        \item \aihint{} "如何用OpenCV实现文档倾斜校正？"
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例对比总结}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{l|c|c|c|c}
+        \toprule
+        案例 & 难度 & 准确率 & 关键技术 & 调优建议 \\
+        \midrule
+        标准答题卡 & ⭐ & >99\% & 基础算法 & 无需调优 \\
+        填涂较轻 & ⭐⭐ & 85-95\% & 闭运算+自适应阈值 & 降低阈值 \\
+        有污损 & ⭐⭐⭐ & 80-90\% & 开运算+连通域筛选 & 形态学组合 \\
+        多选题 & ⭐⭐ & 90-95\% & 多选项检测 & 调高阈值 \\
+        倾斜扫描 & ⭐⭐⭐⭐ & 70-85\% & 几何校正 & 预处理校正 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{alertblock}{关键经验}
+    \begin{enumerate}
+        \item \textbf{形态学预处理}是提升准确率的关键
+        \item \textbf{自适应阈值}比固定阈值更鲁棒
+        \item \textbf{几何校正}能解决大部分定位问题
+    \end{enumerate}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{课堂讨论}
+    \textbf{问题1：} 如果答题卡既有填涂较轻的区域，又有污损区域，如何同时处理？
+
+    \vspace{0.2cm}
+
+    \textbf{问题2：} 如何判断一个答题卡是否"未填涂任何选项"？
+
+    \vspace{0.2cm}
+
+    \textbf{问题3：} 实际应用中，如何处理"擦除不干净"的情况？
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textcolor{blue}{\textbf{[分组讨论 5分钟]}}
+    \end{center}
+\end{frame}

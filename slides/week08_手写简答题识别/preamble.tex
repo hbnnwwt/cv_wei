@@ -1,0 +1,61 @@
+%===========================================================
+% preamble.tex - Beamer 配置文件
+%===========================================================
+
+% 中文支持
+\usepackage[UTF8]{ctex}
+
+% 图形与表格
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+% 代码高亮
+\usepackage{listings}
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    backgroundcolor=\color{gray!10}
+}
+
+% 颜色与图形
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows, positioning}
+
+% 数学公式
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% 超链接
+\usepackage{hyperref}
+
+% 定义主题颜色（修复编译错误）
+\definecolor{themecolor}{RGB}{0, 102, 204}
+
+%===========================================================
+% 主题设置
+%===========================================================
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+%===========================================================
+% 课程信息
+%===========================================================
+\title[手写简答题识别]{第8周：手写简答题识别}
+\subtitle{能看懂学生写的答案吗？}
+\author{北京石油化工学院\\人工智能研究院\\王文通}
+\institute{通选课}
+\date{2025-2026 学年}
+
+%===========================================================
+% 自定义命令
+%===========================================================
+% 高亮命令
+\newcommand{\highlight}[1]{\textcolor{red}{\textbf{#1}}}

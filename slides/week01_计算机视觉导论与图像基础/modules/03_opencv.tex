@@ -110,6 +110,33 @@ print("保存成功！")
 	\end{columns}
 \end{frame}
 
+\begin{frame}[fragile]{AI辅助实战示例：解决中文路径问题}
+	\textbf{场景}: OpenCV无法读取中文路径，如何用AI解决？
+
+	\begin{tcolorbox}[colback=blue!5!white,colframe=blue!50!black,title=👤 用户提问]
+		\small
+		"我用cv2.imread读取中文路径的图片返回None，怎么解决？"
+	\end{tcolorbox}
+
+	\begin{tcolorbox}[colback=green!5!white,colframe=green!50!black,title=🤖 AI回答]
+		\small
+		"OpenCV的imread不支持中文路径。解决方法：\\
+		1. 用numpy.fromfile读取为字节数组\\
+		2. 用cv2.imdecode解码"
+	\end{tcolorbox}
+
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+import numpy as np
+import cv2
+
+# 支持中文路径的读取方式
+img = cv2.imdecode(np.fromfile(path, dtype=np.uint8), -1)
+	\end{lstlisting}
+
+	\vspace{0.2cm}
+	\small \textbf{AI的价值}: 告诉你问题的本质（OpenCV的C++底层限制），直接给出可用代码，节省搜索时间。
+\end{frame}
+
 \begin{frame}[fragile]{Matplotlib 显示与 BGR 转换}
 	为什么用 \texttt{plt.imshow} 显示出来的人脸是青蓝色的？
 

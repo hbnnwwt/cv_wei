@@ -1,0 +1,361 @@
+%===========================================================
+% 08_pipeline.tex - 图像处理流水线实战
+%===========================================================
+
+\section{图像处理流水线架构设计}
+
+\begin{frame}{流水线架构设计}
+    \begin{definition}[图像处理流水线]
+        将图像处理任务分解为一系列独立的处理步骤（过滤器），数据通过管道依次流经各过滤器完成处理。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2cm, minimum height=0.8cm, align=center},
+            arrow/.style={->, thick}]
+            % 输入
+            \node[box, fill=green!20] (input) at (0,0) {原始图像};
+
+            % 过滤器
+            \node[box] (f1) at (2.5,0) {去噪\\过滤器};
+            \node[box] (f2) at (5,0) {增强\\过滤器};
+            \node[box] (f3) at (7.5,0) {二值化\\过滤器};
+            \node[box] (f4) at (10,0) {矫正\\过滤器};
+
+            % 输出
+            \node[box, fill=red!20] (output) at (12.5,0) {处理后\\图像};
+
+            % 连接
+            \draw[arrow] (input) -- (f1);
+            \draw[arrow] (f1) -- (f2);
+            \draw[arrow] (f2) -- (f3);
+            \draw[arrow] (f3) -- (f4);
+            \draw[arrow] (f4) -- (output);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{设计要点：}
+    \begin{itemize}
+        \item 每个过滤器职责单一
+        \item 过滤器之间松耦合
+        \item 支持动态组合
+        \item 中间结果可追溯
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{过滤器接口设计}
+    \begin{lstlisting}
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Any, Dict
+
+@dataclass
+class ImageData:
+    """图像数据封装"""
+    image: np.ndarray
+    metadata: Dict[str, Any]
+
+class FilterInterface(ABC):
+    """过滤器接口"""
+
+    @abstractmethod
+    def process(self, data: ImageData) -> ImageData:
+        """处理图像数据，返回处理后的数据"""
+        pass
+
+    @abstractmethod
+    def get_name(self) -> str:
+        """获取过滤器名称"""
+        pass
+
+    def configure(self, params: Dict[str, Any]) -> None:
+        """配置参数（可选）"""
+        pass
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{去噪过滤器实现}
+    \begin{lstlisting}
+class DenoiseFilter(FilterInterface):
+    """去噪过滤器：高斯滤波"""
+
+    def __init__(self, kernel_size=5):
+        self.kernel_size = kernel_size
+        self.name = "DenoiseFilter"
+
+    def get_name(self) -> str:
+        return self.name
+
+    def process(self, data: ImageData) -> ImageData:
+        denoised = cv2.GaussianBlur(
+            data.image,
+            (self.kernel_size, self.kernel_size),
+            0
+        )
+        data.metadata['denoise_applied'] = True
+        return ImageData(denoised, data.metadata)
+
+    def configure(self, params: Dict[str, Any]) -> None:
+        self.kernel_size = params.get('kernel_size', 5)
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item 参数可配置：核大小可调
+        \item 元数据记录：标记已应用去噪
+        \item 纯函数设计：输入输出明确
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{二值化过滤器实现}
+    \begin{lstlisting}
+class BinarizeFilter(FilterInterface):
+    """自适应二值化过滤器"""
+
+    def __init__(self, method='adaptive', block_size=11):
+        self.method = method
+        self.block_size = block_size
+        self.name = "BinarizeFilter"
+
+    def get_name(self) -> str:
+        return self.name
+
+    def process(self, data: ImageData) -> ImageData:
+        gray = cv2.cvtColor(data.image, cv2.COLOR_BGR2GRAY)
+
+        if self.method == 'adaptive':
+            binary = cv2.adaptiveThreshold(
+                gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                cv2.THRESH_BINARY, self.block_size, 2
+            )
+        else:
+            _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+        data.metadata['binarize_method'] = self.method
+        return ImageData(binary, data.metadata)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{透视矫正过滤器实现}
+    \begin{lstlisting}
+class PerspectiveCorrectionFilter(FilterInterface):
+    """透视矫正过滤器"""
+
+    def __init__(self, target_points=None):
+        self.target_points = target_points
+        self.name = "PerspectiveCorrectionFilter"
+
+    def get_name(self) -> str:
+        return self.name
+
+    def process(self, data: ImageData) -> ImageData:
+        # 从元数据获取角点
+        corners = data.metadata.get('corners')
+        if corners is None:
+            return data  # 无需矫正
+
+        # 计算透视变换矩阵
+        h, w = data.image.shape[:2]
+        target = np.float32([
+            [0, 0], [w, 0], [w, h], [0, h]
+        ])
+        matrix = cv2.getPerspectiveTransform(corners, target)
+
+        # 应用变换
+        corrected = cv2.warpPerspective(
+            data.image, matrix, (w, h)
+        )
+        return ImageData(corrected, data.metadata)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{流水线执行引擎}
+    \begin{lstlisting}
+class ImagePipeline:
+    """图像处理流水线"""
+
+    def __init__(self, name: str = "default"):
+        self.name = name
+        self.filters: List[FilterInterface] = []
+        self.intermediate_results: List[ImageData] = []
+
+    def add_filter(self, filter_obj: FilterInterface) -> 'ImagePipeline':
+        """添加过滤器（支持链式调用）"""
+        self.filters.append(filter_obj)
+        return self
+
+    def execute(self, image: np.ndarray) -> ImageData:
+        """执行流水线"""
+        data = ImageData(image, {'pipeline': self.name})
+        self.intermediate_results = [data]
+
+        for filter_obj in self.filters:
+            data = filter_obj.process(data)
+            self.intermediate_results.append(data)
+
+        return data
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{流水线执行与监控}
+    \begin{lstlisting}
+    def execute_with_monitoring(self, image: np.ndarray) -> Dict:
+        """带监控的执行"""
+        import time
+        data = ImageData(image, {'pipeline': self.name})
+        execution_log = []
+
+        for filter_obj in self.filters:
+            start_time = time.time()
+            data = filter_obj.process(data)
+            elapsed = time.time() - start_time
+
+            execution_log.append({
+                'filter': filter_obj.get_name(),
+                'time_ms': elapsed * 1000,
+                'image_shape': data.image.shape
+            })
+
+        return {
+            'result': data,
+            'execution_log': execution_log,
+            'total_time_ms': sum(f['time_ms'] for f in execution_log)
+        }
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item 记录每个过滤器的执行时间
+        \item 追踪图像尺寸变化
+        \item 便于性能分析和优化
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{流水线使用示例}
+    \begin{lstlisting}
+# 构建预处理流水线
+pipeline = ImagePipeline("exam_preprocess")
+
+pipeline \
+    .add_filter(DenoiseFilter(kernel_size=5)) \
+    .add_filter(BinarizeFilter(method='adaptive')) \
+    .add_filter(PerspectiveCorrectionFilter())
+
+# 执行处理
+result = pipeline.execute(image)
+processed_image = result.image
+
+# 带监控执行
+monitored = pipeline.execute_with_monitoring(image)
+print(f"总耗时: {monitored['total_time_ms']:.2f}ms")
+for log in monitored['execution_log']:
+    print(f"  {log['filter']}: {log['time_ms']:.2f}ms")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{中间结果缓存}
+    \begin{lstlisting}
+class CachedPipeline(ImagePipeline):
+    """带缓存的流水线"""
+
+    def __init__(self, name: str = "cached", cache_dir: str = "./cache"):
+        super().__init__(name)
+        self.cache_dir = Path(cache_dir)
+        self.cache_dir.mkdir(exist_ok=True)
+
+    def _get_cache_key(self, image: np.ndarray, step: int) -> str:
+        """生成缓存键"""
+        import hashlib
+        image_hash = hashlib.md5(image.tobytes()).hexdigest()
+        return f"{self.name}_step{step}_{image_hash}.jpg"
+
+    def execute(self, image: np.ndarray, use_cache: bool = True) -> ImageData:
+        """支持缓存的执行"""
+        # 检查缓存...
+        # 命中则直接返回，否则执行并缓存
+        \end{lstlisting}
+\end{frame}
+
+\begin{frame}{异常处理与恢复}
+    \begin{lstlisting}
+class RobustPipeline(ImagePipeline):
+    """带异常处理的流水线"""
+
+    def execute(self, image: np.ndarray) -> ImageData:
+        data = ImageData(image, {'pipeline': self.name})
+
+        for i, filter_obj in enumerate(self.filters):
+            try:
+                data = filter_obj.process(data)
+            except Exception as e:
+                print(f"过滤器 {filter_obj.get_name()} 失败: {e}")
+
+                # 策略1: 跳过当前过滤器
+                if self.skip_on_error:
+                    continue
+
+                # 策略2: 使用备用过滤器
+                if i in self.fallback_filters:
+                    fallback = self.fallback_filters[i]
+                    data = fallback.process(data)
+
+        return data
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{过滤器组合模式}
+    \begin{lstlisting}
+class CompositeFilter(FilterInterface):
+    """组合过滤器：将多个过滤器视为一个"""
+
+    def __init__(self, name: str):
+        self.name = name
+        self.filters: List[FilterInterface] = []
+
+    def add(self, filter_obj: FilterInterface) -> 'CompositeFilter':
+        self.filters.append(filter_obj)
+        return self
+
+    def process(self, data: ImageData) -> ImageData:
+        for f in self.filters:
+            data = f.process(data)
+        return data
+
+    def get_name(self) -> str:
+        return self.name
+
+# 使用：创建可复用的预处理组合
+preprocess = CompositeFilter("preprocess") \
+    .add(DenoiseFilter()) \
+    .add(BinarizeFilter())
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{并行流水线}
+    \begin{lstlisting}
+class ParallelPipeline(ImagePipeline):
+    """支持并行处理的流水线"""
+
+    def __init__(self, name: str = "parallel", max_workers: int = 4):
+        super().__init__(name)
+        self.max_workers = max_workers
+
+    def execute_parallel(self, images: List[np.ndarray]) -> List[ImageData]:
+        """并行处理多张图像"""
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            results = list(executor.map(self.execute, images))
+
+        return results
+
+    def execute_filter_parallel(self, data: ImageData) -> ImageData:
+        """过滤器内部并行（如分块处理）"""
+        # 实现分块并行处理逻辑
+        pass
+    \end{lstlisting}
+\end{frame}

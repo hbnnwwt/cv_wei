@@ -1,0 +1,215 @@
+%===========================================================
+% 06_implementation.tex - 完整实现
+%===========================================================
+\section{完整实现}
+
+\begin{frame}{选择题识别器类设计}
+    \textbf{类结构：}
+    \begin{itemize}
+        \item \texttt{ChoiceRecognizer}: 封装识别逻辑
+        \item \texttt{recognize\_all()}: 批量识别所有选择题
+        \item \texttt{calculate\_density()}: 计算密度
+        \item \texttt{visualize()}: 可视化结果
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{数据流：}
+    \begin{center}
+        \begin{tikzpicture}[node distance=0.8cm]
+            \node[draw, fill=blue!10] (input) {输入图像};
+            \node[draw, fill=yellow!10, right=of input] (locate) {定位选项};
+            \node[draw, fill=green!10, right=of locate] (detect) {检测填涂};
+            \node[draw, fill=orange!10, right=of detect] (output) {输出结果};
+            \draw[->] (input) -- (locate);
+            \draw[->] (locate) -- (detect);
+            \draw[->] (detect) -- (output);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{ChoiceRecognizer类}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请帮我创建一个ChoiceRecognizer类，包含calculate_density、recognize_all和visualize方法"
+    \end{block}
+
+    \begin{block}{类定义}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 可使用AI助手完成以下代码
+class ChoiceRecognizer:
+    """选择题识别器"""
+
+    def __init__(self, threshold=0.3, use_morphology=True):
+        """
+        Args:
+            threshold: 密度阈值
+            use_morphology: 是否使用形态学预处理
+        """
+        self.threshold = threshold
+        self.use_morphology = use_morphology
+        self.option_labels = ['A', 'B', 'C', 'D']
+
+    def calculate_density(self, roi):
+        """计算填涂密度"""
+        # TODO: 形态学预处理
+        if self.use_morphology:
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+            roi = cv2.morphologyEx(roi, cv2.MORPH_CLOSE, kernel)
+
+        # TODO: 二值化并统计
+        _, binary = cv2.threshold(roi, 127, 255, cv2.THRESH_BINARY_INV)
+        non_zero = cv2.countNonZero(binary)
+        total = roi.shape[0] * roi.shape[1]
+        return non_zero / total
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{recognize\_all方法}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现recognize_all方法，批量识别所有选择题并返回结果"
+    \end{block}
+
+    \begin{block}{批量识别实现}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+    def recognize_all(self, image, question_groups):
+        """
+        识别所有选择题
+
+        Args:
+            image: 答题卡图像（灰度图）
+            question_groups: 选项位置分组
+                [[(x,y,w,h), ...], ...]  # 每个问题的选项
+
+        Returns:
+            results: 识别结果列表
+        """
+        results = []
+
+        for i, option_positions in enumerate(question_groups):
+            # 计算密度
+            densities = []
+            for (x, y, w, h) in option_positions:
+                roi = image[y:y+h, x:x+w]
+                density = self.calculate_density(roi)
+                densities.append(density)
+
+            # 找到填涂的选项
+            max_density = max(densities)
+            if max_density >= self.threshold:
+                idx = densities.index(max_density)
+                answer = self.option_labels[idx]
+            else:
+                answer = None
+
+            results.append({
+                'question': i + 1,
+                'answer': answer,
+                'confidence': max_density
+            })
+
+        return results
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{结果可视化}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现visualize方法，用不同颜色标注识别结果并保存图像"
+    \end{block}
+
+    \begin{block}{visualize方法}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 可使用AI助手完成以下代码
+    def visualize(self, image, results, question_groups):
+        """可视化识别结果"""
+        output = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+
+        for result, positions in zip(results, question_groups):
+            q_num = result['question']
+            answer = result['answer']
+            confidence = result['confidence']
+
+            # 标注问题编号
+            x, y, _, _ = positions[0]
+            cv2.putText(output, f"Q{q_num}: {answer}",
+                       (x, y-10), cv2.FONT_HERSHEY_SIMPLEX,
+                       0.5, (0, 255, 0), 2)
+
+            # 标注选项状态
+            for (x, y, w, h) in positions:
+                # 绿色=选中, 红色=未选中
+                cv2.rectangle(output, (x, y), (x+w, y+h),
+                           (0, 255, 0), 2)
+
+        return output
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{完整使用示例}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请给我一个完整的OMR识别使用示例，从读取图像到输出结果"
+    \end{block}
+
+    \begin{block}{端到端使用}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+
+# 读取答题卡
+image = cv2.imread("answer_card.png", cv2.IMREAD_GRAYSCALE)
+
+# 创建识别器
+recognizer = ChoiceRecognizer(threshold=0.3, use_morphology=True)
+
+# 定位选项（使用之前的locate_options函数）
+option_groups = locate_options(image)
+
+# 识别所有选择题
+results = recognizer.recognize_all(image, option_groups)
+
+# 输出结果
+for r in results:
+    print(f"第{r['question']}题: {r['answer']} (置信度: {r['confidence']:.2f})")
+
+# 可视化
+output = recognizer.visualize(image, results, option_groups)
+cv2.imwrite("result.png", output)
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Live Coding：完整流程}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请指导我从零开始构建一个完整的OMR识别系统，包括定位、检测、识别和可视化"
+    \end{block}
+
+    \begin{block}{挑战任务：从零构建识别系统}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 任务清单
+# 1. 读取答题卡图像
+image = cv2.imread("answer_card.png", cv2.IMREAD_GRAYSCALE)
+
+# 2. 定位所有选项区域
+option_groups = locate_options(image)  # 你需要实现这个函数
+
+# 3. 创建识别器
+recognizer = ChoiceRecognizer(threshold=0.3)
+
+# 4. 识别所有选择题
+results = recognizer.recognize_all(image, option_groups)
+
+# 5. 输出结果
+for r in results:
+    if r['answer']:
+        print(f"第{r['question']}题: {r['answer']}")
+
+# 6. 可视化结果
+output = recognizer.visualize(image, results, option_groups)
+cv2.imwrite("result.png", output)
+
+# TODO: 挑战：实现自适应阈值
+# TODO: 挑战：处理多选题情况
+    \end{lstlisting}
+    \end{block}
+\end{frame}

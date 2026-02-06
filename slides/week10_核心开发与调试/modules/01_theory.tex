@@ -1,0 +1,706 @@
+%===========================================================
+% 模块01：核心理论与原理 (14-18页)
+%===========================================================
+
+\section{核心理论与原理}
+
+%----------------------------------------------------------
+\subsection{代码组织与架构}
+%----------------------------------------------------------
+
+\begin{frame}{模块化设计原则}
+    \textbf{为什么需要模块化？}
+
+    \begin{itemize}
+        \item \textbf{降低复杂度}：分而治之，理解局部而非整体
+        \item \textbf{提高复用性}：独立模块可在不同项目使用
+        \item \textbf{便于维护}：修改局部不影响全局
+        \item \textbf{支持并行开发}：不同开发者负责不同模块
+    \end{itemize}
+
+    \begin{block}{高内聚低耦合}
+        \textbf{高内聚}：模块内部元素紧密相关，职责单一
+
+        \textbf{低耦合}：模块之间依赖最小化，接口清晰
+    \end{block}
+\end{frame}
+
+\begin{frame}{智能阅卷系统的模块划分}
+    \textbf{系统模块结构：}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.5cm,
+            box/.style={draw, fill=blue!15, minimum width=2.8cm, minimum height=0.6cm, align=center, font=\small}
+        ]
+            \node[box, fill=green!30] (main) {AutoGradingSystem\\主程序};
+            \node[box, below=0.3cm of main] (pre) {ImagePreprocessor\\图像预处理};
+            \node[box, right=0.3cm of pre] (det) {RegionDetector\\区域检测};
+            \node[box, left=0.3cm of pre] (rec) {ChoiceRecognizer\\选择识别};
+            \node[box, below=0.3cm of det] (calc) {GradeCalculator\\评分计算};
+
+            \draw[-Stealth, thick] (main) -- (pre);
+            \draw[-Stealth, thick] (pre) -- (det);
+            \draw[-Stealth, thick] (pre) -- (rec);
+            \draw[-Stealth, thick] (det) -- (calc);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{模块间关系：}
+    \begin{itemize}
+        \item 主程序调用各模块
+        \item 预处理 $\to$ 区域检测 $\to$ 识别 $\to$ 评分
+        \item 各模块独立，便于单独开发和测试
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{接口设计原则}
+    \textbf{良好的接口应该：}
+
+    \begin{enumerate}
+        \item \textbf{简洁明了}：只做一件事，命名清晰
+        \item \textbf{隐藏实现}：调用者无需知道内部细节
+        \item \textbf{稳定可靠}：接口定义一旦发布尽量少变更
+        \item \textbf{完备一致}：错误处理、边界情况都有定义
+    \end{enumerate}
+
+    \begin{exampleblock}{接口示例：选择题识别}
+        \begin{itemize}
+            \item[] \texttt{def recognize\_choice(image, options, threshold=0.5):}
+            \item[] \hspace{1em} \texttt{"""识别选择题答案"""}
+            \item[] \hspace{1em} \texttt{Args:}
+            \item[] \hspace{2em} \texttt{image: 题目区域图像}
+            \item[] \hspace{2em} \texttt{options: 选项位置列表 ['A', 'B', 'C', 'D']}
+            \item[] \hspace{2em} \texttt{threshold: 填涂判定阈值}
+            \item[] \hspace{1em} \texttt{Returns: str: 识别结果，如 'A' 或 None}
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{面向对象设计：封装}
+    \textbf{封装（Encapsulation）}：隐藏内部实现，暴露必要接口
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{封装的好处：}
+            \begin{itemize}
+                \item 保护内部状态不被意外修改
+                \item 降低模块间的耦合
+                \item 便于修改内部实现
+                \item 提供清晰的使用方式
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Python中的封装：}
+            \begin{itemize}
+                \item \texttt{\_var}：建议私有（约定）
+                \item \texttt{\_\_var}：名称改写（伪私有）
+                \item \texttt{property}：属性访问控制
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{示例：AnswerSheet类}
+        \texttt{class AnswerSheet:}\\
+        \texttt{\ \ \ \ def \_\_init\_\_(self):}\\
+        \texttt{\ \ \ \ \ \ \ self.\_\_image = None  \# 私有属性}\\
+        \texttt{\ \ \ \ \ \ \ self.\_threshold = 0.5}\\
+        \texttt{\ \ \ \ @property}\\
+        \texttt{\ \ \ \ def image(self):}\\
+        \texttt{\ \ \ \ \ \ \ return self.\_\_image}
+    \end{block}
+\end{frame}
+
+\begin{frame}{面向对象设计：继承与多态}
+    \textbf{继承（Inheritance）：}
+    \begin{itemize}
+        \item 代码复用，提取公共行为
+        \item 建立类型层次关系
+        \item 支持扩展和定制
+    \end{itemize}
+
+    \textbf{多态（Polymorphism）：}
+    \begin{itemize}
+        \item 同一接口，不同实现
+        \item 运行时动态绑定
+        \item 提高代码灵活性
+    \end{itemize}
+
+    \begin{exampleblock}{识别器基类}
+        \texttt{class BaseRecognizer:}\\
+        \texttt{\ \ \ \ def recognize(self, image):}\\
+        \texttt{\ \ \ \ \ \ \ raise NotImplementedError}\\
+        \texttt{class OMRRecognizer(BaseRecognizer):}\\
+        \texttt{\ \ \ \ def recognize(self, image):}\\
+        \texttt{\ \ \ \ \ \ \ \# OMR识别实现}\\
+        \texttt{\ \ \ \ \ \ \ pass}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{SOLID设计原则}
+    \textbf{面向对象设计的五大原则：}
+
+    \begin{description}
+        \item[S - 单一职责原则] 类只负责一项功能
+        \item[O - 开闭原则] 对扩展开放，对修改封闭
+        \item[L - 里氏替换原则] 子类可替换父类使用
+        \item[I - 接口隔离原则] 客户端不依赖不需要的接口
+        \item[D - 依赖倒置原则] 依赖抽象而非具体实现
+    \end{description}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{应用示例：阅卷系统}
+        \begin{itemize}
+            \item \textbf{S}：ImagePreprocessor只处理图像，不负责识别
+            \item \textbf{O}：新增题型识别器，无需修改主程序
+            \item \textbf{D}：依赖BaseRecognizer接口，不依赖具体实现
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{函数式编程思想}
+    \textbf{核心概念：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{纯函数}
+            \begin{itemize}
+                \item 相同输入永远得到相同输出
+                \item 无副作用（不修改外部状态）
+                \item 便于测试和推理
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            \textbf{高阶函数}
+            \begin{itemize}
+                \item 函数可作为参数传递
+                \item 函数可返回函数
+                \item \texttt{map}, \texttt{filter}, \texttt{reduce}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{不可变数据}
+            \begin{itemize}
+                \item 数据创建后不可修改
+                \item 避免共享状态问题
+                \item 简化并发编程
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            \textbf{函数组合}
+            \begin{itemize}
+                \item 小函数组合成复杂功能
+                \item 管道式数据处理
+                \item \texttt{result = f(g(h(x)))}
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Python示例}
+        \texttt{images = [load(p) for p in paths]  \# 列表推导}\\
+        \texttt{regions = map(detect, images)  \# 高阶函数}\\
+        \texttt{valid = filter(is\_valid, regions)  \# 纯函数过滤}
+    \end{block}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{错误处理与异常}
+%----------------------------------------------------------
+
+\begin{frame}{Python异常层次结构}
+    \textbf{标准异常类型：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{常见异常：}
+            \begin{itemize}
+                \item \texttt{Exception}：所有异常的基类
+                \item \texttt{ValueError}：值不正确
+                \item \texttt{TypeError}：类型错误
+                \item \texttt{FileNotFoundError}：文件不存在
+                \item \texttt{KeyError} / \texttt{IndexError}：访问错误
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{自定义异常：}
+            \begin{itemize}
+                \item[] \texttt{class GradingError(Exception):}
+                \item[] \hspace{1em} \texttt{pass}
+                \item[] \texttt{class ImageLoadError(GradingError):}
+                \item[] \hspace{1em} \texttt{pass}
+                \item[] \texttt{class RecognitionError(GradingError):}
+                \item[] \hspace{1em} \texttt{pass}
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{异常捕获层次}
+        \texttt{try:}\\
+        \texttt{\ \ \ \ process\_image(path)}\\
+        \texttt{except ImageLoadError as e:}\\
+        \texttt{\ \ \ \ logger.error(f"加载失败: \{e\}")}\\
+        \texttt{except GradingError as e:}\\
+        \texttt{\ \ \ \ logger.error(f"处理错误: \{e\}")}\\
+        \texttt{except Exception as e:}\\
+        \texttt{\ \ \ \ logger.exception("未知错误")}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{错误处理策略}
+    \textbf{防御式编程：}
+    \begin{itemize}
+        \item 提前验证输入条件
+        \item 断言不变式
+        \item 失败快速（Fail Fast）
+    \end{itemize}
+
+    \textbf{异常转换与封装：}
+    \begin{itemize}
+        \item 捕获底层异常，转换为业务异常
+        \item 保留原始异常信息（异常链）
+        \item 提供更有意义的错误消息
+    \end{itemize}
+
+    \begin{block}{异常转换示例}
+        \texttt{try:}\\
+        \texttt{\ \ \ \ img = cv2.imread(path)}\\
+        \texttt{\ \ \ \ if img is None:}\\
+        \texttt{\ \ \ \ \ \ \ raise ImageLoadError(f"无法加载: \{path\}")}\\
+        \texttt{except cv2.error as e:}\\
+        \texttt{\ \ \ \ raise ImageLoadError(f"OpenCV错误") from e}
+    \end{block}
+\end{frame}
+
+\begin{frame}{日志记录最佳实践}
+    \textbf{结构化日志配置：}
+
+    \begin{itemize}
+        \item[] \texttt{import logging}
+        \item[] \texttt{logging.basicConfig(level=logging.INFO)}
+        \item[] \texttt{logger = logging.getLogger(\_\_name\_\_)}
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{日志记录建议：}
+    \begin{itemize}
+        \item DEBUG：详细变量值、执行路径
+        \item INFO：重要操作里程碑
+        \item WARNING：可恢复的异常情况
+        \item ERROR：功能受影响的错误
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{调试技术与工具}
+%----------------------------------------------------------
+
+\begin{frame}{断点调试技巧}
+    \textbf{断点类型：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{行断点}
+            \begin{itemize}
+                \item 最常用，执行到指定行暂停
+                \item IDE中点击行号设置
+                \item 临时查看程序状态
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            \textbf{条件断点}
+            \begin{itemize}
+                \item 满足条件时才暂停
+                \item 右键断点 $\to$ 编辑条件
+                \item 示例：\texttt{i == 100}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{异常断点}
+            \begin{itemize}
+                \item 发生异常时自动暂停
+                \item 捕获未被处理的异常
+                \item 快速定位异常源头
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            \textbf{日志断点}
+            \begin{itemize}
+                \item 不暂停，输出日志
+                \item 用于性能敏感代码
+                \item 避免中断程序执行
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Python代码中断点}
+        \texttt{import pdb; pdb.set\_trace()  \# 设置断点}\\
+        \texttt{breakpoint()  \# Python 3.7+ 更简洁的写法}
+    \end{block}
+\end{frame}
+
+\begin{frame}{单步执行与变量查看}
+    \textbf{调试操作：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \begin{description}
+                \item[Resume] 继续执行到下一断点
+                \item[Step Over] 执行当前行，不进入函数
+                \item[Step Into] 进入函数内部
+                \item[Step Out] 跳出当前函数
+            \end{description}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{变量查看：}
+            \begin{itemize}
+                \item Variables面板：所有局部变量
+                \item Watches：自定义表达式
+                \item 鼠标悬停：快速查看
+                \item 控制台：执行表达式
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{调试技巧}
+        \begin{itemize}
+            \item 从预期结果倒推：哪里可能导致这个结果？
+            \item 检查中间状态：变量是否符合预期？
+            \item 修改变量值：测试修复是否有效
+            \item 使用条件断点：跳过不感兴趣的循环
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{调试流程可视化}
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=1.2cm,
+            phase/.style={draw, fill=blue!10, minimum width=2.2cm, minimum height=0.9cm, align=center, font=\small},
+            arrow/.style={-Stealth, thick}
+        ]
+            % 调试流程
+            \node[phase, fill=red!20] (problem) {发现问题};
+            \node[phase, right=of problem] (reproduce) {复现问题};
+            \node[phase, right=of reproduce] (hypothesis) {建立假设};
+            \node[phase, right=of hypothesis] (verify) {验证假设};
+            \node[phase, fill=green!20, right=of verify] (fix) {修复问题};
+
+            % 箭头
+            \draw[arrow] (problem) -- (reproduce);
+            \draw[arrow] (reproduce) -- (hypothesis);
+            \draw[arrow] (hypothesis) -- (verify);
+            \draw[arrow, dashed] (verify) to[bend right=45] (hypothesis);
+            \draw[arrow] (verify) -- (fix);
+
+            % 标注
+            \node[below=0.15cm of reproduce, font=\tiny] {最小复现案例};
+            \node[below=0.15cm of hypothesis, font=\tiny] {二分法缩小范围};
+            \node[below=0.15cm of verify, font=\tiny] {日志/断点/变量};
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{调试本质：科学排查流程}
+    \begin{enumerate}
+        \item \textbf{建立假设}：基于理解，推测可能出错的位置
+        \item \textbf{收集证据}：通过日志、断点、变量值获取数据
+        \item \textbf{验证假设}：检查证据是否支持假设
+        \item \textbf{修正理解}：根据结果调整假设，循环直到找到根因
+    \end{enumerate}
+
+    \vspace{0.2cm}
+
+    \begin{block}{关键洞察}
+        调试不是乱试，而是\textbf{科学实验}——假设、验证、迭代的过程
+    \end{block}
+\end{frame}
+
+\begin{frame}{性能分析工具}
+    \textbf{cProfile - CPU性能分析：}
+
+    \begin{itemize}
+        \item[] \texttt{import cProfile}
+        \item[] \texttt{cProfile.run('process\_image(path)')}
+    \end{itemize}
+
+    \textbf{line\_profiler - 逐行分析：}
+
+    \begin{itemize}
+        \item[] \texttt{@profile}
+        \item[] \texttt{def process(image):}
+        \item[] \hspace{1em} \texttt{result = detect(image)  \# 显示此行耗时}
+        \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{memory\_profiler - 内存分析：}
+
+    \begin{itemize}
+        \item[] \texttt{@profile}
+        \item[] \texttt{def load\_images(paths):}
+        \item[] \hspace{1em} \texttt{images = [load(p) for p in paths]}
+        \end{itemize}
+
+    \vspace{0.2cm}
+
+    \begin{block}{运行命令}
+        \texttt{kernprof -l -v script.py  \# line\_profiler}\\
+        \texttt{python -m memory\_profiler script.py  \# memory\_profiler}
+    \end{block}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{测试与质量保证}
+%----------------------------------------------------------
+
+\begin{frame}{测试金字塔}
+    \textbf{测试类型层次：}
+
+    \begin{center}
+        \begin{tikzpicture}
+            % 金字塔
+            \draw[fill=green!30] (0,0) -- (4,0) -- (2,3) -- cycle;
+            \node at (2,0.5) {单元测试};
+            \node[font=\footnotesize] at (2,0.9) {大量、快速、稳定};
+
+            \draw[fill=yellow!30] (0.5,0.7) -- (3.5,0.7) -- (2,2.7) -- cycle;
+            \node at (2,1.3) {集成测试};
+            \node[font=\footnotesize] at (2,1.7) {中等数量};
+
+            \draw[fill=red!30] (1,1.4) -- (3,1.4) -- (2,2.4) -- cycle;
+            \node at (2,1.8) {端到端测试};
+            \node[font=\footnotesize] at (2,2.1) {少量、慢};
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{测试策略：}
+    \begin{itemize}
+        \item 底层测试多，高层测试少
+        \item 单元测试运行快，反馈及时
+        \item E2E测试保证关键路径正确
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{测试驱动开发（TDD）}
+    \textbf{TDD循环：红-绿-重构}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=1.5cm,
+            box/.style={draw, fill=blue!10, minimum width=3cm, minimum height=0.8cm, align=center}
+        ]
+            \node[box, fill=red!20] (red) {\textbf{红灯}\\写失败的测试};
+            \node[box, fill=green!20, right=of red] (green) {\textbf{绿灯}\\写最少代码通过};
+            \node[box, fill=yellow!20, right=of green] (refactor) {\textbf{重构}\\优化代码质量};
+
+            \draw[-Stealth, thick] (red) -- (green);
+            \draw[-Stealth, thick] (green) -- (refactor);
+            \draw[-Stealth, thick, dashed] (refactor.south) to[bend right=45] (red.south);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{TDD的好处：}
+    \begin{itemize}
+        \item 保证代码可测试
+        \item 充当使用文档
+        \item 减少bug数量
+        \item 提高设计质量
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{pytest高级特性}
+    \textbf{Fixture机制：}
+
+    \begin{itemize}
+        \item[] \texttt{@pytest.fixture}
+        \item[] \texttt{def sample\_image():}
+        \item[] \hspace{1em} \texttt{return create\_test\_image()}
+        \item[] \texttt{def test\_recognize(sample\_image):}
+        \item[] \hspace{1em} \texttt{result = recognize(sample\_image)}
+        \item[] \hspace{1em} \texttt{assert result == 'A'}
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{参数化测试：}
+
+    \begin{itemize}
+        \item[] \texttt{@pytest.mark.parametrize("input,expected", [}
+        \item[] \hspace{1em} \texttt{(filled\_img, 'A'),}
+        \item[] \hspace{1em} \texttt{(empty\_img, None),}
+        \item[] \hspace{1em} \texttt{(partial\_img, None)}
+        \item[] \texttt{])}
+        \item[] \texttt{def test\_recognize(input, expected):}
+        \item[] \hspace{1em} \texttt{assert recognize(input) == expected}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Mock与测试隔离}
+    \textbf{为什么要Mock？}
+
+    \begin{itemize}
+        \item 隔离外部依赖（文件、网络、数据库）
+        \item 加速测试执行
+        \item 模拟异常情况
+        \item 确保测试可重复
+    \end{itemize}
+
+    \begin{exampleblock}{Mock示例}
+        \texttt{from unittest.mock import patch, Mock}\\
+        \texttt{@patch('cv2.imread')}\\
+        \texttt{def test\_load(mock\_imread):}\\
+        \texttt{\ \ \ \ mock\_imread.return\_value = test\_img}\\
+        \texttt{\ \ \ \ result = load('any\_path.jpg')}\\
+        \texttt{\ \ \ \ assert result is not None}\\
+        \texttt{\ \ \ \ mock\_imread.assert\_called\_once()}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{测试覆盖率}
+    \textbf{覆盖率指标：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{语句覆盖}
+            \begin{itemize}
+                \item 执行到的代码行比例
+                \item 基础指标
+            \end{itemize}
+
+            \textbf{分支覆盖}
+            \begin{itemize}
+                \item if/else各分支执行情况
+                \item 更严格
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{使用coverage.py：}
+            \begin{itemize}
+                \item[] \texttt{pip install coverage pytest-cov}
+                \item[] \texttt{pytest --cov=module --cov-report=html}
+                \item[] \texttt{open htmlcov/index.html}
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{覆盖率建议}
+        \begin{itemize}
+            \item 核心业务逻辑：$>80\%$
+            \item 工具类：$>90\%$
+            \item 注意：高覆盖率不等于高质量
+            \item 关注边界条件和异常路径
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+%----------------------------------------------------------
+% 本模块要点速查（新增）
+%----------------------------------------------------------
+
+\subsection{本模块要点速查}
+
+\begin{frame}{模块01-核心理论：要点速查}
+    \begin{block}{设计原则}
+        \begin{itemize}
+            \item \textbf{SOLID原则}：单一职责、开闭原则、里氏替换、接口隔离、依赖倒置
+            \item \textbf{封装}：隐藏实现细节，暴露必要接口
+            \item \textbf{继承与多态}：代码复用，灵活扩展
+            \item \textbf{纯函数}：相同输入→相同输出，无副作用
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{调试流程}
+        \texttt{发现问题 → 复现问题 → 建立假设 → 验证假设 → 修复问题}
+    \end{block}
+
+    \begin{block}{测试金字塔}
+        \texttt{大量单元测试(70\%) + 适量集成测试(20\%) + 少量E2E测试(10\%)}
+    \end{block}
+\end{frame}
+
+%----------------------------------------------------------
+% 概念补充：重构/TDD通俗解释（新增）
+%----------------------------------------------------------
+
+\subsection{概念补充}
+
+\begin{frame}{概念补充：什么是重构？}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{生活类比}
+
+            \begin{block}{整理房间}
+                \begin{itemize}
+                    \item 房间很乱（代码可读性差）
+                    \item 不改变房间里的东西（功能不变）
+                    \item 只是重新整理收纳（优化结构）
+                    \item 目的是更容易找到东西（更容易维护）
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{代码示例}
+
+            \begin{block}{重构前}
+                \texttt{def f(x):}\\
+                \texttt{\ \ \ \# 100行代码}
+            \end{block}
+
+            \begin{block}{重构后}
+                \texttt{def process():}\\
+                \texttt{\ \ \ load()}\\
+                \texttt{\ \ \ process\_data()}\\
+                \texttt{\ \ \ save()}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{概念补充：什么是测试驱动开发？}
+    \textbf{想象学做菜的过程：}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.5cm,
+            box/.style={draw, fill=blue!10, minimum width=3cm, minimum height=1cm, align=center, font=\small},
+            arrow/.style={-Stealth, thick}
+        ]
+            \node[box, fill=red!20] (red) {1. 先定标准\\（写测试）};
+            \node[box, fill=green!20, right=of red] (green) {2. 做最简单能通过的\\（写最少代码）};
+            \node[box, fill=yellow!20, right=of green] (refactor) {3. 改进做法\\（重构优化）};
+
+            \draw[arrow] (red) -- (green);
+            \draw[arrow] (green) -- (refactor);
+            \draw[arrow, dashed] (refactor.south) to[bend right=45] (red.south);
+        \end{tikzpicture}
+    \end{center}
+
+    \begin{block}{好处}
+        \begin{itemize}
+            \item 确保做出来的东西符合要求（测试通过）
+            \item 避免过度设计（只写最少代码）
+            \item 持续改进质量（每次都优化一点）
+        \end{itemize}
+    \end{block}
+\end{frame}

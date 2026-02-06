@@ -1,0 +1,161 @@
+%===========================================================
+% modules/04_practice.tex - 试卷文字识别实战
+%===========================================================
+
+\section{试卷文字识别实战}
+
+\begin{frame}{本周在智能阅卷系统中的位置}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{已完成模块：}
+        \begin{enumerate}
+            \item \textcolor{green!60!black}{✓} 图像预处理（第3周）
+            \item \textcolor{green!60!black}{✓} 版面分析（第4周）
+            \item \textcolor{green!60!black}{✓} 选择题识别（第5周）
+            \item \textcolor{green!60!black}{✓} 判断题识别（第6周）
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \textbf{本周目标：}
+        \begin{itemize}
+            \item \textcolor{blue}{[In Progress]} 识别试卷标题
+            \item \textcolor{blue}{[In Progress]} 提取印刷题号
+            \item \textcolor{blue}{[In Progress]} 为下周手写识别打基础
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            box/.style={rectangle, draw=black, minimum width=1.8cm, minimum height=0.6cm, font=\footnotesize},
+            arrow/.style={->, thick}
+        ]
+            \node[box] (p1) {预处理};
+            \node[box, right=0.2cm of p1] (p2) {版面分析};
+            \node[box, right=0.2cm of p2] (p3) {选/判题};
+            \node[box, right=0.2cm of p3, fill=blue!20] (p4) {OCR};
+            \node[box, right=0.2cm of p4, dashed] (p5) {手写};
+
+            \draw[arrow] (p1) -- (p2);
+            \draw[arrow] (p2) -- (p3);
+            \draw[arrow] (p3) -- (p4);
+            \draw[arrow] (p4) -- (p5);
+        \end{tikzpicture}
+
+        \vspace{0.3cm}
+
+        \textit{\textcolor{blue}{从"选对题"到"读懂题"的跨越}}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{识别试卷标题（70\%脚手架）}
+    \textbf{任务：}补全代码，实现从OCR结果中提取试卷标题的功能
+
+    \textbf{AI辅助提示词（Prompts）：}
+    \begin{itemize}
+        \item "PaddleOCR返回结果的格式是什么，如何遍历"
+        \item "计算两点之间的欧几里得距离（numpy）"
+        \item "Python列表按指定元素排序"
+    \end{itemize}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def extract_title(ocr_result):
+    """Extract exam paper title"""
+    boxes_with_height = []
+
+    # TODO: Iterate through OCR result
+    for line in ________:
+        # TODO: Extract text content
+        text = ________
+        # TODO: Extract bounding box coordinates
+        boxes = ________
+
+        # TODO: Calculate character height
+        h = np.linalg.norm(________)
+        boxes_with_height.append((text, h, boxes))
+
+    # TODO: Sort by height in descending order
+    boxes_with_height.________
+    title = ' '.join(________)
+
+    return title
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{识别题号（70\%脚手架）}
+    \textbf{任务：}补全代码，实现提取题号（如1., 1、, (1), 第1题等）的功能
+
+    \textbf{AI辅助提示词（Prompts）：}
+    \begin{itemize}
+        \item "匹配题号格式的正则表达式（1. 1、 (1) 第1题）"
+        \item "Python re模块match和group的使用方法"
+    \end{itemize}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import re
+
+def extract_question_numbers(ocr_result):
+    """Extract question numbers"""
+    questions = []
+
+    # TODO: Iterate through OCR result
+    for line in ________:
+        # TODO: Extract text content
+        text = ________
+
+        # TODO: Define regex patterns for question numbers
+        # Hint: Ask AI for "regex pattern for 1., 1、, (1), 第1题"
+        patterns = [
+            ________,  # Pattern for "1." "1、"
+            ________,  # Pattern for "(1)" "(1)"
+            ________   # Pattern for "第1题"
+        ]
+
+        # TODO: Try to match each pattern
+        for pattern in ________:
+            match = ________
+            if match:
+                # TODO: Extract the matched number
+                num = ________
+                questions.________
+                break
+
+    return questions
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{完整代码示例（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+from paddleocr import PaddleOCR
+import cv2
+import re
+import numpy as np
+
+# TODO: Initialize OCR with AI assistant
+# Prompt: "Configure PaddleOCR for Chinese recognition"
+ocr = PaddleOCR(
+    use_angle_cls=____,
+    lang=____
+)
+
+# TODO: Recognize image
+image_path = 'exam_paper.jpg'
+result = ocr.ocr(______, cls=____)
+
+# TODO: Extract title
+print("=== Exam Title ===")
+title = ________
+print(title)
+
+# TODO: Extract question numbers
+print("\n=== Question Numbers ===")
+questions = ________
+print(questions)
+    \end{lstlisting}
+
+    \begin{alertblock}{AI辅助编程提示}
+        遇到TODO不知道填什么？\textbf{选中TODO行，按Ctrl+K，输入：}"
+        请补全PaddleOCR的______参数，实现中文文字识别"
+    \end{alertblock}
+\end{frame}

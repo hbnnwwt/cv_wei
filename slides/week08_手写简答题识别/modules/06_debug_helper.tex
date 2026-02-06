@@ -1,0 +1,106 @@
+%===========================================================
+% 06_debug_helper.tex - AI调试助手
+%===========================================================
+
+\section{AI调试助手}
+
+\begin{frame}{遇到问题？使用AI调试助手}
+    \textbf{手写识别常见错误与AI调试策略：}
+    \begin{itemize}
+        \item \textbf{PaddleOCR安装失败}：
+        \begin{itemize}
+            \item 提示AI："paddlepaddle安装报错：[粘贴错误信息]，提供替代方案"
+            \item AI会建议：使用清华镜像源、检查Python版本
+        \end{itemize}
+
+        \item \textbf{TrOCR模型加载慢}：
+        \begin{itemize}
+            \item 提示AI："TrOCR模型加载很慢，如何优化？"
+            \item AI会建议：使用本地缓存、降低模型精度、使用CPU模式
+        \end{itemize}
+
+        \item \textbf{识别结果为空}：
+        \begin{itemize}
+            \item 提示AI："TrOCR返回空结果，检查图像路径[路径]，代码如下：[代码]"
+            \item AI会检查：图像格式、尺寸、模型选择
+        \end{itemize}
+
+        \item \textbf{GPU内存不足}：
+        \begin{itemize}
+            \item 提示AI："TrOCR推理时CUDA out of memory，如何优化？"
+            \item AI会建议：降低batch size、使用CPU、使用小模型
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AI辅助调试三部曲}
+    \begin{alertblock}{AI辅助调试三部曲}
+        \begin{enumerate}
+            \item \textbf{粘贴完整错误}：Traceback、警告信息、异常堆栈
+            \item \textbf{说明环境信息}：Python版本、操作系统、GPU型号、依赖包版本
+            \item \textbf{提供可复现代码}：最小化代码片段 + 数据样本描述
+        \end{enumerate}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \textbf{Prompt模板（手写识别场景）：}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+# 环境信息
+Python: 3.10.11
+OS: Windows 11
+GPU: NVIDIA RTX 3060 (12GB)
+PaddleOCR: 2.7.0
+Transformers: 4.30.0
+
+# 错误信息
+[粘贴完整的Traceback]
+
+# 代码片段
+from paddleocr import PaddleOCR
+ocr = PaddleOCR(use_angle_cls=True, lang='ch')
+result = ocr.ocr('handwriting.jpg', cls=True)
+
+# 数据样本描述
+# 手写图片，内容是学生手写的答案"解决问题"，
+# 图片尺寸800x600，字迹清晰但有轻微连笔
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{使用AI辅助学习PaddleOCR手写识别}
+    \textbf{推荐场景：}
+    \begin{itemize}
+        \item 参数配置时：让AI解释各参数含义
+        \item 识别结果解析时：让AI说明数据结构
+        \item 预处理优化时：让AI提出改进建议
+        \item 参数调优时：让AI设计实验方案
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{Cursor快捷键：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{快捷键} & \textbf{功能} \\
+            \midrule
+            Ctrl+K & 原地编辑选中代码 \\
+            Ctrl+L & 打开AI对话侧边栏 \\
+            Ctrl+I & AI生成代码 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{手写识别专用Prompt}
+        \begin{itemize}
+            \item "PaddleOCR针对手写文字的优化参数有哪些？"
+            \item "如何提高手写识别的准确率？"
+            \item "手写图像预处理流程是什么？"
+            \item "PaddleOCR和TrOCR对比，哪个更适合我的场景？"
+        \end{itemize}
+    \end{alertblock}
+\end{frame}

@@ -61,29 +61,29 @@ def auto_correct_document(img):
 
     \textbf{解决方案：} 统一排序为 [左上, 右上, 右下, 左下]
 
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize, escapechar=!]
 def order_points(pts):
     """
     将四个点按左上、右上、右下、左下排序
     """
-    # 按x坐标排序
+    !\# 按x坐标排序
     x_sorted = pts[np.argsort(pts[:, 0]), :]
 
-    # 分为左右两组
+    !\# 分为左右两组
     left = x_sorted[:2, :]
     right = x_sorted[2:, :]
 
-    # 左边按y排序（上→下）
+    !\# 左边按y排序（上→下）
     left = left[np.argsort(left[:, 1]), :]
-    # 右边按y排序（上→下）
+    !\# 右边按y排序（上→下）
     right = right[np.argsort(right[:, 1]), :]
 
-    # 返回：左上、右上、右下、左下
+    !\# 返回：左上、右上、右下、左下
     return np.array([
-        left[0],   # 左上
-        right[0],  # 右上
-        right[1],  # 右下
-        left[1]    # 左下
+        left[0],   !\# 左上
+        right[0],  !\# 右上
+        right[1],  !\# 右下
+        left[1]    !\# 左下
     ])
     \end{lstlisting}
 \end{frame}

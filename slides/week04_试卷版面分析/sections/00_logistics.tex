@@ -1,0 +1,206 @@
+%===========================================================
+% 00_logistics.tex - 教学设计模块（时间分配、分组策略、预备知识、学习路径）
+%===========================================================
+
+%===========================================================
+% 页面1：本周时间分配
+%===========================================================
+\begin{frame}{本周时间分配（160分钟 = 3学时）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第1学时（50分钟）：}
+        \begin{itemize}
+            \item[00:00-00:10] 概览（10min）：版面分析概述
+            \item[00:10-00:35] 边缘检测（25min）：梯度、Sobel、Canny
+            \item[00:35-00:50] 讨论（15min）：边缘检测问题讨论
+        \end{itemize}
+
+        \textbf{第2学时（50分钟）：}
+        \begin{itemize}
+            \item[00:50-01:15] 轮廓检测（25min）：findContours API
+            \item[01:15-01:40] 形状特征（25min）：面积、周长、多边形逼近
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{第3学时（60分钟）：}
+        \begin{itemize}
+            \item[01:40-02:05] 区域定位（25min）：投影法、连通域
+            \item[02:05-02:30] 实战任务（25min）：标注三种题型区域
+            \item[02:30-02:50] 总结与作业（20min）
+            \item[02:50-03:00] 课间休息（10min）
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{时间控制提示}
+    如果进度落后，建议跳过"Hu矩"和"凸缺陷"部分
+    \end{alertblock}
+\end{frame}
+
+%===========================================================
+% 页面2：分组策略
+%===========================================================
+\begin{frame}{本周分组策略}
+    \textbf{分组原则：}
+    \begin{itemize}
+        \item 每4人为一组
+        \item 确保不同专业背景混合
+        \item 建议包含：理工科、文科、无编程基础、有编程基础
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{角色分工：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{角色} & \textbf{职责} & \textbf{适合} \\
+            \midrule
+            组长 & 统筹协调、进度管理 & 组织能力强的 \\
+            算法实现者 & 实现边缘检测、轮廓检测 & 有编程基础的 \\
+            参数调优者 & 调整Canny阈值、轮廓筛选参数 & 细心负责的 \\
+            测试者 & 收集测试用例、报告问题 & 细心负责的 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{本周协作任务}
+        用Canny边缘检测和轮廓检测实现试卷版面分析，标注选择题、判断题、简答题区域
+    \end{block}
+\end{frame}
+
+%===========================================================
+% 页面3：预备知识视频说明
+%===========================================================
+\begin{frame}{预备知识（课前5分钟视频）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{梯度与边缘的数学基础：}
+        \begin{itemize}
+            \item 导数的概念
+            \item 偏导数（对x方向、对y方向）
+            \item 梯度向量
+            \item 梯度幅值和方向
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{坐标系与几何变换基础：}
+        \begin{itemize}
+            \item 图像坐标系（原点在左上角）
+            \item 坐标变换（平移、旋转、缩放）
+            \item 仿射变换
+            \item 透视变换
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{观看要求}
+    请在课前观看预备知识视频，为本周学习做好准备
+    \end{alertblock}
+\end{frame}
+
+%===========================================================
+% 页面4：并行学习路径
+%===========================================================
+\begin{frame}{并行学习路径}
+    \textbf{观察者路径：}
+    \begin{itemize}
+        \item 理解版面分析原理
+        \item 看老师演示边缘检测、轮廓检测
+        \item 完成基础任务：运行示例代码
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{使用者路径：}
+    \begin{itemize}
+        \item 使用示例代码处理自己的试卷图像
+        \item 调整Canny阈值、轮廓筛选参数
+        \item 完成核心任务：标注三种题型区域
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{创造者路径：}
+    \begin{itemize}
+        \item 设计自己的版面分析算法
+        \item 处理复杂版式的试卷
+        \item 完成挑战任务：实现自适应版面分析
+    \end{itemize}
+\end{frame}
+
+%===========================================================
+% 页面5：AI工具回顾（Week 2内容）
+%===========================================================
+\begin{frame}{AI编程辅助工具回顾}
+    \textbf{Week 2 学到的AI工具：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{Cursor}
+            \begin{itemize}
+                \item AI代码编辑器
+                \item 支持代码补全和生成
+                \item 可以直接询问编程问题
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{ChatGPT / Claude}
+            \begin{itemize}
+                \item 通用AI助手
+                \item 可以解释算法原理
+                \item 可以调试代码错误
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{exampleblock}{本周AI辅助重点}
+        \begin{itemize}
+            \item 理解Canny算法的4个步骤
+            \item 调试边缘检测和轮廓检测代码
+            \item 优化Canny阈值参数
+            \item 筛选合适的轮廓
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+%===========================================================
+% 页面6：课堂互动环节设计
+%===========================================================
+\begin{frame}{课堂互动环节设计}
+    \textbf{互动1：实时投票（问卷星）}
+    \begin{itemize}
+        \item \textbf{时机}：边缘检测基础讲解后
+        \item \textbf{问题}：边缘是图像中像素值发生什么变化的位置？
+        \item \textbf{选项}：A. 剧烈变化  B. 缓慢变化  C. 无变化
+        \item \textbf{目的}：检查学生对边缘概念的理解
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{互动2：代码拼图（小组竞赛）}
+    \begin{itemize}
+        \item \textbf{时机}：Canny边缘检测代码讲解后
+        \item \textbf{内容}：将Canny边缘检测代码打乱顺序
+        \item \textbf{任务}：小组竞赛复原代码
+        \item \textbf{目的}：巩固代码逻辑，培养团队协作
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{互动3：错误找茬（集体debug）}
+    \begin{itemize}
+        \item \textbf{时机}：轮廓检测代码讲解后
+        \item \textbf{内容}：展示有bug的轮廓检测代码
+        \item \textbf{问题}：findContours输入图像格式错误
+        \item \textbf{目的}：培养调试能力，预防常见错误
+    \end{itemize}
+\end{frame}

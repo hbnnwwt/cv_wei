@@ -1,0 +1,153 @@
+%===========================================================
+% summary.tex - 总结与作业
+%===========================================================
+\section{总结}
+
+\begin{frame}{本周知识要点}
+    \textbf{判断题识别核心技术：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{轮廓特征法}
+            \begin{itemize}
+                \item 面积、周长
+                \item 圆度、凸性
+                \item Hu矩
+                \item 规则分类
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{模板匹配法}
+            \begin{itemize}
+                \item 相似度度量
+                \item 多尺度匹配
+                \item 模板库构建
+                \item 阈值判断
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{完整流程：}
+    预处理 $\to$ 定位 $\to$ 提取 $\to$ 特征 $\to$ 分类 $\to$ 输出
+\end{frame}
+
+\begin{frame}{方法对比总结}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{l c c c}
+        \toprule
+        \textbf{方法} & \textbf{准确率} & \textbf{速度} & \textbf{适用场景} \\
+        \midrule
+        轮廓特征 & 中 & 快 & 规范符号 \\
+        模板匹配 & 高 & 中 & 标准符号 \\
+        机器学习 & 高 & 慢 & 手写符号 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{实践建议：}
+    \begin{itemize}
+        \item 先用特征法快速实现
+        \item 效果不好再加模板匹配
+        \item 复杂场景考虑机器学习
+    \end{itemize}
+\end{frame}
+
+\section{课后作业}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目：判断题符号识别模块}
+        实现一个能够识别对号和错号的程序
+    \end{block}
+
+    \textbf{基础要求（60分）：}
+    \begin{itemize}
+        \item 实现轮廓特征提取函数（20分）
+        \item 实现基于规则的分类器（20分）
+        \item 能够区分标准对号和错号（20分）
+    \end{itemize}
+
+    \textbf{进阶要求（30分）：}
+    \begin{itemize}
+        \item 支持圆圈识别（10分）
+        \item 实现模板匹配方法（10分）
+        \item 输出识别置信度（10分）
+    \end{itemize}
+
+    \textbf{加分项（10分）：}
+    \begin{itemize}
+        \item 可视化展示识别过程（10分）
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{作业提交要求}
+    \textbf{提交内容：}
+    \begin{enumerate}
+        \item Python代码（.py文件）
+        \item 测试结果截图
+        \item 简要说明文档
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{评分标准：}
+    \begin{itemize}
+        \item 代码规范性（20分）
+        \item 功能完整性（40分）
+        \item 识别准确率（30分）
+        \item 文档与展示（10分）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{截止时间：} 下周上课前
+\end{frame}
+
+\section{下节预告}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第7周：OCR基础与文字识别}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{怎么让机器"阅读"文字？}
+
+        \vspace{0.5cm}
+
+        \begin{columns}
+            \column{0.5\textwidth}
+            \textbf{你将学会：}
+            \begin{itemize}
+                \item OCR技术原理
+                \item PaddleOCR使用
+                \item 印刷文字识别
+                \item 手写文字识别
+            \end{itemize}
+
+            \column{0.5\textwidth}
+            \textbf{实践项目：}
+            \begin{itemize}
+                \item 学号识别
+                \item 姓名识别
+                \item 简答题识别
+            \end{itemize}
+        \end{columns}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+
+        \vspace{1cm}
+
+        \Large \textbf{下节课见！}
+    \end{center}
+\end{frame}

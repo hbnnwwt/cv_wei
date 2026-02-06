@@ -1,0 +1,289 @@
+%===========================================================
+% 01_omr_overview.tex - OMR技术概述
+%===========================================================
+\section{OMR技术概述}
+
+\begin{frame}{什么是OMR？}
+    \begin{block}{OMR：Optical Mark Recognition}
+        光学标记识别 —— 通过检测填涂区域来识别答案
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \textbf{核心思想：} 填涂区域与空白区域的\textbf{像素密度差异}
+
+    \begin{center}
+    \begin{tikzpicture}
+        \shade[ball color=black] (0,0) circle (0.5cm);
+        \node at (0,-1) {填涂 $\to$ 密度高};
+        \shade[ball color=white, draw=black] (3,0) circle (0.5cm);
+        \node at (3,-1) {空白 $\to$ 密度低};
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{OMR vs OCR}
+    \begin{table}
+        \centering
+        \begin{tabular}{l|l|l}
+        \toprule
+        特性 & OMR (光学标记识别) & OCR (光学字符识别) \\
+        \midrule
+        识别对象 & 填涂标记、气泡 & 文字、字符 \\
+        判断依据 & 像素密度 & 特征匹配、深度学习 \\
+        典型应用 & 标准化考试答题卡 & 文档数字化、车牌识别 \\
+        技术复杂度 & 较低 & 较高 \\
+        准确率 & 极高（99\%+） & 取决于场景 \\
+        \bottomrule
+        \end{tabular}
+        \caption{OMR与OCR的对比}
+    \end{table}
+\end{frame}
+
+\begin{frame}{OMR技术发展简史}
+    \begin{itemize}
+        \item[1930s] 第一台OMR机器用于考试评分
+        \item[1960s] IBM推出大型OMR系统
+        \item[1980s] 个人电脑+扫描仪实现桌面OMR
+        \item[2000s] 数字相机+图像处理实现便携OMR
+        \item[2020s] 手机拍照+AI实现智能OMR
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{本周目标：} 用Python+OpenCV实现一个基础的OMR系统
+\end{frame}
+
+\begin{frame}{标准化考试答题卡技术}
+    \textbf{答题卡的关键元素：}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{定位标记（Timing \texttt{\_} Marks）}
+                \begin{itemize}
+                    \item 黑色方块/线条
+                    \item 用于定位和校正
+                \end{itemize}
+            \item \textbf{选项气泡（Bubbles）}
+                \begin{itemize}
+                    \item 圆形或椭圆形
+                    \item 规则排列
+                \end{itemize}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{填涂区域}
+                \begin{itemize}
+                    \item 铅笔/碳素笔填涂
+                    \item 深度影响识别
+                \end{itemize}
+            \item \textbf{导出块}
+                \begin{itemize}
+                    \item 考号填写区
+                    \item 需特殊识别
+                \end{itemize}
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{选择题识别的挑战}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{alertblock}{填涂质量问题}
+            \begin{itemize}
+                \item 填涂深浅不一
+                \item 填涂范围不完整
+                \item 笔迹颜色差异
+            \end{itemize}
+        \end{alertblock}
+
+        \begin{alertblock}{擦除与修改}
+            \begin{itemize}
+                \item 擦除不干净的痕迹
+                \item 多次填涂的混乱
+            \end{itemize}
+        \end{alertblock}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{图像质量}
+            \begin{itemize}
+                \item 扫描/拍摄角度偏差
+                \item 光照不均匀
+                \item 纸张折痕/污损
+            \end{itemize}
+        \end{alertblock}
+
+        \begin{alertblock}{多选与漏选}
+            \begin{itemize}
+                \item 多选项填涂（多选题）
+                \item 所有选项未填（空题）
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{识别流程概述}
+    \begin{enumerate}
+        \item \textbf{图像预处理}：去噪、二值化、几何校正
+        \item \textbf{选项区域定位}：找到每个选项的位置
+        \item \textbf{提取选项图像}：裁剪出单个选项区域
+        \item \textbf{形态学处理}：去除噪点、填充孔洞
+        \item \textbf{统计像素密度}：计算深色像素占比
+        \item \textbf{阈值判断}：密度超过阈值则认为已填涂
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}[node distance=0.5cm]
+            \node[draw, fill=blue!10, rectangle, rounded corners] (1) {预处理};
+            \node[draw, fill=yellow!10, rectangle, rounded corners, right=of 1] (2) {定位};
+            \node[draw, fill=green!10, rectangle, rounded corners, right=of 2] (3) {提取};
+            \node[draw, fill=orange!10, rectangle, rounded corners, right=of 3] (4) {形态学};
+            \node[draw, fill=red!10, rectangle, rounded corners, right=of 4] (5) {统计};
+            \node[draw, fill=purple!10, rectangle, rounded corners, right=of 5] (6) {判断};
+
+            \draw[->] (1) -- (2);
+            \draw[->] (2) -- (3);
+            \draw[->] (3) -- (4);
+            \draw[->] (4) -- (5);
+            \draw[->] (5) -- (6);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{OMR技术在教育领域的应用}
+    \textbf{标准化考试：}
+    \begin{itemize}
+        \item 高考：全国千万考生，选择题占比60-70\%
+        \item 研究生考试：政治、英语等科目
+        \item 英语四六级：每年超过1800万考生
+        \item 公务员考试：行测部分全部为选择题
+        \item 职业资格认证：医师、会计师、建造师等
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{在线教育：}
+    \begin{itemize}
+        \item 在线作业与测验
+        \item 智慧课堂互动答题
+        \item 企业培训考核
+        \item 职业技能鉴定
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{市场规模：}
+    \begin{itemize}
+        \item 中国OMR市场年增长率约15\%
+        \item 2025年市场规模预计超过50亿元
+        \item 从硬件向软件+服务转型
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{答题卡的历史演进}
+    \textbf{第一代：穿孔卡片（1930s-1960s）}
+    \begin{itemize}
+        \item IBM开发，用于人口普查和考试评分
+        \item 需要专用读卡设备
+        \item 速度慢、成本高
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{第二代：光标阅读卡（1960s-1990s）}
+    \begin{itemize}
+        \item 使用石墨铅笔填涂
+        \item 光电传感器识别
+        \item 速度快、准确率高
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{第三代：数字化OMR（1990s-2010s）}
+    \begin{itemize}
+        \item 扫描仪+计算机处理
+        \item 图像处理算法优化
+        \item 成本大幅降低
+    \end{itemize}
+
+    \vspace{0.2cm}
+
+    \textbf{第四代：智能OMR（2010s-至今）}
+    \begin{itemize}
+        \item 手机拍照即可识别
+        \item AI算法提升鲁棒性
+        \item 云端实时处理
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{答题卡标准化设计原则}
+    \textbf{设计原则：}
+    \begin{enumerate}
+        \item \textbf{唯一性}：每个填涂位置唯一对应一个选项
+        \item \textbf{独立性}：各填涂区域互不干扰
+        \item \textbf{可检测性}：提供定位标记便于自动识别
+        \item \textbf{容错性}：允许一定程度的填涂偏差
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{常见答题卡格式：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{横版答题卡}
+                \begin{itemize}
+                    \item 左侧为选择题区域
+                    \item 右侧为考号填涂区
+                    \item 顶部为定位标记
+                \end{itemize}
+            \item \textbf{竖版答题卡}
+                \begin{itemize}
+                    \item 上部为选择题区域
+                    \item 下部为姓名考号区
+                    \item 四角定位标记
+                \end{itemize}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{印刷质量要求：}
+        \begin{itemize}
+            \item 定位标记精度：±0.5mm
+            \item 选项气泡位置：±1mm
+            \item 线条粗细：0.8-1.2mm
+            \item 颜色对比度：>70\%
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{国内外OMR系统发展现状}
+    \textbf{国外主要厂商：}
+    \begin{itemize}
+        \item \textbf{Scantron}（美国）：市场领导者，服务全球教育机构
+        \item \textbf{Pearson VUE}（英国）：考试评估综合服务
+        \item \textbf{Datacard}（美国）：身份证件+答题卡识别
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{国内主要厂商：}
+    \begin{itemize}
+        \item \textbf{海云天}：教育考试信息化龙头
+        \item \textbf{鸥玛}：OMR设备制造商
+        \item \textbf{新开普}：智慧考试综合解决方案
+        \item \textbf{科大讯飞}：AI+OMR智能阅卷
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{技术趋势：}
+    \begin{itemize}
+        \item 硬件向软件服务转型
+        \item 传统OMR向AI-OMR升级
+        \item 离线处理向云端实时处理发展
+    \end{itemize}
+\end{frame}

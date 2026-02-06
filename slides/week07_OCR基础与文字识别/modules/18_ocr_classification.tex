@@ -1,0 +1,140 @@
+%===========================================================
+% modules/18_ocr_classification.tex - OCR技术分类
+%===========================================================
+
+\section{OCR技术分类}
+
+\begin{frame}{OCR技术多维分类体系}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{按技术路线分类：}
+        \begin{itemize}
+            \item \textbf{传统OCR}
+            \begin{itemize}
+                \item 模板匹配
+                \item 特征工程
+                \item 机器学习分类器
+            \end{itemize}
+            \item \textbf{深度学习OCR}
+            \begin{itemize}
+                \item CNN特征提取
+                \item RNN序列建模
+                \item Attention机制
+                \item Transformer架构
+            \end{itemize}
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{按输入类型分类：}
+        \begin{itemize}
+            \item \textbf{扫描文档OCR}
+            \begin{itemize}
+                \item 印刷体
+                \item 手写体
+                \item 表格
+            \end{itemize}
+            \item \textbf{场景文字OCR}
+            \begin{itemize}
+                \item 自然场景
+                \item 街景文字
+                \item 商品包装
+            \end{itemize}
+            \item \textbf{视频OCR}
+            \begin{itemize}
+                \item 字幕识别
+                \item 实时识别
+            \end{itemize}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{按识别对象分类：}
+        \begin{itemize}
+            \item \textbf{单字识别 vs 整行识别}
+            \begin{itemize}
+                \item 单字：独立分类
+                \item 整行：序列建模
+            \end{itemize}
+            \item \textbf{印刷体 vs 手写体}
+            \begin{itemize}
+                \item 印刷体：规则、规范
+                \item 手写体：个性化、变化大
+            \end{itemize}
+            \item \textbf{单语言 vs 多语言}
+            \begin{itemize}
+                \item 单语言：专用模型
+                \item 多语言：统一模型
+            \end{itemize}
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{按应用场景分类：}
+        \begin{itemize}
+            \item \textbf{文档数字化}
+            \begin{itemize}
+                \item 书籍扫描
+                \item 档案数字化
+                \item 票据处理
+            \end{itemize}
+            \item \textbf{证件识别}
+            \begin{itemize}
+                \item 身份证
+                \item 银行卡
+                \item 驾驶证
+            \end{itemize}
+            \item \textbf{移动应用}
+            \begin{itemize}
+                \item 拍照翻译
+                \item 名片识别
+                \item 文档扫描APP
+            \end{itemize}
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{传统OCR vs 深度学习OCR对比}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{5cm}p{5cm}}
+            \toprule
+            \textbf{对比维度} & \textbf{传统OCR} & \textbf{深度学习OCR} \\
+            \midrule
+            \textbf{特征提取} &
+            手工设计特征（HOG、LBP、投影） &
+            自动学习特征（CNN） \\
+            \midrule
+            \textbf{模型设计} &
+            分模块设计（检测、分割、识别） &
+            端到端训练 & \\
+            \midrule
+            \textbf{数据依赖} &
+            小样本即可训练 &
+            需要大量标注数据 & \\
+            \midrule
+            \textbf{泛化能力} &
+            对复杂场景适应性差 &
+            强泛化能力，适应多场景 & \\
+            \midrule
+            \textbf{识别精度} &
+            印刷体：高（>95%）
+            手写体：中（70-85%） &
+            印刷体：极高（>99%）
+            手写体：高（85-95%） & \\
+            \midrule
+            \textbf{计算效率} &
+            CPU即可实时处理 &
+            通常需要GPU加速 & \\
+            \midrule
+            \textbf{可解释性} &
+            强，每一步可分析 &
+            弱，黑盒模型 & \\
+            \midrule
+            \textbf{维护成本} &
+            高，需调多个模块参数 &
+            中，主要调网络结构和超参 & \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}

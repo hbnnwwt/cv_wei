@@ -1,0 +1,299 @@
+%===========================================================
+% summary.tex - 总结与作业
+%===========================================================
+
+\section{知识点总结}
+
+\begin{frame}{系统架构设计完整流程}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.65, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=0.8cm, align=center},
+            arrow/.style={->, thick}]
+
+            \node[box, fill=green!20] (req) at (0,0) {需求分析};
+            \node[box] (arch) at (3,0) {架构设计};
+            \node[box] (module) at (6,0) {模块划分};
+            \node[box] (interface) at (9,0) {接口定义};
+            \node[box] (impl) at (12,0) {模块实现};
+            \node[box] (test) at (12,-2) {集成测试};
+            \node[box] (deploy) at (9,-2) {部署运维};
+
+            \draw[arrow] (req) -- (arch);
+            \draw[arrow] (arch) -- (module);
+            \draw[arrow] (module) -- (interface);
+            \draw[arrow] (interface) -- (impl);
+            \draw[arrow] (impl) -- (test);
+            \draw[arrow] (test) -- (deploy);
+            \draw[arrow, dashed] (test) -- (interface) node[midway, left] {问题反馈};
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{核心要点：}
+    \begin{itemize}
+        \item 架构设计要面向需求，而非面向技术
+        \item 模块划分遵循高内聚低耦合原则
+        \item 接口设计要稳定，实现可以变化
+        \item 持续重构，保持架构活力
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{架构风格速查表}
+    \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{p{2cm}p{3cm}p{3cm}p{3.5cm}}
+            \toprule
+            \textbf{架构风格} & \textbf{核心思想} & \textbf{适用场景} & \textbf{实现技术} \\
+            \midrule
+            分层架构 & 按职责分层 & 企业应用 & Spring, Django \\
+            微服务 & 服务拆分独立部署 & 大型分布式系统 & Docker, K8s \\
+            管道-过滤器 & 数据流处理 & 图像/数据处理 & OpenCV, FFmpeg \\
+            事件驱动 & 异步消息通信 & 实时系统 & Kafka, RabbitMQ \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{选择原则：}
+    \begin{itemize}
+        \item 小团队、简单业务：单体/分层架构
+        \item 大团队、复杂业务：微服务架构
+        \item 数据处理流水线：管道-过滤器
+        \item 高并发、实时性：事件驱动
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{设计模式速查表}
+    \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{p{1.8cm}p{2.5cm}p{4cm}p{3.5cm}}
+            \toprule
+            \textbf{类型} & \textbf{模式} & \textbf{解决问题} & \textbf{应用场景} \\
+            \midrule
+            \multirow{3}{*}{创建型}
+            & 工厂模式 & 对象创建与使用解耦 & 根据类型创建不同对象 \\
+            & 单例模式 & 全局唯一实例 & 配置管理、数据库连接 \\
+            & 建造者模式 & 复杂对象构建 & 多参数对象构造 \\
+            \midrule
+            \multirow{3}{*}{结构型}
+            & 适配器模式 & 接口不兼容转换 & 集成第三方库 \\
+            & 装饰器模式 & 动态添加功能 & 日志、缓存、权限 \\
+            & 代理模式 & 控制对象访问 & 延迟加载、远程代理 \\
+            \midrule
+            \multirow{3}{*}{行为型}
+            & 策略模式 & 算法 interchangeable & 多种识别算法切换 \\
+            & 观察者模式 & 状态变化通知 & 事件监听、消息订阅 \\
+            & 模板方法 & 算法骨架复用 & 通用处理流程 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{SOLID原则速查}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{clp{6cm}}
+            \toprule
+            \textbf{原则} & \textbf{核心} & \textbf{实践要点} \\
+            \midrule
+            SRP & 单一职责 & 一个类只做一件事，修改原因只有一个 \\
+            OCP & 开闭原则 & 扩展新功能不修改已有代码 \\
+            LSP & 里氏替换 & 子类可以无缝替换父类 \\
+            ISP & 接口隔离 & 客户端不依赖不需要的接口 \\
+            DIP & 依赖倒置 & 依赖抽象接口，而非具体实现 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{记忆口诀}
+        "职责单一要封闭，替换子类没问题，接口隔离倒依赖"
+    \end{block}
+\end{frame}
+
+\begin{frame}{常见问题与解决方案}
+    \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{p{4cm}p{7cm}}
+            \toprule
+            \textbf{问题} & \textbf{解决方案} \\
+            \midrule
+            模块耦合严重，修改一处影响全局 & 应用DIP，引入接口抽象；使用依赖注入 \\
+            代码重复，复制粘贴多 & 提取公共逻辑，应用DRY原则 \\
+            扩展困难，新增功能需要修改多处 & 应用OCP，使用策略/工厂模式 \\
+            类职责不清，功能臃肿 & 应用SRP，拆分小类 \\
+            团队协作冲突多 & 规范Git工作流，明确代码审查流程 \\
+            接口频繁变更 & 接口版本化，向下兼容 \\
+            性能瓶颈 & 引入缓存、异步处理、并行计算 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\section{课后作业}
+
+\begin{frame}{作业要求详解}
+    \begin{block}{作业1：架构设计文档（必做）}
+        为你的小组项目设计系统架构：
+        \begin{enumerate}
+            \item 绘制系统架构图（模块划分、接口关系）
+            \item 说明选择的架构风格及理由
+            \item 定义各模块的接口（输入、输出、职责）
+            \item 说明应用了哪些设计模式
+        \end{enumerate}
+        \textbf{提交格式：}Markdown文档 + 架构图（PNG/PDF）
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{作业2：流水线实现（必做）}
+        实现图像预处理流水线：
+        \begin{enumerate}
+            \item 定义FilterInterface接口
+            \item 实现至少3个过滤器（去噪、二值化、矫正）
+            \item 实现Pipeline执行引擎
+            \item 编写测试用例验证
+        \end{enumerate}
+        \textbf{提交格式：}Python代码 + 测试报告
+    \end{block}
+\end{frame}
+
+\begin{frame}{作业评分标准}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{3cm}p{3cm}p{2cm}}
+            \toprule
+            \textbf{评分项} & \textbf{优秀(90-100)} & \textbf{良好(75-89)} & \textbf{及格(60-74)} \\
+            \midrule
+            架构完整性 & 设计合理，扩展性强 & 设计合理 & 基本可用 \\
+            代码规范 & 规范+类型注解+文档 & 规范 & 基本规范 \\
+            设计模式应用 & 恰当使用3+种 & 使用2种 & 使用1种 \\
+            测试覆盖 & 单元测试覆盖主要逻辑 & 有测试 & 无测试 \\
+            团队协作 & Git提交规范，PR清晰 & 提交较规范 & 提交混乱 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{提交要求}
+        \begin{itemize}
+            \item 截止时间：第10周上课前
+            \item 提交方式：GitHub仓库链接
+            \item 命名规范：cv2025-groupX-week9
+            \item 提交内容：代码 + 文档 + README说明
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\section{延伸学习资源}
+
+\begin{frame}{推荐书籍与论文}
+    \textbf{架构设计：}
+    \begin{itemize}
+        \item 《软件架构设计：大型网站技术架构与业务架构融合之道》— 余洪春
+        \item 《实现领域驱动设计》— Vaughn Vernon
+        \item 《微服务设计》— Sam Newman
+        \item 《软件架构模式》— Mark Richards（免费电子书）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{设计模式：}
+    \begin{itemize}
+        \item 《设计模式：可复用面向对象软件的基础》— GoF
+        \item 《Head First 设计模式》— Eric Freeman
+        \item 《Python设计模式》— Brandon Rhodes
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{代码规范：}
+    \begin{itemize}
+        \item 《代码整洁之道》— Robert C. Martin
+        \item 《重构：改善既有代码的设计》— Martin Fowler
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{在线课程与教程}
+    \textbf{中文资源：}
+    \begin{itemize}
+        \item 极客时间《从0开始学架构》— 李运华
+        \item 极客时间《设计模式之美》— 王争
+        \item B站《软件架构设计》系列课程
+        \item 慕课网《Python设计模式》
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{英文资源：}
+    \begin{itemize}
+        \item Coursera: Software Architecture for the Internet of Things
+        \item Udemy: Software Architecture & Technology of Large-Scale Systems
+        \item YouTube: System Design Primer系列
+        \item Refactoring.Guru: 设计模式教程（有中文）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{官方文档：}
+    \begin{itemize}
+        \item PEP 8 -- Python代码风格指南
+        \item Git官方文档与Pro Git电子书
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{开源项目参考}
+    \textbf{推荐学习项目：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3.5cm}p{3cm}p{4cm}}
+            \toprule
+            \textbf{项目} & \textbf{语言} & \textbf{学习点} \\
+            \midrule
+            OCRmyPDF & Python & 图像处理流水线、插件架构 \\
+            OpenCV-Python & Python/C++ & 计算机视觉算法实现 \\
+            FastAPI & Python & 现代Web框架设计 \\
+            Celery & Python & 分布式任务队列 \\
+            Pytest & Python & 测试框架设计 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{参与开源：}
+    \begin{itemize}
+        \item 从阅读源码开始，理解项目架构
+        \item 修复good-first-issue标签的问题
+        \item 参与代码审查，学习最佳实践
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+
+        \vspace{1cm}
+
+        \Large 有问题随时交流
+
+        \vspace{1cm}
+
+        \normalsize
+        \textbf{下节预告：}第10周 核心开发与调试
+
+        \vspace{0.3cm}
+
+        \textit{目标：完成所有模块开发与集成}
+    \end{center}
+\end{frame}

@@ -1,0 +1,472 @@
+%===========================================================
+% 02_paddleocr.tex - PaddleOCR手写识别
+%===========================================================
+
+\section{PaddleOCR手写识别}
+
+\begin{frame}{PaddleOCR架构概述}
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            \textbf{PP-OCRv4三大核心模块}
+            \vspace{0.3cm}
+
+            \begin{enumerate}
+                \item \textbf{文本检测} (Text Detection)
+                \begin{itemize}
+                    \item DBNet算法
+                    \item 可微分二值化
+                \end{itemize}
+
+                \item \textbf{方向分类} (Orientation Classification)
+                \begin{itemize}
+                    \item 0/90/180/270度分类
+                    \item 轻量级CNN
+                \end{itemize}
+
+                \item \textbf{文本识别} (Text Recognition)
+                \begin{itemize}
+                    \item SVTR\_LCNet架构
+                    \item CTC解码
+                \end{itemize}
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.43\textwidth}
+            \begin{tikzpicture}[
+                node distance=0.6cm,
+                box/.style={draw, rounded corners, fill=blue!10, minimum width=3.5cm, minimum height=0.7cm, align=center, font=\small}
+            ]
+                \node[box] (input) {输入图像};
+                \node[box, below=of input, fill=red!10] (det) {文本检测\\DBNet};
+                \node[box, below=of det, fill=yellow!10] (cls) {方向分类\\CNN};
+                \node[box, below=of cls, fill=green!10] (rec) {文本识别\\SVTR};
+                \node[box, below=of rec] (output) {识别结果};
+
+                \draw[->, thick] (input) -- (det);
+                \draw[->, thick] (det) -- (cls);
+                \draw[->, thick] (cls) -- (rec);
+                \draw[->, thick] (rec) -- (output);
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{检测模型：DBNet原理}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{DBNet (Differentiable Binarization)}
+
+            \vspace{0.3cm}
+            \textbf{核心创新：可微分二值化}
+            \begin{itemize}
+                \item 传统方法：二值化不可导，无法端到端训练
+                \item DBNet：将二值化近似为可微分函数
+                \item 梯度可直接传播到阈值预测
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{二值化公式：}
+            \[
+            B_{i,j} = \frac{1}{1 + e^{-k(P_{i,j} - T_{i,j})}}
+            \]
+            其中：$P$为概率图，$T$为阈值图，$k$为放大因子
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{tikzpicture}[
+                node distance=0.4cm,
+                smallbox/.style={draw, rounded corners, fill=blue!10, minimum width=4cm, minimum height=0.6cm, align=center, font=\small}
+            ]
+                \node[smallbox] (input) {输入图像};
+                \node[smallbox, below=of input] (backbone) {Backbone (ResNet)};
+                \node[smallbox, below=of backbone] (neck) {FPN (特征融合)};
+                \node[smallbox, below=of neck, fill=green!10] (prob) {概率图 $P$};
+                \node[smallbox, below=of prob, fill=yellow!10] (thresh) {阈值图 $T$};
+                \node[smallbox, below=of thresh, fill=red!10] (binary) {近似二值图 $\hat{B}$};
+
+                \draw[->, thick] (input) -- (backbone);
+                \draw[->, thick] (backbone) -- (neck);
+                \draw[->, thick] (neck) -- (prob);
+                \draw[->, thick] (neck) -- (thresh);
+                \draw[->, thick] (prob) -- (binary);
+                \draw[->, thick] (thresh) -- (binary);
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{识别模型：SVTR\_LCNet原理}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{SVTR\_LCNet架构}
+
+            \vspace{0.3cm}
+            \textbf{设计目标：}
+            \begin{itemize}
+                \item 中文场景文字识别
+                \item 支持横排和竖排文本
+                \item 平衡精度与速度
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{网络结构：}
+            \begin{enumerate}
+                \item \textbf{LCNet骨干网络}
+                \begin{itemize}
+                    \item 轻量级CNN架构
+                    \item 深度可分离卷积
+                \end{itemize}
+                \item \textbf{SVTR编码器}
+                \begin{itemize}
+                    \item 基于Sub-Block的Transformer
+                    \item 全局特征建模
+                \end{itemize}
+                \item \textbf{CTC解码器}
+                \begin{itemize}
+                    \item 无需字符级对齐
+                    \item 处理不定长序列
+                \end{itemize}
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{tikzpicture}[
+                node distance=0.35cm,
+                box/.style={draw, rounded corners, minimum width=4cm, minimum height=0.55cm, align=center, font=\small}
+            ]
+                \node[box, fill=blue!10] (input) {输入图像 (H×W×C)};
+                \node[box, below=of input, fill=cyan!10] (lcnet) {LCNet骨干网络};
+                \node[box, below=of lcnet, fill=green!10] (feature) {特征图 (H'×W'×C')};
+                \node[box, below=of feature, fill=yellow!10] (svtr) {SVTR编码器};
+                \node[box, below=of svtr, fill=orange!10] (seq) {序列特征 (T×D)};
+                \node[box, below=of seq, fill=red!10] (ctc) {CTC解码器};
+                \node[box, below=of ctc, fill=purple!10] (output) {识别结果};
+
+                \draw[->, thick] (input) -- (lcnet);
+                \draw[->, thick] (lcnet) -- (feature);
+                \draw[->, thick] (feature) -- (svtr);
+                \draw[->, thick] (svtr) -- (seq);
+                \draw[->, thick] (seq) -- (ctc);
+                \draw[->, thick] (ctc) -- (output);
+            \end{tikzpicture}
+
+            \vspace{0.5cm}
+            \textbf{CTC解码公式：}
+            \[
+            p(l|x) = \sum_{\pi \in B^{-1}(l)} p(\pi|x)
+            \]
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{PaddleOCR手写配置}
+    \begin{lstlisting}
+from paddleocr import PaddleOCR
+
+# TODO: 使用AI助手补全PaddleOCR初始化
+# 提示词："PaddleOCR手写识别配置参数说明"
+ocr_handwrite = PaddleOCR(
+    use_angle_cls=______,  # TODO: 是否启用方向分类（True/False）
+    lang=______,           # TODO: 语言设置（'ch'/'en'/...）
+    show_log=______        # TODO: 是否显示日志（True/False）
+)
+
+# TODO: 调用OCR识别方法
+# 提示词："PaddleOCR ocr()方法参数说明"
+result = ocr_handwrite.ocr(
+    ______,  # TODO: 输入图像路径或数组
+    cls=______  # TODO: 是否启用方向分类（True/False）
+)
+
+# TODO: 解析并打印识别结果
+# 提示词："PaddleOCR识别结果结构解析"
+for line in result:
+    text = ______  # TODO: 提取文字内容
+    confidence = ______  # TODO: 提取置信度
+    print(f"{text} ({confidence:.4f})")
+    \end{lstlisting}
+
+    \textbf{注意：} PaddleOCR默认已支持手写识别
+\end{frame}
+
+\begin{frame}[fragile]{手写识别参数调优}
+    \begin{lstlisting}
+# TODO: 使用AI助手补全手写识别优化配置
+# 提示词："PaddleOCR手写识别参数调优指南"
+ocr_optimized = PaddleOCR(
+    use_angle_cls=______,  # TODO: 是否启用方向分类
+    lang=______,           # TODO: 语言设置
+    # TODO: 模型路径配置
+    det_model_dir=______,  # TODO: 检测模型路径
+    rec_model_dir=______,  # TODO: 识别模型路径
+    cls_model_dir=______,  # TODO: 方向分类模型路径
+    # TODO: 性能参数调优
+    rec_batch_num=______,   # TODO: 批量识别数（整数）
+    max_text_length=______, # TODO: 最大文本长度（整数）
+    drop_score=______,      # TODO: 置信度阈值（0-1浮点数）
+    show_log=______         # TODO: 是否显示日志
+)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{多行手写文字识别}
+    \begin{lstlisting}
+import cv2
+from paddleocr import PaddleOCR
+
+# TODO: 使用AI助手补全图像读取代码
+# 提示词："OpenCV读取图像的常用方法"
+image = cv2.______  # TODO: 读取图像文件（如'answer_sheet.jpg'）
+
+# TODO: 初始化OCR
+# 提示词："PaddleOCR初始化参数说明"
+ocr = PaddleOCR(
+    use_angle_cls=______,  # TODO: 是否启用方向分类
+    lang=______           # TODO: 语言设置
+)
+
+# TODO: 执行OCR识别
+result = ocr.ocr(
+    ______,  # TODO: 输入图像
+    cls=______  # TODO: 是否启用方向分类
+)
+
+# TODO: 提取文字块并按位置排序
+# 提示词："如何根据边界框坐标对OCR结果排序"
+text_blocks = []
+for line in result[0]:
+    box = ______  # TODO: 提取边界框坐标
+    text = ______  # TODO: 提取文字内容
+    conf = ______  # TODO: 提取置信度
+    # TODO: 计算中心点y坐标
+    center_y = ______  # TODO: 计算边界框中心y坐标
+    text_blocks.append((center_y, text, conf))
+
+# TODO: 按y坐标排序（从上到下）
+text_blocks.sort(key=______)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{增强版手写识别（含错误处理）}
+    \begin{lstlisting}
+import os
+import cv2
+import numpy as np
+from paddleocr import PaddleOCR
+from typing import List, Dict, Optional, Union
+
+class HandwritingOCR:
+    """增强版手写OCR识别器"""
+
+    def __init__(self,
+                 use_gpu: bool = False,
+                 det_model_dir: Optional[str] = None,
+                 rec_model_dir: Optional[str] = None,
+                 drop_score: float = 0.3):
+        """
+        初始化OCR识别器
+
+        Args:
+            use_gpu: 是否使用GPU
+            det_model_dir: 检测模型路径
+            rec_model_dir: 识别模型路径
+            drop_score: 置信度过滤阈值
+        """
+        try:
+            self.ocr = PaddleOCR(
+                use_angle_cls=True,
+                lang='ch',
+                use_gpu=use_gpu,
+                det_model_dir=det_model_dir,
+                rec_model_dir=rec_model_dir,
+                drop_score=drop_score,
+                show_log=False
+            )
+            self.drop_score = drop_score
+            print("[INFO] OCR模型初始化成功")
+        except Exception as e:
+            raise RuntimeError(f"OCR初始化失败: {str(e)}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{批量处理与结果可视化}
+    \begin{lstlisting}
+    def batch_recognize(self,
+                       image_paths: List[str],
+                       save_results: bool = True,
+                       output_dir: str = "./results") -> List[Dict]:
+        """
+        批量识别手写文字
+
+        Args:
+            image_paths: 图像路径列表
+            save_results: 是否保存可视化结果
+            output_dir: 输出目录
+
+        Returns:
+            识别结果列表，每项包含：
+            - image_path: 图像路径
+            - texts: 识别文字列表
+            - confidences: 置信度列表
+            - avg_confidence: 平均置信度
+        """
+        if save_results and not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        results = []
+        for img_path in image_paths:
+            if not os.path.exists(img_path):
+                print(f"[WARN] 文件不存在: {img_path}")
+                continue
+
+            try:
+                result = self.recognize_single(img_path,
+                                               save_vis=save_results,
+                                               output_dir=output_dir)
+                results.append(result)
+            except Exception as e:
+                print(f"[ERROR] 处理 {img_path} 失败: {str(e)}")
+
+        return results
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{单张图像识别与可视化}
+    \begin{lstlisting}
+    def recognize_single(self,
+                        image_path: str,
+                        save_vis: bool = True,
+                        output_dir: str = "./results") -> Dict:
+        """
+        单张图像手写文字识别
+
+        Args:
+            image_path: 图像路径
+            save_vis: 是否保存可视化结果
+            output_dir: 输出目录
+
+        Returns:
+            识别结果字典
+        """
+        # 读取图像
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ValueError(f"无法读取图像: {image_path}")
+
+        # 执行OCR识别
+        ocr_result = self.ocr.ocr(image_path, cls=True)
+
+        # 解析结果
+        texts = []
+        confidences = []
+        boxes = []
+
+        if ocr_result and ocr_result[0]:
+            for line in ocr_result[0]:
+                box = line[0]  # 边界框坐标
+                text = line[1][0]  # 识别文本
+                conf = line[1][1]  # 置信度
+
+                # 过滤低置信度结果
+                if conf >= self.drop_score:
+                    boxes.append(box)
+                    texts.append(text)
+                    confidences.append(conf)
+
+        # 按位置排序（从上到下）
+        if boxes:
+            sorted_data = sorted(zip(boxes, texts, confidences),
+                                key=lambda x: (x[0][0][1] + x[0][2][1]) / 2)
+            boxes, texts, confidences = zip(*sorted_data) if sorted_data else ([], [], [])
+
+        # 可视化结果
+        vis_image = None
+        if save_vis:
+            vis_image = self._visualize_result(image, boxes, texts, confidences)
+            output_path = os.path.join(output_dir, f"vis_{os.path.basename(image_path)}")
+            cv2.imwrite(output_path, vis_image)
+            print(f"[INFO] 可视化结果已保存: {output_path}")
+
+        # 计算平均置信度
+        avg_conf = sum(confidences) / len(confidences) if confidences else 0.0
+
+        return {
+            'image_path': image_path,
+            'texts': list(texts),
+            'confidences': list(confidences),
+            'avg_confidence': avg_conf,
+            'boxes': list(boxes),
+            'visualization': vis_image
+        }
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{结果可视化方法}
+    \begin{lstlisting}
+    def _visualize_result(self,
+                         image: np.ndarray,
+                         boxes: List[List],
+                         texts: List[str],
+                         confidences: List[float],
+                         box_color: Tuple[int, int, int] = (0, 255, 0),
+                         text_color: Tuple[int, int, int] = (255, 0, 0)) -> np.ndarray:
+        """
+        可视化识别结果
+
+        Args:
+            image: 原始图像
+            boxes: 边界框列表
+            texts: 识别文本列表
+            confidences: 置信度列表
+            box_color: 框颜色 (BGR)
+            text_color: 文字颜色 (BGR)
+
+        Returns:
+            可视化后的图像
+        """
+        vis_image = image.copy()
+
+        for i, (box, text, conf) in enumerate(zip(boxes, texts, confidences)):
+            # 绘制边界框
+            box_pts = np.array(box, dtype=np.int32).reshape((-1, 1, 2))
+            cv2.polylines(vis_image, [box_pts], True, box_color, 2)
+
+            # 准备显示文本
+            display_text = f"{text} ({conf:.2f})"
+
+            # 计算文本位置（框的左上角）
+            text_pos = (int(box[0][0]), int(box[0][1]) - 5)
+
+            # 获取文本大小以绘制背景
+            (text_w, text_h), _ = cv2.getTextSize(
+                display_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2
+            )
+
+            # 绘制文本背景
+            cv2.rectangle(
+                vis_image,
+                (text_pos[0], text_pos[1] - text_h - 4),
+                (text_pos[0] + text_w, text_pos[1] + 4),
+                (0, 0, 0),
+                -1
+            )
+
+            # 绘制文本
+            cv2.putText(
+                vis_image, display_text, text_pos,
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, text_color, 2
+            )
+
+        return vis_image
+
+
+# 使用示例
+if __name__ == "__main__":
+    # 初始化OCR
+    ocr = HandwritingOCR(use_gpu=False, drop_score=0.3)
+
+    # 单张识别
+    result = ocr.recognize_single("handwriting.jpg", save_vis=True)
+    print(f"识别结果: {result['texts']}")
+    print(f"平均置信度: {result['avg_confidence']:.4f}")
+    \end{lstlisting}
+\end{frame}
+
+% 注意：重复的PaddleOCR配置页面已删除，相关内容见上方"PaddleOCR手写配置"和"手写识别参数调优"页面

@@ -1,0 +1,151 @@
+%===========================================================
+% 08_quiz.tex - 课堂Quiz
+%===========================================================
+\section{课堂Quiz}
+
+\begin{frame}{Quiz 1：形态学操作选择}
+    \begin{block}{问题}
+    填涂区域有内部孔洞（铅笔痕迹不连续），应该使用哪种形态学操作？
+    \end{block}
+
+    \begin{columns}
+        \column{0.25\textwidth}
+        \begin{alertblock}{A. 腐蚀}
+        会放大孔洞
+        \end{alertblock}
+
+        \column{0.25\textwidth}
+        \begin{alertblock}{B. 膨胀}
+        能填充但也会扩大边界
+        \end{alertblock}
+
+        \column{0.25\textwidth}
+        \begin{exampleblock}{C. 闭运算 ✓}
+        填充孔洞且保持大小
+        \end{exampleblock}
+
+        \column{0.25\textwidth}
+        \begin{alertblock}{D. 开运算}
+        用于去噪点
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Quiz 2：密度计算}
+    \begin{block}{问题}
+    一个30×30像素的选项ROI，二值化后有600个白色像素，密度是多少？
+    \end{block}
+
+    \begin{columns}
+        \column{0.25\textwidth}
+        \begin{alertblock}{A. 0.2}
+        \end{alertblock}
+
+        \column{0.25\textwidth}
+        \begin{exampleblock}{B. 0.67 ✓}
+        600/(30×30) = 0.67
+        \end{exampleblock}
+
+        \column{0.25\textwidth}
+        \begin{alertblock}{C. 0.75}
+        \end{alertblock}
+
+        \column{0.25\textwidth}
+        \begin{alertblock}{D. 0.8}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Quiz 3：阈值策略}
+    \begin{block}{问题}
+    对于填涂质量差异大的答题卡，哪种阈值策略最合适？
+    \end{block}
+
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{alertblock}{A. 固定0.2}
+        太低，易误判
+        \end{alertblock}
+
+        \column{0.33\textwidth}
+        \begin{exampleblock}{B. 自适应均值 ✓}
+        根据数据动态调整
+        \end{exampleblock}
+
+        \column{0.33\textwidth}
+        \begin{alertblock}{C. 固定0.5}
+        太高，漏检填涂
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{代码找茬挑战}
+    \begin{block}{找出代码中的问题}
+    \begin{lstlisting}
+def calculate_density(roi):
+    _, binary = cv2.threshold(roi, 127, 255, cv2.THRESH_BINARY)
+    non_zero = cv2.countNonZero(binary)
+    return non_zero / (roi.shape[0] * roi.shape[1])
+    \end{lstlisting}
+    \end{block}
+
+    \textbf{问题：} 填涂区域应该是高密度（白色），但这里...
+
+    \vspace{0.3cm}
+
+    \textbf{答案：} 应该使用 \texttt{cv2.THRESH\_BINARY\_INV} 反色
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textcolor{blue}{\textbf{[AI提示]}} 用AI解释：为什么要用THRESH\_BINARY\_INV？
+    \end{center}
+\end{frame}
+
+\begin{frame}{代码拼图挑战}
+    \begin{block}{将打乱的代码复原（小组竞赛）}
+    \begin{enumerate}
+        \item \texttt{densities.append(density)}
+        \item \texttt{for (x, y, w, h) in options:}
+        \item \texttt{roi = image[y:y+h, x:x+w]}
+        \item \texttt{density = calculate\_density(roi)}
+    \end{enumerate}
+    \end{block}
+
+    \vspace{0.5cm}
+
+    \textbf{正确顺序：} 2 → 3 → 4 → 1
+\end{frame}
+
+\begin{frame}{实战挑战}
+    \begin{block}{任务：在10分钟内完成}
+    \begin{itemize}
+        \item \textbf{基础任务}：运行示例代码，识别标准答题卡
+        \item \textbf{进阶任务}：调整参数，识别填涂较轻的答题卡
+        \item \textbf{挑战任务}：实现自适应阈值，处理混合情况
+    \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \textbf{完成任务的小组获得 +2 分附加分！}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Quiz答案总结}
+    \begin{table}
+        \centering
+        \begin{tabular}{cll}
+        \toprule
+        题号 & 正确答案 & 解析 \\
+        \midrule
+        Quiz 1 & C. 闭运算 & 填充内部孔洞 \\
+        Quiz 2 & B. 0.67 & 600/900 = 0.67 \\
+        Quiz 3 & B. 自适应均值 & 根据数据动态调整 \\
+        代码找茬 & THRESH\_BINARY\_INV & 需要反色 \\
+        代码拼图 & 2→3→4→1 & 先遍历再计算再添加 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}

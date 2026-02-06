@@ -1,0 +1,201 @@
+%===========================================================
+% 05_detection.tex - 填涂检测算法
+%===========================================================
+\section{填涂检测算法}
+
+\begin{frame}{像素密度统计}
+    \textbf{核心思想：} 填涂区域的深色像素占比高于空白区域
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{密度计算步骤：}
+        \begin{enumerate}
+            \item 提取选项ROI
+            \item 二值化（反色）
+            \item 统计白色像素数
+            \item 除以总像素数
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \begin{block}{密度公式}
+        \[ \text{density} = \frac{\text{填涂像素数}}{\text{总像素数}} \]
+        \end{block}
+
+        \textbf{典型值：}
+        \begin{itemize}
+            \item 未填涂：0.05 - 0.15
+            \item 轻度填涂：0.20 - 0.40
+            \item 完整填涂：0.50 - 0.80
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{密度计算实现}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请用Python和OpenCV实现填涂密度计算函数，包括二值化和像素计数"
+    \end{block}
+
+    \begin{block}{calculate\_density函数}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 可使用AI助手完成以下代码
+def calculate_density(option_roi, threshold=127):
+    """
+    计算填涂密度
+
+    Args:
+        option_roi: 选项区域图像（灰度图）
+        threshold: 二值化阈值
+
+    Returns:
+        density: 密度值 [0, 1]
+    """
+    # 二值化（反色：填涂变白）
+    _, binary = cv2.threshold(
+        option_roi, threshold, 255,
+        cv2.THRESH_BINARY_INV
+    )
+
+    # 统计白色像素
+    non_zero = cv2.countNonZero(binary)
+
+    # 计算密度
+    total = option_roi.shape[0] * option_roi.shape[1]
+    density = non_zero / total
+
+    return density
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}{阈值确定方法}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{方法1：固定阈值}
+        \begin{itemize}
+            \item 经验值：0.2 - 0.4
+            \item 简单但不适应场景
+        \end{itemize}
+
+        \begin{block}{示例}
+        \texttt{THRESHOLD = 0.3}\\
+        \texttt{if density > 0.3:}\\
+        \texttt{~~填涂 = True}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \textbf{方法2：自适应阈值（推荐）}
+        \begin{itemize}
+            \item 基于所有选项的密度分布
+            \item 自动确定最佳阈值
+        \end{itemize}
+
+        \begin{block}{示例}
+        \texttt{threshold = np.mean(densities)}\\
+        \texttt{threshold = np.median(densities)}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{自适应阈值策略}
+    \textbf{策略1：均值法}
+    \[ \text{threshold} = \frac{1}{n}\sum_{i=1}^{n}\text{density}_i \]
+
+    \textbf{策略2：Otsu思想}
+    \begin{itemize}
+        \item 寻找最大化类间方差的阈值
+        \item 假设：填涂和未填涂呈双峰分布
+    \end{itemize}
+
+    \textbf{策略3：相对最大值}
+    \begin{itemize}
+        \item 单选题：选择密度最高的
+        \item threshold = max(density) × 0.8
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{单选题识别}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现单选题识别函数，使用自适应阈值确定答案"
+    \end{block}
+
+    \begin{block}{recognize\_single\_choice函数}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 可使用AI助手完成以下代码
+def recognize_single_choice(question_img, option_positions):
+    """识别单道选择题"""
+    densities = []
+
+    # 计算每个选项的密度
+    for (x, y, w, h) in option_positions:
+        roi = question_img[y:y+h, x:x+w]
+        density = calculate_density(roi)
+        densities.append(density)
+
+    # 自适应确定阈值
+    threshold = np.mean(densities) + 0.1
+
+    # 找到密度最高的选项
+    max_density = max(densities)
+
+    if max_density >= threshold:
+        answer_idx = densities.index(max_density)
+        return chr(ord('A') + answer_idx)
+
+    return None  # 未填涂
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}{形态学预处理对密度的影响}
+    \begin{table}
+        \centering
+        \begin{tabular}{l|c|c|c}
+        \toprule
+        处理方式 & 填涂完整 & 填涂有孔 & 轻度填涂 \\
+        \midrule
+        不处理 & 0.65 & 0.42 & 0.25 \\
+        闭运算 & \textcolor{green}{0.72} & \textcolor{green}{0.58} & \textcolor{green}{0.31} \\
+        开运算 & 0.61 & 0.38 & 0.23 \\
+        \bottomrule
+        \end{tabular}
+        \caption{形态学处理对密度的影响}
+    \end{table}
+
+    \begin{alertblock}{结论}
+    闭运算能显著提高填涂区域的密度值，改善识别效果
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Live Coding：填涂检测实战}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现完整的填涂检测流程，包括形态学预处理、密度计算和阈值判断"
+    \end{block}
+
+    \begin{block}{任务：实现完整的填涂检测流程}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 可使用AI助手完成以下代码
+def detect_bubble(roi):
+    """检测单个选项是否填涂"""
+    # TODO: 形态学预处理（闭运算填充孔洞）
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    processed = cv2.morphologyEx(roi, cv2.MORPH_CLOSE, kernel)
+
+    # TODO: 计算密度
+    density = calculate_density(processed)
+
+    # TODO: 判断是否填涂
+    threshold = 0.3  # 或使用自适应阈值
+    filled = density > threshold
+
+    return filled, density
+
+# 测试
+for i, (x, y, w, h) in enumerate(option_positions):
+    roi = image[y:y+h, x:x+w]
+    filled, density = detect_bubble(roi)
+    print(f"选项 {chr(65+i)}: 密度={density:.2f}, 填涂={filled}")
+    \end{lstlisting}
+    \end{block}
+\end{frame}

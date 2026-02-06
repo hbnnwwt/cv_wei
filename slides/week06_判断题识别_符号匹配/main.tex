@@ -1,0 +1,107 @@
+%===========================================================
+% main.tex - 主控文件
+%===========================================================
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 导入配置文件
+\input{preamble.tex}
+
+% 学校信息（包含 logo 图片）
+\institute{%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../name.png}}\hspace{0.5cm}%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../xiaohui.png}}\hspace{0.3cm}%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
+\begin{document}
+
+%===========================================================
+% 标题页与目录
+%===========================================================
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \textbf{本周内容：}
+        \begin{itemize}
+            \item 判断题识别概述
+            \item 符号特征提取理论
+            \item 模板匹配方法
+            \item 机器学习方法
+            \item Live Coding实战
+            \item 案例分析
+        \end{itemize}
+
+        \column{0.55\textwidth}
+        \textbf{智能阅卷系统进度：}
+        \begin{enumerate}
+            \item[✓] 图像采集与预处理
+            \item[✓] 答题卡区域定位
+            \item[✓] 选择题填涂检测
+            \item \textbf{\textcolor{blue}{判断题符号识别}}
+            \item[\_] 手写文字OCR
+        \end{enumerate}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周时间分配（135分钟 = 3学时）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第1学时（45分钟）：}
+        \begin{itemize}
+            \item[00:00-00:10] 预备知识回顾（10min）
+            \item[00:10-00:25] 判断题识别概述（15min）
+            \item[00:25-00:45] 特征提取理论+演示（20min）
+        \end{itemize}
+
+        \textbf{第2学时（45分钟）：}
+        \begin{itemize}
+            \item[00:45-01:05] 模板匹配理论（20min）
+            \item[01:05-01:30] Live Coding：特征提取与匹配（25min）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{第3学时（45分钟）：}
+        \begin{itemize}
+            \item[01:30-01:55] Live Coding：完整识别流程（25min）
+            \item[01:55-02:10] 案例分析与讨论（15min）
+            \item[02:10-02:25] 课堂Quiz（15min）
+        \end{itemize}
+
+        \vspace{0.5cm}
+        \begin{alertblock}{课前准备}
+        预习：轮廓特征、模板匹配原理（5分钟视频）
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+%===========================================================
+% 教学模块
+%===========================================================
+\input{modules/00_logistics.tex}
+\input{modules/01_overview.tex}
+\input{modules/02_features.tex}
+\input{modules/03_template.tex}
+\input{modules/04_ml_methods.tex}
+\input{modules/05_opencv_tools.tex}
+\input{modules/06_ai_guide.tex}
+\input{modules/07_coding_features.tex}
+\input{modules/08_coding_template.tex}
+\input{modules/09_coding_complete.tex}
+\input{modules/10_cases.tex}
+\input{modules/11_quiz.tex}
+
+%===========================================================
+% 总结与作业
+%===========================================================
+\input{sections/summary.tex}
+
+\end{document}

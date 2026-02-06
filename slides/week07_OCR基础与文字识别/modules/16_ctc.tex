@@ -1,0 +1,135 @@
+%===========================================================
+% modules/16_ctc.tex - 序列识别与CTC
+%===========================================================
+
+\section{序列识别与CTC}
+
+\begin{frame}{CTC（Connectionist Temporal Classification）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{为什么需要CTC？}
+        \begin{itemize}
+            \item 输入序列长度 $T$ 与输出序列长度 $L$ 不一致
+            \item 对齐方式未知（$T \neq L$）
+            \item 无法直接使用交叉熵损失
+            \item 需要端到端训练
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{CTC核心思想：}
+        \begin{enumerate}
+            \item 引入空白符 $\epsilon$（blank）
+            \item 允许重复字符和空白
+            \item 所有可能的对齐路径
+            \item 路径概率求和
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \textbf{CTC对齐示例：}
+
+        目标序列："cat"
+
+        输入长度：$T=6$
+
+        可能的对齐路径：
+        \begin{itemize}
+            \item c-c-a-a-t-t
+            \item c-$\u0007epsilon$-a-t-$epsilon$-t
+            \item $epsilon$-c-a-a-$epsilon$-t
+            \item ...（所有可能的路径）
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{CTC输出处理：}
+
+        原始输出："c-$epsilon$-a-a-t-$epsilon$"
+
+        合并重复："c-$epsilon$-a-t-$epsilon$"
+
+        移除空白："cat"
+
+        \vspace{0.3cm}
+
+        \textbf{CTC的优势：}
+        \begin{itemize}
+            \item 无需对齐标注
+            \item 端到端训练
+            \item 处理变长序列
+            \item 网络输出与文本长度解耦
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{CTC数学原理与算法}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{CTC损失函数：}
+
+        对于目标序列 $y = (y_1, y_2, ..., y_L)$，CTC损失定义为：
+
+        \begin{equation*}
+            \mathcal{L}_{CTC} = -\log P(y|x) = -\log \sum_{\pi \in \mathcal{B}^{-1}(y)} P(\pi|x)
+        \end{equation*}
+
+        其中：
+        \begin{itemize}
+            \item $\pi$：CTC路径（包含空白符的序列）
+            \item $\mathcal{B}^{-1}(y)$：映射到目标序列 $y$ 的所有路径集合
+            \item $P(\pi|x) = \prod_{t=1}^{T} p_t(\pi_t|x)$：路径概率
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{前向-后向算法：}
+
+        为了高效计算CTC损失，使用动态规划的前向-后向算法。
+
+        定义前向变量 $\alpha_t(s)$：在时刻 $t$ 到达状态 $s$ 的所有路径概率之和。
+
+        定义后向变量 $\beta_t(s)$：从时刻 $t$ 的状态 $s$ 到序列结束的所有路径概率之和。
+
+        则：
+        \begin{equation*}
+            P(y|x) = \sum_{s} \alpha_t(s) \cdot \beta_t(s)
+        \end{equation*}
+
+        \column{0.5\textwidth}
+        \textbf{CTC解码策略：}
+
+        \vspace{0.2cm}
+
+        \textbf{1. 贪心解码（Greedy Decoding）：}
+        \begin{itemize}
+            \item 每时刻选择概率最大的标签
+            \item 合并重复字符，移除空白
+            \item 简单快速，但可能不是最优路径
+        \end{itemize}
+
+        \begin{equation*}
+            \pi^* = \arg\max_{\pi} \prod_{t=1}^{T} p_t(\pi_t|x)
+        \end{equation*}
+
+        \vspace{0.2cm}
+
+        \textbf{2. 束搜索（Beam Search）：}
+        \begin{itemize}
+            \item 维护Top-k个候选路径
+            \item 考虑更全局的路径组合
+            \item 精度更高，计算量更大
+        \end{itemize}
+
+        \begin{equation*}
+            \mathcal{B} = \text{top-}k \{ P(\pi|x) : \pi \in \Pi \}
+        \end{equation*}
+
+        \vspace{0.2cm}
+
+        \textbf{3. 前缀束搜索（Prefix Beam Search）：}
+        \begin{itemize}
+            \item 在标签级别进行束搜索
+            \item 更高效，实际应用广泛
+        \end{itemize}
+    \end{columns}
+\end{frame}

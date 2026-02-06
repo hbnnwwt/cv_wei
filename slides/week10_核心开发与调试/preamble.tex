@@ -1,0 +1,58 @@
+%===========================================================
+% preamble.tex - Beamer 配置文件
+%===========================================================
+
+% 中文支持
+\usepackage[UTF8]{ctex}
+
+% 图形与表格
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+% 颜色与图形（必须在listings之前加载）
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning}
+
+% 数学公式
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% 代码高亮
+\usepackage{listings}
+
+\lstset{
+    language=Python,
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{orange},
+    breaklines=true,
+    showstringspaces=false,
+    keepspaces=true
+}
+
+% 超链接
+\usepackage{hyperref}
+
+%===========================================================
+% 主题设置
+%===========================================================
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+%===========================================================
+% 课程信息
+%===========================================================
+\title[核心开发与调试]{第10周：核心开发与调试}
+\subtitle{让系统真正跑起来}
+\author{北京石油化工学院\textbackslash 人工智能研究院\textbackslash 王文通}
+\institute{通选课}
+\date{2025-2026 学年}
+
+%===========================================================
+% 自定义命令
+%===========================================================
+% 高亮命令
+\newcommand{\highlight}[1]{\textcolor{red}{\textbf{#1}}}

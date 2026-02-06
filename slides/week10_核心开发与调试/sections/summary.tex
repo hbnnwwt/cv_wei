@@ -1,0 +1,311 @@
+%===========================================================
+% 总结与作业
+%===========================================================
+
+\section{总结与作业}
+
+%----------------------------------------------------------
+\subsection{知识点总结}
+%----------------------------------------------------------
+
+\begin{frame}{系统开发完整流程}
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.8cm,
+            phase/.style={draw, fill=blue!15, minimum width=2.8cm, minimum height=0.8cm, align=center, font=\small},
+            deliverable/.style={font=\tiny, align=center}
+        ]
+            % 阶段
+            \node[phase] (req) {需求分析};
+            \node[phase, right=0.5cm of req] (design) {系统设计};
+            \node[phase, right=0.5cm of design] (impl) {编码实现};
+            \node[phase, right=0.5cm of impl] (test) {测试验证};
+            \node[phase, right=0.5cm of test] (deploy) {部署运维};
+
+            % 连接线
+            \draw[-Stealth, thick] (req) -- (design);
+            \draw[-Stealth, thick] (design) -- (impl);
+            \draw[-Stealth, thick] (impl) -- (test);
+            \draw[-Stealth, thick] (test) -- (deploy);
+
+            % 产出物
+            \node[deliverable, below=0.1cm of req] {需求文档\\用例图};
+            \node[deliverable, below=0.1cm of design] {架构图\\接口设计};
+            \node[deliverable, below=0.1cm of impl] {源代码\\注释文档};
+            \node[deliverable, below=0.1cm of test] {测试报告\\缺陷列表};
+            \node[deliverable, below=0.1cm of deploy] {运维手册\\监控告警};
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{核心原则：}
+    \begin{itemize}
+        \item 需求驱动，文档先行
+        \item 迭代增量，持续交付
+        \item 测试保护，重构无忧
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{调试技术速查表}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{问题定位方法}
+            \begin{itemize}
+                \item 二分法：快速缩小范围
+                \item 假设验证：科学排查思路
+                \item 最小复现：剥离干扰因素
+                \item 日志追踪：生产环境必备
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{调试工具选择}
+            \begin{itemize}
+                \item IDE调试器：单步、断点、变量
+                \item pdb/ipdb：命令行调试
+                \item print/logging：简单直接
+                \item 性能分析：cProfile、line\_profiler
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{调试黄金法则：}
+    \begin{enumerate}
+        \item 先复现，再定位
+        \item 先假设，再验证
+        \item 先理解，再修复
+        \item 先测试，再提交
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{测试策略对比表}
+    \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{测试类型} & \textbf{粒度} & \textbf{速度} & \textbf{范围} \\
+            \midrule
+            单元测试 & 函数/类 & 极快（毫秒） & 单个组件 \\
+            集成测试 & 模块间 & 较快（秒） & 接口交互 \\
+            端到端测试 & 完整流程 & 慢（分钟） & 用户场景 \\
+            \bottomrule
+        \end{table}
+
+        \vspace{0.3cm}
+
+        \textbf{测试金字塔原则：}
+        \begin{itemize}
+            \item 大量单元测试（70\%）
+            \item 适量集成测试（20\%）
+            \item 少量端到端测试（10\%）
+        \end{itemize}
+    \end{table}
+\end{frame}
+
+\begin{frame}{常见问题解决方案汇总}
+    \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{lp{6cm}}
+            \toprule
+            \textbf{问题类型} & \textbf{解决方案} \\
+            \midrule
+            性能瓶颈 & 分析热点、算法优化、缓存、异步处理 \\
+            内存泄漏 & 检查循环引用、及时释放资源、gc监控 \\
+            并发问题 & 锁机制、线程安全、进程隔离 \\
+            识别不准 & 调参、数据增强、模型优化 \\
+            模块集成失败 & 检查接口、版本兼容、依赖管理 \\
+            测试不稳定 & 隔离依赖、Mock外部服务、固定随机种子 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{课后作业}
+%----------------------------------------------------------
+
+\begin{frame}{任务层级（可选路径）}
+    \textbf{三条路径，适合不同基础的同学：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.32\textwidth}
+            \begin{block}{观察者路径\\（基础60分）}
+                \begin{itemize}
+                    \item 理解代码架构
+                    \item 运行框架代码
+                    \item 调整参数功能
+                \end{itemize}
+                \vspace{0.2cm}
+                \textbf{适合：}\\编程基础较弱
+            \end{block}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \begin{block}{使用者路径\\（进阶+20分）}
+                \begin{itemize}
+                    \item 补充模块代码
+                    \item 编写单元测试
+                    \item 优化准确率80\%+
+                \end{itemize}
+                \vspace{0.2cm}
+                \textbf{适合：}\\有编程基础
+            \end{block}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \begin{block}{创造者路径\\（挑战+20分）}
+                \begin{itemize}
+                    \item 设计新功能
+                    \item AI辅助重构
+                    \item 性能优化
+                \end{itemize}
+                \vspace{0.2cm}
+                \textbf{适合：}编程能力较强
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周核心任务}
+    \begin{alertblock}{所有路径必须完成（P0任务）}
+        \begin{enumerate}
+            \item \textbf{完成模块开发}（至少选择题+判断题）
+            \item \textbf{完成模块集成}
+            \item \textbf{通过基本功能测试}
+        \end{enumerate}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \textbf{各路径额外任务：}
+    \begin{itemize}
+        \item \textbf{观察者}：完成基础任务即可获得60分
+        \item \textbf{使用者}：补充核心模块+测试，额外获得20分
+        \item \textbf{创造者}：新功能+重构+优化，额外获得20分
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{作业详细要求}
+    \textbf{代码质量要求：}
+    \begin{itemize}
+        \item 函数长度不超过50行
+        \item 每个函数有清晰文档字符串
+        \item 关键逻辑有注释说明
+        \item 命名清晰，见名知意
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{测试要求：}
+    \begin{itemize}
+        \item 核心函数有单元测试
+        \item 测试覆盖正常和异常情况
+        \item 提供测试运行说明
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{提交格式：}
+    \begin{itemize}
+        \item 源码压缩包（包含README）
+        \item 测试样例和预期结果
+        \item 运行演示视频（可选加分）
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{评分标准}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lc}
+            \toprule
+            \textbf{评分项} & \textbf{分值} \\
+            \midrule
+            功能完整性 & 40分 \\
+            代码质量 & 20分 \\
+            测试覆盖 & 15分 \\
+            文档完整性 & 15分 \\
+            演示效果 & 10分 \\
+            \midrule
+            \textbf{总分} & \textbf{100分} \\
+            \bottomrule
+        \end{table}
+
+        \vspace{0.3cm}
+
+        \textbf{加分项：}
+        \begin{itemize}
+            \item 使用TDD开发（+5分）
+            \item 性能优化有数据支撑（+5分）
+            \item 额外的错误处理（+3分）
+        \end{itemize}
+    \end{table}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{延伸学习资源}
+%----------------------------------------------------------
+
+\begin{frame}{推荐学习资源}
+    \textbf{书籍推荐：}
+    \begin{itemize}
+        \item 《代码大全》- Steve McConnell（软件工程圣经）
+        \item 《重构》- Martin Fowler（重构技术权威）
+        \item 《代码整洁之道》- Robert C. Martin（Clean Code）
+        \item 《Python编程：从入门到实践》- 基础入门
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{在线资源：}
+    \begin{itemize}
+        \item Python官方文档：https://docs.python.org/zh-cn/3/
+        \item pytest文档：https://docs.pytest.org/
+        \item Real Python：https://realpython.com/（高质量教程）
+        \item 廖雪峰Python教程（中文入门）
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第11周：成果展示与总结}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        每组5分钟演示 + 2分钟答辩
+
+        \vspace{0.3cm}
+
+        \textbf{展示内容：}
+        \begin{itemize}
+            \item 系统功能演示
+            \item 技术架构介绍
+            \item 开发过程分享
+            \item 问题与解决方案
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \Large \textbf{准备好你们的展示！}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{加油！}
+
+        \vspace{1cm}
+
+        \Large 最后一周冲刺
+
+        \vspace{0.5cm}
+
+        \normalsize
+        让系统真正跑起来！
+    \end{center}
+\end{frame}

@@ -1,0 +1,122 @@
+%===========================================================
+% 06_ai_guide.tex - AI辅助编程指导
+%===========================================================
+\section{AI辅助编程}
+
+\begin{frame}{AI辅助编程：本周使用指南}
+    \begin{block}{AI工具推荐}
+        \begin{itemize}
+            \item \textbf{Cursor}: 强烈推荐，AI辅助编程IDE
+            \item \textbf{ChatGPT/Claude}: 通用AI编程助手
+            \item \textbf{通义灵码}: 国内可用的AI编程工具
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{本周AI辅助任务：}
+    \begin{itemize}
+        \item 用AI解释圆度和凸性的数学原理
+        \item 用AI生成轮廓特征提取代码框架
+        \item 用AI调试特征阈值参数
+        \item 用AI优化模板匹配性能
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Prompt工程：RTF框架}
+    \textbf{RTF框架示例：}
+
+    \begin{exampleblock}{Prompt模板}
+    \texttt{[角色] 你是OpenCV和图像处理专家 \\
+    [任务] 帮我解释什么是Hu矩，以及它如何用于符号识别 \\
+    [格式] 用通俗语言配合具体示例说明}
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{场景示例：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 示例1：理解概念
+请解释圆度的概念，并用简单的比喻帮助我理解
+为什么对号的圆度较低而圆圈的圆度较高。
+
+# 示例2：代码生成
+请用Python和OpenCV实现计算轮廓的圆度、凸性特征，
+并解释每个参数的含义。
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助调试：问题诊断}
+    \textbf{常见问题与AI求助方式：}
+
+    \begin{alertblock}{问题：符号识别错误}
+    \textbf{Prompt模板：}
+    \texttt{我的判断题符号识别代码将对号误识别为错号。\\
+    运行环境：Windows 11, Python 3.9, OpenCV 4.8\\
+    特征值：圆度=0.65, 凸性=0.85\\
+    代码：[粘贴关键代码片段]\\
+    请帮我分析问题并提供解决方案。}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \textbf{AI调试三部曲（回顾Week 2）：}
+    \begin{enumerate}
+        \item \textbf{问题定位}：向AI描述现象，请求可能原因
+        \item \textbf{代码分析}：粘贴代码，请求AI检查bug
+        \item \textbf{解决方案}：请AI提供修复代码和解释
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助学习：代码脚手架使用}
+    \begin{block}{代码脚手架说明}
+        以下是带有TODO标记的代码框架，请使用AI助手完成TODO部分。
+    \end{block}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def extract_features(contour):
+    """提取轮廓特征"""
+    features = {}
+
+    # TODO: 使用AI助手完成以下代码
+    # Prompt: 请用Python和OpenCV实现轮廓特征提取
+
+    # TODO: 计算轮廓面积
+    # 提示：使用cv2.contourArea()
+    features['area'] = ______
+
+    # TODO: 计算轮廓周长
+    # 提示：使用cv2.arcLength(contour, True)
+    features['perimeter'] = ______
+
+    # TODO: 计算圆度
+    # 提示：圆度公式 C = 4π × Area / Perimeter²
+    features['circularity'] = ______
+
+    return features
+    \end{lstlisting}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \small \textbf{练习}：使用Cursor/Claude完成上述TODO，并解释每个步骤
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助学习：高级Prompt技巧}
+    \textbf{场景1：优化模板匹配}
+    \begin{exampleblock}{Prompt示例}
+        我的模板匹配识别准确率不高，特别是对于手写差异较大的符号。
+        当前方法：cv2.matchTemplate(roi, template, cv2.TM\_CCOEFF\_NORMED)
+        问题：手写对号和标准模板的匹配度较低。
+        请提供优化方案的实现代码。
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{场景2：设计自适应阈值}
+    \begin{exampleblock}{Prompt示例}
+        我想设计一个自适应阈值系统，能够根据不同的手写风格自动调整圆度和凸性的阈值。
+        请提供设计思路和Python实现代码。
+    \end{exampleblock}
+\end{frame}

@@ -39,15 +39,45 @@
 			\toprule
 			\textbf{工具}    & \textbf{特点}  & \textbf{适用场景} & \textbf{推荐指数} \\
 			\midrule
-			ChatGPT        & 对话能力强，代码生成准确 & 学习、调试、解释      & ⭐⭐⭐⭐⭐         \\
-			Claude         & 代码分析深入       & 代码审查、架构设计     & ⭐⭐⭐⭐⭐         \\
-			GitHub Copilot & IDE集成，实时补全   & 日常编码、快速开发     & ⭐⭐⭐⭐☆         \\
-			Cursor         & AI原生IDE      & 项目开发、重构       & ⭐⭐⭐⭐⭐         \\
-			通义千问           & 中文友好，国内可用    & 中文问题咨询        & ⭐⭐⭐⭐☆         \\
-			DeepSeek       & 编程能力强，开源     & 代码生成、算法实现     & ⭐⭐⭐⭐⭐         \\
+			ChatGPT        & 对话能力强，代码生成准确 & 学习、调试、解释      & [star][star][star][star][star]         \\
+			Claude         & 代码分析深入       & 代码审查、架构设计     & [star][star][star][star][star]         \\
+			GitHub Copilot & IDE集成，实时补全   & 日常编码、快速开发     & [star][star][star][star][star-empty]         \\
+			Cursor         & AI原生IDE      & 项目开发、重构       & [star][star][star][star][star]         \\
+			通义千问           & 中文友好，国内可用    & 中文问题咨询        & [star][star][star][star][star-empty]         \\
+			DeepSeek       & 编程能力强，开源     & 代码生成、算法实现     & [star][star][star][star][star]         \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
+\end{frame}
+
+\begin{frame}{AI编程工具发展史：从传统IDE到AI助手}
+	\begin{center}
+		\begin{tikzpicture}[scale=0.9]
+			% 时间轴
+			\draw[->, thick] (0,0) -- (12,0);
+
+			% 时间节点
+			\node[below] at (1,-0.3) {\small 2018};
+			\node[below] at (4,-0.3) {\small 2020};
+			\node[below] at (7,-0.3) {\small 2022};
+			\node[below] at (10,-0.3) {\small 2024-26};
+
+			% 事件
+			\node[draw, fill=blue!20, align=center] at (1,1.5) {\small TabNine\\\small 代码补全};
+			\node[draw, fill=green!20, align=center] at (4,1.5) {\small GPT-3发布\\\small 代码生成};
+			\node[draw, fill=orange!20, align=center] at (7,1.5) {\small ChatGPT\\\small Copilot爆发};
+			\node[draw, fill=red!20, align=center] at (10,1.5) {\small Claude/Cursor\\\small 原生AI IDE};
+		\end{tikzpicture}
+	\end{center}
+
+	\begin{block}{里程碑事件}
+		\begin{itemize}
+			\item \textbf{2018}：TabNine首次将深度学习用于代码补全
+			\item \textbf{2020}：GPT-3展示强大的代码生成能力
+			\item \textbf{2022}：ChatGPT和GitHub Copilot引爆AI编程浪潮
+			\item \textbf{2024-26}：Claude、Cursor等原生AI IDE重新定义编程体验
+		\end{itemize}
+	\end{block}
 \end{frame}
 
 % -----------------------------------------------------------------------------
@@ -178,11 +208,11 @@
 			\toprule
 			\textbf{模型}    & \textbf{代码质量} & \textbf{中文理解} & \textbf{运行成功率} \\
 			\midrule
-			GPT-4o         & ⭐⭐⭐⭐⭐         & ⭐⭐⭐⭐☆         & 95\%           \\
-			Claude 3.5     & ⭐⭐⭐⭐⭐         & ⭐⭐⭐⭐☆         & 93\%           \\
-			DeepSeek-Coder & ⭐⭐⭐⭐☆         & ⭐⭐⭐⭐⭐         & 90\%           \\
-			通义千问2.5        & ⭐⭐⭐⭐☆         & ⭐⭐⭐⭐⭐         & 88\%           \\
-			GPT-3.5        & ⭐⭐⭐☆☆         & ⭐⭐⭐☆☆         & 75\%           \\
+			GPT-4o         & [star][star][star][star][star]         & [star][star][star][star][star-empty]         & 95\%           \\
+			Claude 3.5     & [star][star][star][star][star]         & [star][star][star][star][star-empty]         & 93\%           \\
+			DeepSeek-Coder & [star][star][star][star][star-empty]         & [star][star][star][star][star]         & 90\%           \\
+			通义千问2.5        & [star][star][star][star][star-empty]         & [star][star][star][star][star]         & 88\%           \\
+			GPT-3.5        & [star][star][star][star-empty][star-empty]         & [star][star][star][star-empty][star-empty]         & 75\%           \\
 			\bottomrule
 		\end{tabular}
 	\end{table}
@@ -206,4 +236,295 @@
 			\item 价格更实惠
 		\end{itemize}
 	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 5. ChatGPT 详细使用教程
+% -----------------------------------------------------------------------------
+
+\begin{frame}{ChatGPT 使用教程（一）：账号与界面}
+	\textbf{1. 账号注册与登录}
+	\begin{itemize}
+		\item 访问 \url{https://chat.openai.com}
+		\item 使用邮箱/Google/Microsoft 账号注册
+		\item 免费版使用 GPT-4o mini，Plus 版使用 GPT-4o
+	\end{itemize}
+
+	\vspace{0.3cm}
+
+	\textbf{2. 界面介绍}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{左侧边栏}
+			\begin{itemize}
+				\item 新建对话
+				\item 历史记录
+				\item GPTs 商店
+			\end{itemize}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{block}{输入区域}
+			\begin{itemize}
+				\item 文字输入框
+				\item 文件上传
+				\item 语音输入
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{ChatGPT 使用教程（二）：编程技巧}
+	\textbf{核心功能：}
+	\begin{enumerate}
+		\item \textbf{代码生成}：描述功能需求，ChatGPT 生成代码
+		\item \textbf{代码解释}：粘贴代码，逐行解释逻辑
+		\item \textbf{错误调试}：粘贴错误信息，分析原因
+		\item \textbf{代码优化}：要求优化性能/可读性
+	\end{enumerate}
+
+	\vspace{0.3cm}
+
+	\textbf{高级功能（Plus 用户）：}
+	\begin{itemize}
+		\item \textbf{GPTs}：创建专用助手（如 "OpenCV 专家"）
+		\item \textbf{文件分析}：上传 PDF/代码文件分析
+		\item \textbf{联网搜索}：获取最新文档
+		\item \textbf{数据分析}：上传 Excel/CSV，生成分析代码
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{ChatGPT 使用教程（三）：实战示例}
+	\textbf{示例：用 ChatGPT 实现人脸检测}
+
+	\vspace{0.2cm}
+
+	\textbf{Prompt 模板：}
+
+	\begin{block}{推荐 Prompt}
+		你是一位有 5 年 OpenCV 经验的工程师。请用 Python 和 OpenCV 实现人脸检测：
+
+		\textbf{功能：} 从图片中检测所有人脸，并用绿色矩形框标注
+
+		\textbf{输入：} 图片文件路径（字符串）
+
+		\textbf{输出：} 显示标注后的图像，打印检测到的人脸数量
+
+		\textbf{要求：}
+		\begin{itemize}
+			\item 使用 Haar 级联分类器
+			\item 处理中文路径问题
+			\item 代码有详细中文注释
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 6. Claude 详细使用教程
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Claude 使用教程（一）：核心优势}
+	\textbf{Claude vs ChatGPT：代码分析更深入}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{Claude 独特优势：}
+		\begin{itemize}
+			\item \textbf{长文本处理}：支持 200K token
+			\item \textbf{代码审查}：分析完整项目
+			\item \textbf{安全意识}：避免不安全代码
+			\item \textbf{诚实性}：不知道时会说明
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{适用场景：}
+		\begin{itemize}
+			\item 架构设计咨询
+			\item 复杂代码重构
+			\item 代码审查与优化
+			\item 长文档分析
+		\end{itemize}
+	\end{columns}
+
+	\vspace{0.3cm}
+
+	\begin{block}{访问方式}
+		\begin{itemize}
+			\item 网页版：\url{https://claude.ai}
+			\item Claude Code：命令行工具
+			\item API：开发者集成
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Claude 使用教程（二）：Artifacts 功能}
+	\textbf{Artifacts：Claude 的杀手级功能}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.6\textwidth}
+		\textbf{什么是 Artifacts？}
+		\begin{itemize}
+			\item 侧边栏预览生成内容
+			\item 支持 HTML/React/Mermaid
+			\item 实时编辑与交互
+		\end{itemize}
+
+		\vspace{0.2cm}
+
+		\textbf{实战应用：}
+		\begin{itemize}
+			\item 生成可视化图表
+			\item 创建交互式文档
+			\item 快速原型开发
+		\end{itemize}
+
+		\column{0.4\textwidth}
+		\begin{alertblock}{示例}
+			让 Claude 生成：
+			\begin{itemize}
+				\item 数据处理流程图
+				\item 算法架构图
+				\item API 文档页面
+			\end{itemize}
+		\end{alertblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Claude 使用教程（三）：代码审查实战}
+	\textbf{用 Claude 进行代码审查}
+
+	\vspace{0.3cm}
+
+	\textbf{步骤 1：提供上下文}
+
+	\begin{alertblock}{输入}
+		"这是我的人脸检测代码，请审查其质量和安全性"
+	\end{alertblock}
+
+	\vspace{0.2cm}
+
+	\textbf{步骤 2：Claude 分析}
+	\begin{itemize}
+		\item 指出潜在的安全漏洞
+		\item 建议性能优化方案
+		\item 检查边界情况处理
+		\item 评估代码可读性
+	\end{itemize}
+
+	\vspace{0.2cm}
+
+	\textbf{步骤 3：迭代改进}
+
+	\begin{exampleblock}{输出}
+		"请按照你的建议重构这段代码"
+	\end{exampleblock}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 7. 通义千问详细使用教程
+% -----------------------------------------------------------------------------
+
+\begin{frame}{通义千问使用教程（一）：国内优势}
+	\textbf{为什么选择通义千问？}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{核心优势}
+			\begin{itemize}
+				\item \textbf{中文友好}：理解中文术语
+				\item \textbf{国内可用}：无需特殊网络
+				\item \textbf{免费额度}：每日百万 token
+				\item \textbf{多模态}：支持图像理解
+			\end{itemize}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{block}{适用场景}
+			\begin{itemize}
+				\item 中文技术问题咨询
+				\item 代码中文注释生成
+				\item 中文文档撰写
+				\item 图像识别与分析
+			\end{itemize}
+		\end{block}
+	\end{columns}
+
+	\vspace{0.3cm}
+
+	\textbf{访问方式：}
+	\begin{itemize}
+		\item 网页版：\url{https://tongyi.aliyun.com}
+		\item 通义灵码：IDE 插件（类似 Copilot）
+		\item API：Python SDK 集成
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{通义千问使用教程（二）：灵码插件}
+	\textbf{通义灵码：阿里推出的智能编码助手}
+
+	\vspace{0.3cm}
+
+	\textbf{安装与配置：}
+	\begin{enumerate}
+		\item VS Code / JetBrains 搜索 "Tongyi Lingma"
+		\item 使用阿里云账号登录
+		\item 开始使用自动补全
+	\end{enumerate}
+
+	\vspace{0.3cm}
+
+	\textbf{核心功能：}
+	\begin{itemize}
+		\item \textbf{智能补全}：根据上下文预测代码
+		\item \textbf{注释生成}：一键添加中文注释
+		\item \textbf{代码解释}：选中代码查看解释
+		\item \textbf{单元测试}：自动生成测试用例
+	\end{itemize}
+
+	\vspace{0.2cm}
+
+	\begin{block}{免费额度}
+		个人用户每月 20 万次补全，完全免费！
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{通义千问使用教程（三）：Python SDK}
+	\textbf{在代码中直接调用通义千问}
+
+	\vspace{0.3cm}
+
+	\textbf{安装 SDK：}
+	\begin{verbatim}
+	pip install dashscope
+	\end{verbatim}
+
+	\vspace{0.3cm}
+
+	\textbf{代码示例：}
+	\begin{lstlisting}[language=Python, basicstyle=\tiny\ttfamily]
+import dashscope
+from dashscope import Generation
+
+# 设置 API Key
+dashscope.api_key = "your-api-key"
+
+# 调用模型
+response = Generation.call(
+    model='qwen-turbo',
+    prompt='用 Python 和 OpenCV 实现图像灰度化',
+    max_tokens=1500
+)
+
+print(response.output.text)
+	\end{lstlisting}
+
+	\vspace{0.2cm}
+
+	\textbf{应用场景：} 自动化脚本、批量处理、集成开发
 \end{frame}

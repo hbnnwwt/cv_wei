@@ -1,0 +1,44 @@
+%===========================================================
+% 模块03：测试策略
+%===========================================================
+
+\section{测试策略}
+
+\begin{frame}{测试集准备}
+    \textbf{测试数据：}
+    \begin{itemize}
+        \item 基础选择题：单独测试选择题识别
+        \item 基础判断题：单独测试判断题识别
+        \item 完整试卷：测试整体流程
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{测试目标：}
+    \begin{itemize}
+        \item 选择题准确率 $>$80\%
+        \item 判断题准确率 $>$80\%
+        \item 简答题能提取文字
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{单元测试示例}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import unittest
+
+class TestChoiceRecognizer(unittest.TestCase):
+    def test_calculate_density(self):
+        """测试密度计算"""
+        test_img = create_test_image(density=0.5)
+        density = self.recognizer.calculate_density(test_img)
+        self.assertAlmostEqual(density, 0.5, places=1)
+
+    def test_recognize_single(self):
+        """测试单题识别"""
+        result = self.recognizer.recognize_question(img, positions)
+        self.assertIn(result, ['A', 'B', 'C', 'D', None])
+
+if __name__ == '__main__':
+    unittest.main()
+    \end{lstlisting}
+\end{frame}

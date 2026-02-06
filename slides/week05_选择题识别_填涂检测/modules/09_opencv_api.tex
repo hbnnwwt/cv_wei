@@ -1,0 +1,171 @@
+%===========================================================
+% 09_opencv_api.tex - OpenCV API工具介绍
+%===========================================================
+\section{OpenCV API工具介绍}
+
+\begin{frame}{形态学处理API}
+    \textbf{核心函数：}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{5cm}l}
+        \toprule
+        函数 & 功能描述 & 使用场景 \\
+        \midrule
+        \texttt{cv2.erode()} & 腐蚀操作 & 去除噪点、分离目标 \\
+        \texttt{cv2.dilate()} & 膨胀操作 & 填充孔洞、连接区域 \\
+        \texttt{cv2.morphologyEx()} & 通用形态学操作 & 开/闭/梯度/顶帽/黑帽 \\
+        \texttt{cv2.getStructuringElement()} & 创建结构元素 & 定义操作的探针形状 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{morphologyEx操作类型}
+    \begin{itemize}
+        \item \texttt{cv2.MORPH\_ERODE}：腐蚀
+        \item \texttt{cv2.MORPH\_DILATE}：膨胀
+        \item \texttt{cv2.MORPH\_OPEN}：开运算
+        \item \texttt{cv2.MORPH\_CLOSE}：闭运算
+        \item \texttt{cv2.MORPH\_GRADIENT}：梯度
+        \item \texttt{cv2.MORPH\_TOPHAT}：顶帽
+        \item \texttt{cv2.MORPH\_BLACKHAT}：黑帽
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{连通域分析API}
+    \textbf{核心函数：}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{4cm}l}
+        \toprule
+        函数 & 功能描述 & 返回值 \\
+        \midrule
+        \texttt{cv2.connectedComponents()} & 连通域标记 & 标签数量、标签图像 \\
+        \texttt{cv2.connectedComponentsWithStats()} & 带统计的标记 & +统计信息、质心 \\
+        \texttt{cv2.findContours()} & 轮廓查找 & 轮廓列表、层次结构 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{统计信息索引（stats）：}
+    \begin{itemize}
+        \item \texttt{cv2.CC\_STAT\_LEFT}：外接矩形左上角x
+        \item \texttt{cv2.CC\_STAT\_TOP}：外接矩形左上角y
+        \item \texttt{cv2.CC\_STAT\_WIDTH}：外接矩形宽度
+        \item \texttt{cv2.CC\_STAT\_HEIGHT}：外接矩形高度
+        \item \texttt{cv2.CC\_STAT\_AREA}：连通域面积
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{模板匹配API}
+    \textbf{AI辅助提示：}
+    \aihint{} "请解释OpenCV的matchTemplate函数如何工作，以及不同匹配方法的区别"
+
+    \textbf{核心函数：}
+
+    \begin{block}{cv2.matchTemplate()}
+    \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+result = cv2.matchTemplate(
+    image,      # 搜索图像
+    template,   # 模板图像
+    method,     # 匹配方法
+    mask=None   # 掩码（可选）
+)
+    \end{lstlisting}
+    \end{block}
+
+    \textbf{匹配方法：}
+    \begin{table}
+        \centering
+        \tiny
+        \begin{tabular}{ll}
+        \toprule
+        方法 & 说明 \\
+        \midrule
+        \texttt{cv2.TM\_SQDIFF} & 平方差匹配（值越小越好） \\
+        \texttt{cv2.TM\_SQDIFF\_NORMED} & 归一化平方差 \\
+        \texttt{cv2.TM\_CCOEFF} & 相关系数 \\
+        \texttt{cv2.TM\_CCOEFF\_NORMED} & 归一化相关系数（推荐） \\
+        \texttt{cv2.TM\_CCORR} & 互相关 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{几何变换API}
+    \textbf{AI辅助提示：}
+    \aihint{} "请解释透视变换的原理，并用OpenCV实现答题卡倾斜校正"
+
+    \textbf{透视变换：}
+
+    \begin{block}{获取透视变换矩阵}
+    \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+M = cv2.getPerspectiveTransform(
+    src,  # 源图像四个点
+    dst   # 目标图像四个点
+)
+    \end{lstlisting}
+    \end{block}
+
+    \begin{block}{执行透视变换}
+    \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+warped = cv2.warpPerspective(
+    image,    # 输入图像
+    M,        # 变换矩阵
+    dsize     # 输出图像大小 (width, height)
+)
+    \end{lstlisting}
+    \end{block}
+
+    \textbf{应用：} 答题卡倾斜校正、透视变形修复
+\end{frame}
+
+\begin{frame}[fragile]{Live Coding：OpenCV API综合使用}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请指导我使用OpenCV的API完成答题卡定位，包括二值化、轮廓查找、气泡筛选"
+    \end{block}
+
+    \begin{block}{任务：使用API完成答题卡定位}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+# 读取答题卡
+card = cv2.imread("answer_card.png", cv2.IMREAD_GRAYSCALE)
+
+# TODO: 二值化
+_, binary = cv2.threshold(card, 127, 255, cv2.THRESH_BINARY_INV)
+
+# TODO: 查找轮廓（定位选项气泡）
+contours, hierarchy = cv2.findContours(
+    binary,
+    cv2.RETR_EXTERNAL,
+    cv2.CHAIN_APPROX_SIMPLE
+)
+
+# TODO: 筛选气泡状轮廓
+bubbles = []
+for cnt in contours:
+    x, y, w, h = cv2.boundingRect(cnt)
+    area = cv2.contourArea(cnt)
+    ratio = w / h if h > 0 else 0
+
+    # 筛选条件：面积适中、接近圆形
+    if 500 < area < 5000 and 0.7 < ratio < 1.3:
+        bubbles.append((x, y, w, h))
+
+print(f"找到 {len(bubbles)} 个选项气泡")
+    \end{lstlisting}
+    \end{block}
+\end{frame}

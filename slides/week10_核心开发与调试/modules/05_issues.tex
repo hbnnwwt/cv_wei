@@ -1,0 +1,23 @@
+%===========================================================
+% 模块05：常见问题
+%===========================================================
+
+\section{常见问题}
+
+\begin{frame}{常见问题与解决}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}}
+            \toprule
+            \textbf{问题} & \textbf{解决方案} \\
+            \midrule
+            填涂识别不准 & 调整阈值，检查二值化 \\
+            符号识别失败 & 检查轮廓，用模板匹配后备 \\
+            OCR结果乱码 & 检查预处理，调整分辨率 \\
+            模块导入错误 & 检查sys.path，确保\_\_init\_\_.py \\
+            数组越界 & 使用safe\_crop，检查边界 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}

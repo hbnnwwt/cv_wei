@@ -1,0 +1,208 @@
+%===========================================================
+% summary.tex - 知识点总结与课后作业
+%===========================================================
+\section{总结与作业}
+
+\begin{frame}{本周知识地图}
+    \begin{center}
+    \begin{tikzpicture}[
+        node distance=0.5cm and 0.8cm,
+        box/.style={draw, rectangle, rounded corners, minimum width=2cm, minimum height=0.8cm, align=center}
+    ]
+        \node[box, fill=blue!20] (omr) {OMR\\原理};
+        \node[box, fill=yellow!20, right=of omr] (morph) {形态学\\处理};
+        \node[box, fill=green!20, right=of morph] (conn) {连通域\\分析};
+        \node[box, fill=orange!20, below=of morph] (loc) {选项\\定位};
+        \node[box, fill=red!20, right=of loc] (detect) {填涂\\检测};
+        \node[box, fill=purple!20, right=of detect] (impl) {完整\\实现};
+
+        \draw[->] (omr) -- (morph);
+        \draw[->] (morph) -- (conn);
+        \draw[->] (morph) -- (loc);
+        \draw[->] (conn) -- (loc);
+        \draw[->] (loc) -- (detect);
+        \draw[->] (detect) -- (impl);
+    \end{tikzpicture}
+    \end{center}
+
+    \textbf{核心技能：}
+    \begin{itemize}
+        \item 掌握形态学操作（腐蚀、膨胀、开运算、闭运算）
+        \item 理解连通域分析的应用
+        \item 实现填涂检测算法
+        \item 构建完整的识别系统
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{算法对比总结}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{l|p{3cm}|p{4cm}}
+        \toprule
+        技术 & 核心思想 & 适用场景 \\
+        \midrule
+        腐蚀 & 前景缩小 & 去除噪点 \\
+        膨胀 & 前景扩大 & 填充孔洞 \\
+        开运算 & 先腐后胀 & 去噪保形 \\
+        闭运算 & 先胀后腐 & \textcolor{green}{填充孔洞（填涂检测常用）} \\
+        连通域分析 & 区域标记 & 自动定位选项 \\
+        密度统计 & 像素占比 & 判断是否填涂 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{智能阅卷系统进度}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{已完成模块：}
+        \begin{enumerate}
+            \item[\checkmark] 图像采集与预处理
+            \item[\checkmark] 答题卡区域定位
+            \item[\checkmark] 选择题填涂检测
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \textbf{待完成模块：}
+        \begin{enumerate}
+            \item[\_] 判断题符号识别
+            \item[\_] 手写文字OCR
+            \item[\_] 系统集成与部署
+        \end{enumerate}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{本周成果}
+    完成选择题识别模块，为智能阅卷系统添加核心功能
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{课后作业}
+    \begin{block}{题目：实现选择题填涂识别模块}
+    \end{block}
+
+    \textbf{基础任务（60分）：}
+    \begin{enumerate}
+        \item 实现选项区域定位（15分）
+        \item 实现填涂密度计算（15分）
+        \item 识别单选题答案（15分）
+        \item 可视化标注识别结果（15分）
+    \end{enumerate}
+
+    \textbf{拓展任务（20分）：}
+    \begin{itemize}
+        \item 实现形态学预处理，提高识别准确率
+        \item 实现自适应阈值策略
+    \end{itemize}
+
+    \textbf{挑战任务（20分）：}
+    \begin{itemize}
+        \item 处理多选题识别
+        \item 实现几何校正，处理倾斜扫描
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{作业提交要求}
+    \textbf{提交内容：}
+    \begin{itemize}
+        \item 代码文件（.py）
+        \item 测试结果截图
+        \item 简要说明文档（.md或.txt）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{评分标准：}
+    \begin{table}
+        \centering
+        \begin{tabular}{lc}
+        \toprule
+        评分项 & 分值 \\
+        \midrule
+        选项定位准确性 & 15分 \\
+        密度计算正确性 & 15分 \\
+        答案识别准确率 & 20分 \\
+        可视化效果 & 10分 \\
+        代码质量 & 10分 \\
+        拓展功能 & 20分 \\
+        文档完整性 & 10分 \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{AI辅助作业提示}
+    \begin{block}{可以用AI做什么？}
+    \begin{itemize}
+        \item \aihint{} "帮我设计ChoiceRecognizer类的结构"
+        \item \aihint{} "如何用OpenCV实现形态学闭运算？"
+        \item \aihint{} "帮我调试这个密度计算函数"
+        \item \aihint{} "如何用Matplotlib并排显示多张图片？"
+    \end{itemize}
+    \end{block}
+
+    \begin{alertblock}{学术诚信}
+    \begin{itemize}
+        \item 可以用AI生成代码框架
+        \item 必须理解每一行代码的作用
+        \item 在代码中标注AI辅助部分
+    \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{延伸学习资源}
+    \textbf{推荐阅读：}
+    \begin{itemize}
+        \item OpenCV官方文档：Image Processing
+        \item 《数字图像处理》- 冈萨雷斯（形态学章节）
+        \item OMR技术综述论文
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{在线资源：}
+    \begin{itemize}
+        \item OpenCV Python Tutorials
+        \item Coursera: Digital Image Processing
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{开源项目参考：}
+    \begin{itemize}
+        \item GitHub: omr-python
+        \item GitHub: bubble-sheet-scanner
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{下节预告}
+    \begin{center}
+        \Large \textbf{第6周：判断题识别（符号匹配）}
+
+        \vspace{0.5cm}
+
+        \normalsize
+        故事问题：\textcolor{blue}{怎么看到是$\checkmark$还是$\times$？}
+
+        \vspace{0.3cm}
+
+        你将学会：
+        \begin{itemize}
+            \item 轮廓特征提取
+            \item 模板匹配法
+            \item $\checkmark$和$\times$符号识别
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \Huge \textbf{谢谢！}
+
+        \vspace{1cm}
+
+        \large \textbf{提问与答疑}
+    \end{center}
+\end{frame}

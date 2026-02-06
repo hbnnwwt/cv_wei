@@ -1,0 +1,400 @@
+%===========================================================
+% 00_background.tex - 背景知识铺垫
+%===========================================================
+
+\section{软件系统架构概述}
+
+\begin{frame}{什么是软件架构？}
+    \begin{definition}[软件架构]
+        软件架构是系统的高级结构，包括软件元素、元素的外部可见属性，以及元素之间的关系。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{架构的核心要素：}
+    \begin{itemize}
+        \item \textbf{组件（Components）}：系统的功能单元
+        \item \textbf{连接器（Connectors）}：组件之间的交互机制
+        \item \textbf{配置（Configuration）}：组件和连接器的拓扑结构
+        \item \textbf{约束（Constraints）}：设计和实现的规则
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{架构 vs 设计}
+        架构关注"系统由什么组成"和"它们如何交互"；设计关注"如何实现每个组件"。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{架构设计的重要性}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{好的架构带来：}
+        \begin{itemize}
+            \item 易于理解和维护
+            \item 便于团队协作
+            \item 支持系统演化
+            \item 降低技术风险
+            \item 提高开发效率
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{糟糕的架构导致：}
+        \begin{itemize}
+            \item 技术债务累积
+            \item 修改牵一发而动全身
+            \item 团队协作困难
+            \item 系统难以扩展
+            \item 维护成本高昂
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{架构决策的影响}
+        架构决策一旦做出，后期修改成本极高。前期投入时间设计架构是值得的。
+    \end{block}
+\end{frame}
+
+\begin{frame}{架构设计原则：SOLID}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{clp{6cm}}
+            \toprule
+            \textbf{原则} \& \textbf{名称} \& \textbf{核心思想} \\
+            \midrule
+            S \& 单一职责 \& 一个类只负责一件事 \\
+            O \& 开闭原则 \& 对扩展开放，对修改关闭 \\
+            L \& 里氏替换 \& 子类可以替换父类 \\
+            I \& 接口隔离 \& 客户端不应该依赖它不需要的接口 \\
+            D \& 依赖倒置 \& 依赖抽象，而非具体实现 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{实际应用}
+        \begin{itemize}
+            \item SRP：图像预处理类只负责预处理，不负责识别
+            \item OCP：新增识别算法时，不修改现有代码
+            \item DIP：识别引擎依赖抽象接口，而非具体算法
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{架构设计原则：KISS \& DRY}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{KISS原则}
+            \textbf{K}eep \textbf{I}t \textbf{S}hort and \textbf{S}imple
+
+            \vspace{0.3cm}
+            \begin{itemize}
+                \item 简单优于复杂
+                \item 避免过度设计
+                \item 选择最直接的解决方案
+                \item 代码应易于理解
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{DRY原则}
+            \textbf{D}on't \textbf{R}epeat \textbf{Y}ourself
+
+            \vspace{0.3cm}
+            \begin{itemize}
+                \item 消除重复代码
+                \item 单一事实来源
+                \item 变化只需修改一处
+                \item 提高可维护性
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textbf{简单是终极的复杂 —— 达芬奇}
+    \end{center}
+\end{frame}
+
+\begin{frame}{架构风格分类}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{4cm}p{5cm}}
+            \toprule
+            \textbf{架构风格} \& \textbf{特点} \& \textbf{适用场景} \\
+            \midrule
+            单体架构 \& 所有功能在一个应用中 \& 小型项目、快速原型 \\
+            分层架构 \& 按层次组织（表现层/业务层/数据层） \& 企业应用、Web应用 \\
+            微服务架构 \& 服务拆分、独立部署 \& 大型系统、团队协作 \\
+            事件驱动 \& 基于事件通信 \& 实时系统、流处理 \\
+            管道-过滤器 \& 数据流处理 \& 数据处理、编译器 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{选择建议}
+        没有最好的架构，只有最适合的架构。根据团队规模、项目复杂度、维护周期选择。
+    \end{alertblock}
+\end{frame}
+
+\section{智能阅卷系统架构分析}
+
+\begin{frame}{智能阅卷系统的业务场景}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{主要用户：}
+        \begin{itemize}
+            \item 教师：上传试卷、查看结果
+            \item 学生：查看成绩
+            \item 管理员：系统管理
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{核心业务流程：}
+        \begin{enumerate}
+            \item 试卷扫描/上传
+            \item 图像预处理
+            \item 版面分析定位
+            \item 各题型识别
+            \item 自动评分
+            \item 结果导出
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.7, transform shape,
+                box/.style={draw, rectangle, rounded corners, fill=blue!10, minimum width=2cm, minimum height=0.8cm}]
+                \node[box] (upload) at (0,0) {上传试卷};
+                \node[box] (process) at (0,-1.2) {图像处理};
+                \node[box] (analyze) at (0,-2.4) {版面分析};
+                \node[box] (recog) at (0,-3.6) {内容识别};
+                \node[box] (grade) at (0,-4.8) {自动评分};
+                \node[box] (export) at (0,-6) {结果导出};
+
+                \draw[->, thick] (upload) -- (process);
+                \draw[->, thick] (process) -- (analyze);
+                \draw[->, thick] (analyze) -- (recog);
+                \draw[->, thick] (recog) -- (grade);
+                \draw[->, thick] (grade) -- (export);
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{系统功能需求分析}
+    \textbf{功能需求分类：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{核心功能：}
+        \begin{itemize}
+            \item 图像导入与格式转换
+            \item 图像预处理（去噪、矫正）
+            \item 答题卡区域定位
+            \item 选择题自动识别
+            \item 判断题符号识别
+            \item 简答题文字识别
+            \item 答案比对与评分
+            \item 成绩统计与导出
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{辅助功能：}
+        \begin{itemize}
+            \item 标准答案管理
+            \item 人工复核接口
+            \item 识别结果校对
+            \item 批量处理
+            \item 历史记录查询
+            \item 权限管理
+            \item 日志记录
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{非功能性需求}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{3cm}p{6cm}}
+            \toprule
+            \textbf{需求类型} \& \textbf{具体要求} \& \textbf{实现策略} \\
+            \midrule
+            性能 \& 单张试卷<3秒 \& 算法优化、并行处理、缓存 \\
+            准确率 \& 选择题>99\% \& 多算法融合、人工复核机制 \\
+            可扩展性 \& 支持新题型 \& 插件化架构、模块化设计 \\
+            可用性 \& 7x24小时 \& 容错设计、异常恢复 \\
+            安全性 \& 数据加密 \& 传输加密、访问控制 \\
+            可维护性 \& 易于升级 \& 清晰文档、单元测试 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{典型智能阅卷系统架构案例}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.75, transform shape,
+            box/.style={draw, rectangle, rounded corners, minimum width=2.5cm, minimum height=0.8cm, align=center}]
+            % 客户端层
+            \node[box, fill=blue!15] (web) at (-3,0) {Web客户端};
+            \node[box, fill=blue!15] (mobile) at (0,0) {移动端};
+            \node[box, fill=blue!15] (desktop) at (3,0) {桌面端};
+
+            % API网关层
+            \node[box, fill=green!15] (gateway) at (0,-1.5) {API网关\\负载均衡};
+
+            % 服务层
+            \node[box, fill=yellow!15] (upload) at (-4,-3) {上传服务};
+            \node[box, fill=yellow!15] (process) at (-1.5,-3) {处理服务};
+            \node[box, fill=yellow!15] (recognize) at (1.5,-3) {识别服务};
+            \node[box, fill=yellow!15] (grade) at (4,-3) {评分服务};
+
+            % 数据层
+            \node[box, fill=red!15] (storage) at (-2,-4.5) {文件存储};
+            \node[box, fill=red!15] (db) at (2,-4.5) {数据库};
+
+            % 连接线
+            \draw[->] (web) -- (gateway);
+            \draw[->] (mobile) -- (gateway);
+            \draw[->] (desktop) -- (gateway);
+            \draw[->] (gateway) -- (upload);
+            \draw[->] (gateway) -- (process);
+            \draw[->] (gateway) -- (recognize);
+            \draw[->] (gateway) -- (grade);
+            \draw[->] (upload) -- (storage);
+            \draw[->] (process) -- (storage);
+            \draw[->] (recognize) -- (db);
+            \draw[->] (grade) -- (db);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+    \small 这是一个典型的分层微服务架构，支持水平扩展和高可用。
+\end{frame}
+
+\section{团队协作与分组开发}
+
+\begin{frame}{敏捷开发方法论简介}
+    \begin{definition}[敏捷开发]
+        敏捷开发是一种以人为核心、迭代、循序渐进的软件开发方法。强调快速交付、持续改进和适应变化。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{敏捷宣言四大价值观：}
+    \begin{enumerate}
+        \item 个体和互动 高于 流程和工具
+        \item 工作的软件 高于 详尽的文档
+        \item 客户合作 高于 合同谈判
+        \item 响应变化 高于 遵循计划
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{block}{常用敏捷方法}
+        \begin{itemize}
+            \item \textbf{Scrum}：迭代开发、每日站会、冲刺计划
+            \item \textbf{Kanban}：可视化工作流、限制在制品
+            \item \textbf{XP}：极限编程、结对编程、测试驱动
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{团队协作工具与流程}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{版本控制：}
+        \begin{itemize}
+            \item Git：分布式版本控制
+            \item GitHub/GitLab：代码托管
+            \item 分支策略：Git Flow / GitHub Flow
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{项目管理：}
+        \begin{itemize}
+            \item Jira：任务跟踪
+            \item Trello：看板管理
+            \item Notion：知识库
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{沟通协作：}
+        \begin{itemize}
+            \item Slack/飞书：即时通讯
+            \item 腾讯会议：视频会议
+            \item 石墨文档：协作文档
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{CI/CD工具：}
+        \begin{itemize}
+            \item GitHub Actions
+            \item Jenkins
+            \item GitLab CI
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{代码规范与版本控制}
+    \textbf{Python代码规范（PEP 8）：}
+    \begin{itemize}
+        \item 缩进：4个空格（不要用Tab）
+        \item 行宽：每行不超过79字符
+        \item 命名：模块小写、类驼峰、函数下划线
+        \item 注释：文档字符串、行内注释
+        \item 导入：每行一个导入、按标准库/第三方/本地分组
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{Git工作流最佳实践：}
+    \begin{enumerate}
+        \item 功能开发从develop分支创建feature分支
+        \item 提交信息清晰描述变更内容
+        \item 代码审查（Code Review）后再合并
+        \item 定期同步主分支，解决冲突尽早
+        \item 标签标记重要版本
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{团队沟通与冲突解决}
+    \begin{block}{有效沟通原则}
+        \begin{itemize}
+            \item \textbf{清晰表达}：明确目标、背景、期望
+            \item \textbf{主动同步}：定期汇报进度、暴露问题
+            \item \textbf{倾听反馈}：理解他人观点、接受建议
+            \item \textbf{文档留痕}：重要决策书面记录
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{常见冲突及解决：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{7cm}}
+            \toprule
+            \textbf{冲突类型} \& \textbf{解决策略} \\
+            \midrule
+            技术方案分歧 \& 数据说话、原型验证、投票决定 \\
+            任务分配不均 \& 明确角色、轮换任务、互相帮助 \\
+            代码风格不一致 \& 统一规范、自动化检查、互相审查 \\
+            进度延误 \& 及时沟通、调整计划、寻求帮助 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}

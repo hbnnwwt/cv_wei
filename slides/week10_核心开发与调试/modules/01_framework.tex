@@ -1,0 +1,39 @@
+%===========================================================
+% 模块01：主程序框架
+%===========================================================
+
+\section{主程序框架}
+
+\begin{frame}[fragile]{主程序结构}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+class AutoGradingSystem:
+    """自动阅卷系统"""
+
+    def __init__(self):
+        # 初始化各模块
+        self.preprocessor = Preprocessor()
+        self.layout_analyzer = LayoutAnalyzer()
+        self.choice_recognizer = ChoiceRecognizer()
+        self.judge_recognizer = JudgeRecognizer()
+        self.essay_recognizer = EssayRecognizer()
+        self.grading_module = GradingModule()
+
+    def process(self, image_path):
+        """处理试卷"""
+        # 1. 预处理
+        preprocessed = self.preprocessor.process(image)
+
+        # 2. 版面分析
+        layout = self.layout_analyzer.analyze(image)
+
+        # 3. 识别
+        choices = self.choice_recognizer.recognize_all(...)
+        judges = self.judge_recognizer.recognize_all(...)
+        essays = self.essay_recognizer.recognize_all(...)
+
+        # 4. 评分
+        result = self.grading_module.grade(...)
+
+        return result
+    \end{lstlisting}
+\end{frame}

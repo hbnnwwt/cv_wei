@@ -1,0 +1,119 @@
+%===========================================================
+% sections/summary.tex - 课程总结
+%===========================================================
+
+\section{课程总结}
+
+\begin{frame}{本周要点回顾}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{核心概念：}
+        \begin{itemize}
+            \item OCR：光学字符识别
+            \item PaddleOCR：百度开源OCR工具
+            \item 置信度：识别结果的可信程度
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{关键技能：}
+        \begin{itemize}
+            \item 安装配置PaddleOCR
+            \item 识别图像中的文字
+            \item 提取标题和题号
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{优化技巧：}
+        \begin{itemize}
+            \item 图像预处理（灰度、去噪、二值化）
+            \item 调整识别参数
+            \item 根据置信度过滤结果
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \begin{block}{项目进展}
+            \textbf{第7周完成：}
+            用OCR识别试卷印刷文字，为后续手写文字识别打基础。
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{常见问题与解决}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{4cm}p{8cm}}
+            \toprule
+            \textbf{问题} & \textbf{解决方案} \\
+            \midrule
+            安装PaddleOCR失败 & 确保网络连接，使用清华镜像源 \\
+            首次运行很慢 & 正常，需要下载模型文件 \\
+            中文识别效果差 & 确认lang='ch'参数 \\
+            识别结果有空格 & 使用text.replace(' ', '')去除 \\
+            置信度太低 & 尝试图像预处理或调整阈值 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{差异化学习路径}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{4.5cm}p{4.5cm}}
+            \toprule
+            \textbf{角色} \& \textbf{基础任务（60\%）} \& \textbf{进阶/挑战任务} \\
+            \midrule
+            \textbf{观察者} \& 跟着代码运行，理解结果 \& 分析不同预处理的效果差异 \\
+            \textbf{使用者} \& 完成标题和题号提取 \& 识别所有选项文字并匹配题号 \\
+            \textbf{创造者} \& 完成基础功能 \& 设计新的文字识别场景（如成绩单、证书） \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{选择建议：}
+    \begin{itemize}
+        \item 无编程基础：选择"观察者"
+        \item 有基础但时间有限：选择"使用者"
+        \item 有基础且感兴趣：选择"创造者"
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{扩展学习资源}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{官方文档：}
+        \begin{itemize}
+            \item PaddleOCR GitHub
+            \item PaddleOCR官方文档
+            \item Tesseract官方文档
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{推荐教程：}
+        \begin{itemize}
+            \item 飞桨AI Studio课程
+            \item PaddleOCR实战案例
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{进阶方向：}
+        \begin{itemize}
+            \item 端到端OCR（如Donut）
+            \item 多语言OCR
+            \item 手写文字识别
+            \item 版面分析（Layout Analysis）
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \begin{block}{预告}
+            下周我们将学习\textbf{手写简答题识别}，敬请关注！
+        \end{block}
+    \end{columns}
+\end{frame}

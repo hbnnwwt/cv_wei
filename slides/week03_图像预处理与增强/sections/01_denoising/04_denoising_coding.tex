@@ -1,40 +1,75 @@
 %===========================================================
-% 04_denoising_coding.tex - 去噪实战代码
+% 04_denoising_coding.tex - 去噪实战代码（TODO框架）
 %===========================================================
 
-\begin{frame}[fragile]{去噪实战：完整代码}
+\begin{frame}[fragile]{去噪实战：代码框架}
+    \begin{alertblock}{AI辅助提示}
+        使用Cursor/Claude Code可以快速生成以下代码：
+        \begin{itemize}
+            \item "用OpenCV实现中值滤波去噪，kernel=5"
+            \item "对比高斯滤波和中值滤波的效果"
+        \end{itemize}
+    \end{alertblock}
+
     \begin{lstlisting}[basicstyle=\ttfamily\tiny]
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 读取图像
-img = cv2.imread('exam_noisy.jpg')
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+def denoise_exam(img_path):
+    """
+    试卷图像去噪处理
+    """
+    # TODO 1: 读取图像
+    # 提示：使用 cv2.imread()
+    img = ____
 
-# 方法1：高斯滤波（适合高斯噪声）
-gaussian = cv2.GaussianBlur(gray, (5, 5), 0)
+    # TODO 2: 转为灰度图
+    # 提示：使用 cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = ____
 
-# 方法2：中值滤波（适合椒盐噪声）- 推荐用于试卷
-median = cv2.medianBlur(gray, 5)
+    # TODO 3: 应用中值滤波（适合试卷的椒盐噪声）
+    # 提示：使用 cv2.medianBlur(gray, 5)
+    median = ____
 
-# 方法3：双边滤波（保边去噪）
-bilateral = cv2.bilateralFilter(gray, 9, 75, 75)
+    # TODO 4 (可选): 尝试高斯滤波，对比效果
+    gaussian = ____
 
-# 方法4：非局部均值（效果最好，速度较慢）
-nlm = cv2.fastNlMeansDenoising(gray, None, 10, 7, 21)
+    return gray, median, gaussian
 
-# 显示对比
-titles = ['原图', '高斯', '中值', '双边', 'NLM']
-images = [gray, gaussian, median, bilateral, nlm]
+# 使用
+original, median_denoised, gaussian_denoised = denoise_exam('exam_noisy.jpg')
+    \end{lstlisting}
+\end{frame}
 
-plt.figure(figsize=(15, 3))
-for i in range(5):
-    plt.subplot(1, 5, i+1)
-    plt.imshow(images[i], cmap='gray')
-    plt.title(titles[i])
-    plt.axis('off')
-plt.show()
+\begin{frame}[fragile]{完整参考代码（课后查看）}
+    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+def denoise_exam(img_path):
+    """完整版去噪函数"""
+    img = cv2.imread(img_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # 中值滤波（推荐用于试卷）
+    median = cv2.medianBlur(gray, 5)
+
+    # 高斯滤波（适合高斯噪声）
+    gaussian = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # 双边滤波（保边去噪）
+    bilateral = cv2.bilateralFilter(gray, 9, 75, 75)
+
+    return gray, median, gaussian, bilateral
+
+def psnr(img1, img2):
+    """计算PSNR值"""
+    mse = np.mean((img1 - img2) ** 2)
+    if mse == 0:
+        return float('inf')
+    return 20 * np.log10(255.0 / np.sqrt(mse))
+
+# 使用示例
+gray, median, gaussian, bilateral = denoise_exam('exam_noisy.jpg')
+print(f"中值滤波PSNR: {psnr(gray, median):.2f} dB")
     \end{lstlisting}
 \end{frame}
 
@@ -48,11 +83,10 @@ def psnr(img1, img2):
         return float('inf')
     return 20 * np.log10(255.0 / np.sqrt(mse))
 
-# 对比各方法PSNR
-print(f"高斯滤波: {psnr(gray, gaussian):.2f} dB")
-print(f"中值滤波: {psnr(gray, median):.2f} dB")
-print(f"双边滤波: {psnr(gray, bilateral):.2f} dB")
-print(f"NLM去噪: {psnr(gray, nlm):.2f} dB")
+# TODO: 对比各方法的PSNR值
+# 提示：调用psnr函数对比原图和去噪后的图像
+print(f"中值滤波: {psnr(gray, __):.2f} dB")
+print(f"高斯滤波: {psnr(gray, __):.2f} dB")
     \end{lstlisting}
 
     \vspace{0.2cm}
@@ -63,4 +97,35 @@ print(f"NLM去噪: {psnr(gray, nlm):.2f} dB")
         \item $30-40$ dB：良好
         \item $< 30$ dB：较差
     \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{三种学习模式的代码任务}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \textbf{观察者模式：}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+# 只运行代码
+denoised = cv2.medianBlur(gray, 5)
+# 修改参数对比
+denoised = cv2.medianBlur(gray, 7)
+        \end{lstlisting}
+
+        \column{0.33\textwidth}
+        \textbf{使用者模式：}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+# 完成TODO
+median = cv2.medianBlur(gray, ____)
+# 对比不同方法
+gaussian = cv2.GaussianBlur(gray, ____, ____)
+        \end{lstlisting}
+
+        \column{0.33\textwidth}
+        \textbf{创造者模式：}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+# 从零实现
+def my_median_filter(img, k):
+    # 自己实现中值滤波
+    pass
+        \end{lstlisting}
+    \end{columns}
 \end{frame}

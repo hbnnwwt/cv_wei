@@ -1,0 +1,730 @@
+%===========================================================
+% 10_teamwork_extended.tex - 团队协作开发实战（扩充版）
+%===========================================================
+
+\section{AI辅助编程实战}
+
+\begin{frame}{AI编程工具推荐}
+    \textbf{课程推荐工具（按优先级）：}
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{Cursor - 首选}
+            \begin{itemize}
+                \item AI原生IDE
+                \item Ctrl+K 原地编辑
+                \item Ctrl+L 上下文对话
+                \item 最适合初学者
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{Claude Code}
+            \begin{itemize}
+                \item 命令行AI助手
+                \item 适合高级用户
+                \item 强大的代码理解
+            \end{itemize}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{通义灵码}
+            \begin{itemize}
+                \item JetBrains插件
+                \item 国内访问友好
+                \item 免费使用
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Cursor实战演示}
+    \textbf{Cursor核心快捷键：}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.9, transform shape,
+            key/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=3cm, minimum height=0.6cm, align=center},
+            arrow/.style={->, thick}]
+
+            \node[key] (ctrlk) at (0,0) {\texttt{Ctrl+K} - 原地编辑代码};
+            \node[key] (ctrlkdesc) at (4,0) {选中代码 → 按Ctrl+K → 输入指令};
+
+            \node[key] (ctrlk2) at (0,-1) {\texttt{Ctrl+L} - 上下文对话};
+            \node[key] (ctrldesc) at (4,-1) {询问代码逻辑、解释错误原因};
+
+            \node[key] (ctrlk3) at (0,-2) {\texttt{Ctrl+I} - 生成新代码};
+            \node[key] (ctrldesc3) at (4,-2) {描述需求 → 自动生成代码框架};
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{AI Prompt模板：RTF框架}
+    \textbf{RTF框架示例 - 生成接口代码：}
+    \begin{block}{Role-Task-Format}
+        \begin{itemize}
+            \item \textbf{Role}: 你是一个Python架构师
+            \item \textbf{Task}: 设计图像预处理流水线的Filter接口
+            \item \textbf{Format}: 包含类定义、方法签名、类型注解、注释
+        \end{itemize}
+    \end{block}
+
+    \textbf{思维链引导示例：}
+    \texttt{请一步步思考：首先确定输入输出数据结构，然后定义过滤器接口，最后实现流水线引擎}
+
+    \textbf{少样本提示示例：}
+    \texttt{请参考以下接口设计，为二值化过滤器创建类似的接口：\\
+    \indent class DenoiseFilter:\\
+    \indent \indent def process(self, data: ImageData) -> ImageData:}
+\end{frame}
+
+\begin{frame}{AI辅助调试三部曲}
+    \textbf{遇到错误时，这样问AI：}
+
+    \begin{enumerate}
+        \item \textbf{Traceback复制}：粘贴完整的错误信息
+        \item \textbf{环境说明}：Python版本、使用的库
+        \item \textbf{数据贴出}：关键变量值或输入数据
+    \end{enumerate}
+
+    \begin{block}{示例Prompt}
+        我遇到了这个错误：\texttt{TypeError: 'NoneType' object...}\\
+        环境：Python 3.10, OpenCV 4.8\\
+        代码在第56行，请帮我分析原因并修复
+    \end{block}
+\end{frame}
+
+\section{调试工具函数}
+
+\begin{frame}{调试工具函数：save\_debug\_image}
+    \begin{block}{utils/debug.py}
+        \lstinputlisting[
+            language=Python,
+            basicstyle=\ttfamily\scriptsize,
+            numbers=left,
+            frame=single
+        ]{modules/05_development.tex}
+    \end{block}
+\end{frame}
+
+\begin{frame}{调试工具函数：draw\_debug\_boxes}
+    \begin{block}{绘制调试框}
+        \lstinputlisting[
+            language=Python,
+            firstline=30,
+            lastline=46,
+            basicstyle=\ttfamily\scriptsize,
+            numbers=left,
+            frame=single
+        ]{modules/05_development.tex}
+    \end{block}
+
+    \textbf{使用示例：}
+    \begin{itemize}
+        \item 检测到答题框后，用 \texttt{draw\_debug\_boxes} 可视化
+        \item 调试时保存中间结果到 \texttt{debug/} 目录
+        \item 结合 \texttt{save\_debug\_image} 记录处理步骤
+    \end{itemize}
+\end{frame}
+
+\section{Git工作流实践详解}
+
+\begin{frame}{分支策略：Git Flow详解}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.65, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.2cm, minimum height=0.6cm, align=center},
+            main/.style={draw, rectangle, rounded corners, fill=red!15, minimum width=2.2cm, minimum height=0.6cm, align=center},
+            develop/.style={draw, rectangle, rounded corners, fill=green!15, minimum width=2.2cm, minimum height=0.6cm, align=center}]
+
+            % 主分支
+            \node[main] (master) at (0,0) {master\\生产分支};
+            \node[develop] (dev) at (0,-1.2) {develop\\开发分支};
+
+            % 功能分支
+            \node[box] (f1) at (4,-1.8) {feature/choice};
+            \node[box] (f2) at (4,-2.5) {feature/judge};
+            \node[box] (f3) at (4,-3.2) {feature/essay};
+
+            % 发布分支
+            \node[box, fill=yellow!15] (rel) at (8,-0.6) {release/v1.0};
+
+            % 热修复分支
+            \node[box, fill=orange!15] (hotfix) at (8,-2) {hotfix/fix};
+
+            % 连接
+            \draw[->, thick] (master) -- (dev);
+            \draw[->, thick] (dev) -- (f1);
+            \draw[->, thick] (dev) -- (f2);
+            \draw[->, thick] (dev) -- (f3);
+            \draw[->, thick] (dev) -- (rel);
+            \draw[->, thick] (rel) -- (master);
+            \draw[->, thick] (hotfix) -- (master);
+            \draw[->, thick] (hotfix) -- (dev);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{分支说明：}
+    \begin{itemize}
+        \item \textbf{master}：生产分支，只接受合并，永远保持可发布状态
+        \item \textbf{develop}：开发分支，功能集成分支
+        \item \textbf{feature/*}：功能分支，从develop创建
+        \item \textbf{release/*}：发布分支，准备上线
+        \item \textbf{hotfix/*}：紧急修复，从master创建
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{分支命名规范}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{6cm}}
+            \toprule
+            \textbf{分支类型} & \textbf{命名规范} \\
+            \midrule
+            功能分支 & feature/模块-功能描述 \\
+            & 如：feature/choice-recognizer \\
+            \hline
+            发布分支 & release/v版本号 \\
+            & 如：release/v1.0.0 \\
+            \hline
+            修复分支 & hotfix/问题描述 \\
+            & 如：hotfix/correct-bug-001 \\
+            \hline
+            实验分支 & dev/实验描述 \\
+            & 如：dev/ocr-experiment \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{alertblock}{命名原则}
+        \begin{itemize}
+            \item 使用小写字母
+            \item 使用连字符（-）而非下划线
+            \item 描述清晰，避免缩写
+            \item 包含任务编号（如有）
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\section{分组任务清单}
+
+\begin{frame}{开发任务分解}
+    \textbf{高优先级（P0）- 本周必须完成：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{选择题识别器}
+            \begin{itemize}
+                \item ChoiceRecognizer类框架
+                \item 填涂区域检测
+                \item 像素密度统计
+                \item 置信度计算
+                \item 单元测试
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{判断题识别器}
+            \begin{itemize}
+                \item JudgeRecognizer类框架
+                \item 符号轮廓提取
+                \item 形状特征分析
+                \item √/× 分类
+                \item 单元测试
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \textbf{中优先级（P1）- 下周完成：}
+    \begin{itemize}
+        \item 简答题识别器（集成PaddleOCR）
+        \item 评分模块
+        \item 模块集成测试
+    \end{itemize}
+
+    \textbf{低优先级（P2）- 选做：}
+    \begin{itemize}
+        \item 性能优化
+        \item 图形界面
+        \item 高级功能
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{角色任务清单}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2cm}p{7cm}p{3cm}}
+            \toprule
+            \textbf{角色} & \textbf{本周任务} & \textbf{交付物} \\
+            \midrule
+            组长 & 协调分工、进度跟踪、代码审查、主程序整合 & 项目周报 \\
+            技术负责人 & 架构设计、技术难点攻关、代码审查 & 架构设计文档 \\
+            模块开发A & 选择题识别器实现、单元测试 & choice\_recognizer.py \\
+            模块开发B & 判断题识别器实现、单元测试 & judge\_recognizer.py \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{alertblock}{协作要求}
+        每日站会（15分钟）：各自汇报进度、遇到的问题
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{GitHub Flow简化工作流}
+    \textbf{适合小团队的简化流程：}
+
+    \begin{enumerate}
+        \item \textbf{主分支保护}：master分支受保护，禁止直接推送
+        \item \textbf{功能分支开发}：从master创建feature分支
+        \item \textbf{提交Pull Request}：完成功能后提交PR
+        \item \textbf{代码审查}：至少1人review通过
+        \item \textbf{合并到主分支}：CI通过后合并
+        \item \textbf{删除功能分支}：保持仓库整洁
+    \end{enumerate}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=0.7cm}]
+            \node[box, fill=green!20] (master) at (0,0) {master};
+            \node[box] (feature) at (3,0) {feature/xxx};
+            \node[box, fill=purple!15] (pr) at (6,0) {Pull Request};
+            \node[box, fill=green!20] (master2) at (9,0) {master (合并后)};
+
+            \draw[->, thick] (master) -- (feature);
+            \draw[->, thick] (feature) -- (pr);
+            \draw[->, thick] (pr) -- (master2);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Git命令实战}
+    \begin{block}{创建功能分支}
+        \begin{itemize}
+            \item \texttt{git checkout -b feature/choice-recognizer} - 创建并切换
+            \item \texttt{git add .} - 添加修改
+            \item \texttt{git commit -m "feat: 实现选择题识别器"} - 提交
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{推送与同步}
+        \begin{itemize}
+            \item \texttt{git push origin feature/choice-recognizer} - 推送到远程
+            \item \texttt{git fetch origin} - 拉取远程
+            \item \texttt{git rebase origin/develop} - 变基到最新
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{代码审查流程}
+    \begin{block}{代码审查（Code Review）原则}
+        \begin{itemize}
+            \item 所有代码必须经过review才能合并
+            \item 审查关注：功能、性能、安全、风格
+            \item 提出问题要具体，给出改进建议
+            \item 保持尊重，对代码不对人
+            \item 及时响应审查意见
+        \end{itemize}
+    \end{block}
+
+    \textbf{审查清单：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2cm}p{8cm}}
+            \toprule
+            \textbf{检查项} & \textbf{内容} \\
+            \midrule
+            功能性 & 代码是否实现了需求？边界条件处理了吗？ \\
+            可读性 & 命名是否清晰？注释是否充分？ \\
+            可维护性 & 是否遵循设计原则？是否高内聚低耦合？ \\
+            性能 & 是否有明显性能问题？算法复杂度如何？ \\
+            安全性 & 是否有注入风险？敏感信息处理？ \\
+            测试 & 是否有单元测试？覆盖率高吗？ \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{审查评论规范}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{好的评论：}
+        \begin{itemize}
+            \item "这个变量名建议改为 total\_score，更清晰表达含义"
+            \item "这里建议添加边界检查，防止数组越界"
+            \item "这个逻辑可以用列表推导式简化，更Pythonic"
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{避免的评论：}
+        \begin{itemize}
+            \item "这写得不对"（太笼统）
+            \item "重写这段代码"（没有说明原因）
+            \item "这么简单都写错"（人身攻击）
+        \end{itemize}
+    \end{columns}
+
+    \begin{block}{审查评论标记}
+        \begin{itemize}
+            \item \textbf{[suggestion]}：建议性改进
+            \item \textbf{[nitpick]}：小的格式问题
+            \item \textbf{[required]}：必须修改的问题
+            \item \textbf{[blocking]}：阻塞性问题
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{冲突解决与合并}
+    \begin{block}{避免冲突的最佳实践}
+        \begin{itemize}
+            \item 频繁提交，小步迭代
+            \item 开发前先从主分支拉取最新代码
+            \item 不要长时间在分支上开发
+            \item 与团队成员沟通，避免同时修改同一文件
+            \item 使用相同的代码格式化工具
+        \end{itemize}
+    \end{block}
+
+    \textbf{解决冲突步骤：}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, fill=blue!15, minimum width=5cm, minimum height=0.8cm}]
+            \node[box] (step1) at (0,0) {1. git pull origin develop};
+            \node[box] (step2) at (0,-1) {2. 识别冲突文件};
+            \node[box] (step3) at (0,-2) {3. 编辑解决冲突};
+            \node[box] (step4) at (0,-3) {4. git add <冲突文件>};
+            \node[box] (step5) at (0,-4) {5. git commit};
+
+            \draw[->, thick] (step1) -- (step2);
+            \draw[->, thick] (step2) -- (step3);
+            \draw[->, thick] (step3) -- (step4);
+            \draw[->, thick] (step4) -- (step5);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{版本发布管理}
+    \textbf{语义化版本（Semantic Versioning）：}
+
+    \begin{center}
+        \Large \textbf{MAJOR.MINOR.PATCH}
+    \end{center}
+
+    \begin{columns}
+        \column{0.4\textwidth}
+        \begin{itemize}
+            \item \textbf{MAJOR}：不兼容的API修改
+            \item \textbf{MINOR}：向下兼容的功能新增
+            \item \textbf{PATCH}：向下兼容的问题修复
+        \end{itemize}
+
+        \column{0.6\textwidth}
+        \begin{block}{版本示例}
+            \begin{itemize}
+                \item v0.1.0（内测版）
+                \item v0.9.0（公测版）
+                \item v1.0.0（正式版）
+                \item v1.1.0（功能更新）
+                \item v1.1.1（Bug修复）
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \textbf{标签操作：}
+    \begin{block}{版本标签命令}
+        \begin{itemize}
+            \item \texttt{git tag -a v1.0.0 -m "第一个正式版本"} - 创建标签
+            \item \texttt{git push origin v1.0.0} - 推送标签
+            \item \texttt{git tag} - 查看标签
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{代码规范与文档}
+
+\begin{frame}{PEP 8代码规范详解}
+    \textbf{命名规范：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{3cm}p{4.5cm}}
+            \toprule
+            \textbf{类型} & \textbf{规范} & \textbf{示例} \\
+            \midrule
+            模块/包 & 小写，短名称 & \texttt{recognition}, \texttt{utils} \\
+            类 & 驼峰命名 & \texttt{ChoiceRecognizer} \\
+            函数/方法 & 小写下划线 & \texttt{recognize\_choice()} \\
+            变量 & 小写下划线 & \texttt{image\_data} \\
+            常量 & 大写下划线 & \texttt{MAX\_IMAGE\_SIZE} \\
+            私有变量 & 前导下划线 & \texttt{\_internal\_data} \\
+            保护成员 & 双前导下划线 & \texttt{\_\_init\_\_} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{代码布局：}
+    \begin{itemize}
+        \item 缩进：4个空格（禁用Tab）
+        \item 行宽：最大79字符
+        \item 空行：顶级函数/类间2行，方法间1行
+        \item 导入：标准库→第三方→本地，每组空一行
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Python代码风格检查}
+    \textbf{使用工具保证代码质量：}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{black - 代码格式化}
+        \begin{itemize}
+            \item 强制统一代码风格
+            \item 减少代码审查中的格式争论
+            \item 配置简单
+        \end{itemize}
+        \begin{block}{安装使用}
+            \begin{itemize}
+                \item \texttt{pip install black}
+                \item \texttt{black src/}
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \textbf{flake8 - 代码检查}
+        \begin{itemize}
+            \item 检查代码风格
+            \item 发现潜在问题
+        \end{itemize}
+        \begin{block}{安装使用}
+            \begin{itemize}
+                \item \texttt{pip install flake8}
+                \item \texttt{flake8 src/}
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{类型注解与文档字符串}
+    \begin{block}{类型注解示例}
+        \begin{itemize}
+            \item \texttt{from typing import List, Optional, Dict}
+            \item \texttt{import numpy as np}
+            \item 参数：\texttt{image: np.ndarray}
+            \item 返回：\texttt{-> Dict[str, str]}
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{文档字符串规范}
+        \begin{itemize}
+            \item \textbf{Args}: 参数说明
+            \item \textbf{Returns}: 返回值说明
+            \item \textbf{Raises}: 异常说明
+            \item \textbf{Example}: 使用示例
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{接口文档生成}
+    \textbf{使用工具自动生成文档：}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{Sphinx：}
+        \begin{itemize}
+            \item Python标准文档工具
+            \item 支持reStructuredText
+            \item 生成HTML/PDF/ePub
+            \item 支持自动生成API文档
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{MkDocs：}
+        \begin{itemize}
+            \item 基于Markdown
+            \item 配置简单
+            \item 美观的主题
+            \item 适合项目文档
+        \end{itemize}
+    \end{columns}
+
+        \begin{block}{pdoc文档生成}
+            \begin{itemize}
+                \item \texttt{pip install pdoc}
+                \item \texttt{pdoc --http : mymodule} - 启动文档服务器
+                \item \texttt{pdoc --html mymodule} - 生成HTML
+            \end{itemize}
+        \end{block}
+\end{frame}
+
+\begin{frame}{README文档规范}
+    \textbf{项目README应包含：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{6cm}}
+            \toprule
+            \textbf{章节} & \textbf{内容} \\
+            \midrule
+            项目名称 & 清晰的项目标题 \\
+            项目简介 & 一句话描述项目目的 \\
+            功能特性 & 主要功能列表 \\
+            技术栈 & 使用的技术、库、版本 \\
+            安装部署 & 环境要求、安装步骤 \\
+            使用说明 & 快速上手示例 \\
+            目录结构 & 项目文件组织 \\
+            贡献指南 & 如何参与开发 \\
+            许可证 & 开源协议 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\section{团队协作实践}
+
+\begin{frame}{任务分配与跟踪}
+    \textbf{任务分解原则（WBS）：}
+    \begin{itemize}
+        \item 每个任务可独立完成（1-3天）
+        \item 任务有明确的验收标准
+        \item 任务间依赖关系清晰
+        \item 预留缓冲时间应对风险
+    \end{itemize}
+
+    \textbf{任务模板：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{|l|l|}
+            \hline
+            \textbf{字段} & \textbf{示例} \\
+            \hline
+            任务名称 & 实现选择题识别器 \\
+            任务描述 & 识别答题卡上选择题的填涂答案 \\
+            验收标准 & 准确率>95\%，有单元测试 \\
+            负责人 & 张三 \\
+            计划工时 & 3天 \\
+            截止时间 & 第10周周三 \\
+            优先级 & 高 \\
+            依赖任务 & 图像预处理模块 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{每日站会与进度同步}
+    \begin{block}{每日站会（Daily Stand-up）}
+        \begin{itemize}
+            \item 时间：固定时间，15分钟以内
+            \item 形式：站立进行，保持高效
+            \item 每人回答三个问题：
+                \begin{enumerate}
+                    \item 昨天完成了什么？
+                    \item 今天计划做什么？
+                    \item 有什么阻碍？
+                \end{enumerate}
+        \end{itemize}
+    \end{block}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{进度同步工具：}
+        \begin{itemize}
+            \item 看板（Kanban）：直观展示任务状态
+            \item 燃尽图（Burndown）：跟踪进度趋势
+            \item 甘特图（Gantt）：展示任务时间安排
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{会议记录模板：}
+        \begin{itemize}
+            \item 日期和参会人员
+            \item 各成员进度汇报
+            \item 遇到的问题
+            \item 解决方案
+            \item 下次会议时间
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{问题沟通与解决}
+    \textbf{问题升级路径：}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=4cm, minimum height=1cm, text width=3.5cm, align=center}]
+
+            \node[box] (self) at (0,0) {1. 自主解决\\查阅文档、Google搜索};
+            \node[box] (team) at (0,-1.5) {2. 团队讨论\\请教组员、技术负责人};
+            \node[box] (lead) at (0,-3) {3. 组长介入\\调整方案、协调资源};
+            \node[box] (teacher) at (0,-4.5) {4. 求助老师\\技术难点、方向决策};
+
+            \draw[->, thick] (self) -- (team) node[midway, right] {30分钟};
+            \draw[->, thick] (team) -- (lead) node[midway, right] {2小时};
+            \draw[->, thick] (lead) -- (teacher) node[midway, right] {半天};
+        \end{tikzpicture}
+    \end{center}
+
+    \begin{alertblock}{沟通原则}
+        遇到问题不要憋太久，及时求助。但同时也要先自己尝试解决，带着思考去提问。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{团队协作工具链}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.65, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=0.8cm, text width=2.3cm, align=center}]
+
+            % 代码协作
+            \node[box, fill=green!20] (git) at (0,0) {Git\\版本控制};
+            \node[box, fill=green!20] (github) at (3,0) {GitHub\\代码托管};
+
+            % 项目管理
+            \node[box, fill=yellow!20] (jira) at (0,-1.2) {Jira\\任务管理};
+            \node[box, fill=yellow!20] (trello) at (3,-1.2) {Trello\\看板};
+
+            % 沟通协作
+            \node[box, fill=purple!20] (slack) at (0,-2.4) {Slack\\即时通讯};
+            \node[box, fill=purple!20] (confluence) at (3,-2.4) {Confluence\\文档};
+
+            % CI/CD
+            \node[box, fill=red!20] (actions) at (0,-3.6) {GitHub Actions\\CI/CD};
+            \node[box, fill=red!20] (docker) at (3,-3.6) {Docker\\容器化};
+
+            \draw[<->, thick] (git) -- (github);
+            \draw[<->, thick] (jira) -- (trello);
+            \draw[<->, thick] (slack) -- (confluence);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{代码评审最佳实践}
+    \textbf{评审流程：}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=0.8cm}]
+            \node[box] (create) at (0,0) {创建PR};
+            \node[box] (notify) at (2.5,0) {通知Reviewer};
+            \node[box] (review) at (5,0) {代码审查};
+            \node[box] (revise) at (7.5,0) {修改反馈};
+            \node[box, fill=green!20] (merge) at (10,0) {合并};
+
+            \draw[->, thick] (create) -- (notify);
+            \draw[->, thick] (notify) -- (review);
+            \draw[->, thick] (review) -- (revise);
+            \draw[->, thick] (revise) -- (merge);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{PR描述模板：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{|l|p{6cm}|}
+            \hline
+            \textbf{字段} & \textbf{内容} \\
+            \hline
+            描述 & 实现选择题识别功能 \\
+            关联Issue & \#123 \\
+            改动内容 & 新增ChoiceRecognizer类 \\
+            测试用例 & test\_choice\_recognition.py \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{frame}

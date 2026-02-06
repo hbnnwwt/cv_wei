@@ -1,0 +1,77 @@
+%===========================================================
+% modules/01_intro.tex - 课程介绍与导入
+%===========================================================
+
+\section{课程导入}
+
+\begin{frame}{从上周说起}
+    \textbf{回顾第6周：判断题识别与符号匹配}
+    \begin{itemize}
+        \item 学会了检测判断题的对勾和叉号
+        \item 了解了符号匹配和字符识别的区别
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{本周新问题：}
+    \begin{alertblock}{挑战}
+        试卷上还有大量印刷文字：标题、题号、选项文字……
+
+        \textbf{怎么让机器"读懂"这些文字？}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{本周故事线}
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=1.2cm,
+            box/.style={rectangle, draw=blue!60, fill=blue!10, rounded corners, minimum width=3.5cm, minimum height=0.8cm, text centered, font=\small}
+        ]
+            \node[box] (n1) {1. OCR是什么？};
+            \node[box, below=1.2cm of n1] (n2) {2. PaddleOCR安装与使用};
+            \node[box, below=1.2cm of n2] (n3) {3. 识别试卷文字};
+            \node[box, below=1.2cm of n3] (n4) {4. 优化识别效果};
+            \node[box, below=1.2cm of n4] (n5) {5. 实战作业};
+
+            \draw[->, thick, blue!60] (n1) -- (n2);
+            \draw[->, thick, blue!60] (n2) -- (n3);
+            \draw[->, thick, blue!60] (n3) -- (n4);
+            \draw[->, thick, blue!60] (n4) -- (n5);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{学习目标}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{知识目标：}
+        \begin{itemize}
+            \item 理解OCR技术原理
+            \item 了解OCR发展历程
+            \item 掌握PaddleOCR基本使用
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{技能目标：}
+        \begin{itemize}
+            \item 能安装配置PaddleOCR
+            \item 能识别图像中的文字
+            \item 能提取标题和题号
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{素质目标：}
+        \begin{itemize}
+            \item 培养跨学科学习能力
+            \item 锻炼动手实践能力
+            \item 提升团队协作意识
+        \end{itemize}
+
+        \vspace{0.5cm}
+
+        \begin{block}{预期成果}
+            完成一个能识别试卷印刷文字的程序
+        \end{block}
+    \end{columns}
+\end{frame}

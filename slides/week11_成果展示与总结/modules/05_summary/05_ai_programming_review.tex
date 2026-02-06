@@ -1,0 +1,116 @@
+%===========================================================
+% 05_ai_programming_review.tex - AI辅助编程实践回顾
+%===========================================================
+
+\begin{frame}{AI辅助编程能力成长}
+    \textbf{从第2周到第10周，AI工具使用能力的提升}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.5cm,
+            phase/.style={draw, fill=blue!10, minimum width=2.2cm, minimum height=0.8cm, align=center, font=\small},
+            arrow/.style={-Stealth, thick}
+        ]
+            \node[phase] (w2) {第2周\\学习Prompt};
+            \node[phase, right=of w2] (w3) {第3-5周\\AI辅助开发};
+            \node[phase, right=of w3] (w6) {第6-8周\\AI调试优化};
+            \node[phase, right=of w6] (w9) {第9周\\AI代码审查};
+            \node[phase, right=of w9] (w10) {第10周\\AI重构测试};
+
+            \draw[arrow] (w2) -- (w3);
+            \draw[arrow] (w3) -- (w6);
+            \draw[arrow] (w6) -- (w9);
+            \draw[arrow] (w9) -- (w10);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{能力提升路径：}
+    \begin{enumerate}
+        \item \textbf{第2周}：学习RTF框架、思维链、少样本提示
+        \item \textbf{第3-5周}：用AI生成代码、解释OpenCV函数、调试图像预处理
+        \item \textbf{第6-8周}：用AI优化识别算法、分析OCR结果、解决手写识别问题
+        \item \textbf{第9周}：用AI进行代码审查、生成测试用例、优化架构
+        \item \textbf{第10周}：用AI重构代码、性能分析、生成文档
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{AI辅助编程最佳实践}
+    \textbf{项目开发中成功使用AI的经验}
+
+    \vspace{0.3cm}
+
+    \textbf{Prompt工程技巧：}
+    \begin{itemize}
+        \item \textbf{RTF框架}：Role（角色）- Task（任务）- Format（格式）
+        \item \textbf{思维链}：引导AI逐步思考，展示推理过程
+        \item \textbf{少样本}：提供示例，让AI模仿学习
+        \item \textbf{多轮迭代}：根据AI回答不断优化Prompt
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{成功案例：}
+    \begin{itemize}
+        \item 用AI快速实现轮廓检测算法，节省2小时
+        \item 用AI解释复杂的OpenCV参数，快速上手
+        \item 用AI生成测试用例，提高测试覆盖率
+        \item 用AI重构长函数，代码可读性提升
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AI辅助编程避坑指南}
+    \textbf{避免这些常见问题}
+
+    \vspace{0.3cm}
+
+    \textbf{常见陷阱：}
+    \begin{itemize}
+        \item[$\times$] \textbf{过度依赖}：完全复制AI生成的代码而不理解
+        \item[$\times$] \textbf{幻觉问题}：AI生成不存在的函数或API
+        \item[$\times$] \textbf{上下文不足}：Prompt缺乏关键信息，AI答非所问
+        \item[$\times$] \textbf{安全风险}：将敏感信息发送给AI
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{最佳实践：}
+    \begin{itemize}
+        \item[$\checkmark$] 理解代码逻辑再使用
+        \item[$\checkmark$] 验证AI生成的API是否存在
+        \item[$\checkmark$] 提供足够的上下文信息
+        \item[$\checkmark$] 不发送密码、Key等敏感信息
+        \item[$\checkmark$] 记录与AI的对话作为学习资料
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AI协作能力评估}
+    \textbf{你掌握了哪些AI协作技能？}
+
+    \vspace{0.3cm}
+
+    \begin{block}{自我评估清单}
+    \begin{itemize}
+        \item[$\square$] 能设计高质量的Prompt（RTF框架）
+        \item[$\square$] 能用思维链引导AI思考复杂问题
+        \item[$\square$] 能用少样本让AI学习特定风格
+        \item[$\square$] 能识别AI的幻觉并验证结果
+        \item[$\square$] 能进行多轮迭代优化AI的回答
+        \item[$\square$] 能用AI辅助调试和定位问题
+        \item[$\square$] 能用AI进行代码审查和重构
+        \item[$\square$] 能用AI生成文档和测试用例
+    \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{持续学习：}
+    \begin{itemize}
+        \item 关注AI工具的新功能和最佳实践
+        \item 参与AI编程社区，分享经验
+        \item 将AI协作作为一项核心竞争力
+    \end{itemize}
+\end{frame}

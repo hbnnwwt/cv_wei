@@ -1,0 +1,1195 @@
+%===========================================================
+% 模块03：Live Coding实战 (20-25页)
+%===========================================================
+
+\section{Live Coding实战}
+
+%----------------------------------------------------------
+\subsection{代码组织与重构实战}
+%----------------------------------------------------------
+
+\begin{frame}[fragile]{识别Code Smells}
+    \textbf{什么是Code Smell？}
+    \begin{itemize}
+        \item 代码中潜在的糟糕设计指示
+        \item 不是bug，但可能导致问题
+        \item 需要重构的信号
+    \end{itemize}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{常见Code Smells：}
+            \begin{itemize}
+                \item 长函数（Long Method）
+                \item 大类（Large Class）
+                \item 重复代码（Duplicated Code）
+                \item 过长参数列表（Long Parameter List）
+                \item 发散式变化（Divergent Change）
+                \item 特性依恋（Feature Envy）
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{block}{示例：长函数}
+\begin{verbatim}
+def process_answer_sheet(path):
+    # 200行代码...
+    image = load(path)
+    gray = cv2.cvtColor(...)
+    binary = cv2.threshold(...)
+    contours = cv2.findContours(...)
+    # ...更多代码
+\end{verbatim}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{重构：提取函数}
+    \textbf{重构前：}
+\begin{verbatim}
+def process_answer_sheet(path):
+    image = cv2.imread(path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)[1]
+    contours = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+    # ... 混杂的处理逻辑
+\end{verbatim}
+
+    \textbf{重构后：}
+\begin{verbatim}
+def process_answer_sheet(path):
+    image = load_image(path)
+    binary = binarize(image)
+    regions = find_regions(binary)
+    return recognize(regions)
+
+def load_image(path):
+    img = cv2.imread(path)
+    if img is None:
+        raise ImageLoadError(f"无法加载: {path}")
+    return img
+
+def binarize(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)[1]
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{重构：提取类}
+    \textbf{重构前：所有逻辑在一个类中}
+\begin{verbatim}
+class AnswerSheetProcessor:
+    def process(self, path):
+        # 加载
+        # 预处理
+        # 检测
+        # 识别
+        # 评分
+        # 全部在这里...
+\end{verbatim}
+
+    \textbf{重构后：职责分离}
+\begin{verbatim}
+class ImagePreprocessor:
+    def load(self, path): pass
+    def normalize(self, image): pass
+    def enhance(self, image): pass
+
+class RegionDetector:
+    def find_answers(self, image): pass
+    def locate_students(self, image): pass
+
+class ChoiceRecognizer:
+    def recognize(self, region): pass
+
+# 主类变为协调器
+class AnswerSheetProcessor:
+    def __init__(self):
+        self.prep = ImagePreprocessor()
+        self.detector = RegionDetector()
+        self.recognizer = ChoiceRecognizer()
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{重构：引入参数对象}
+    \textbf{重构前：参数过多}
+\begin{verbatim}
+def recognize(image, x, y, width, height, threshold,
+              options, algorithm, debug_mode):
+    # 9个参数，难以理解
+    pass
+
+# 调用时容易出错
+result = recognize(img, 100, 200, 50, 30, 0.5,
+                   ['A','B','C','D'], 'omr', True)
+\end{verbatim}
+
+    \textbf{重构后：参数对象}
+\begin{verbatim}
+@dataclass
+class RecognitionConfig:
+    region: Rectangle
+    threshold: float = 0.5
+    options: List[str] = field(default_factory=lambda: ['A','B','C','D'])
+    algorithm: str = 'omr'
+    debug: bool = False
+
+def recognize(image, config: RecognitionConfig):
+    # 清晰明了
+    pass
+
+# 调用时清晰
+config = RecognitionConfig(region=Rectangle(100, 200, 50, 30))
+result = recognize(img, config)
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{重构：替换魔法数字}
+    \textbf{重构前：代码中有未命名的常量}
+\begin{verbatim}
+if density > 0.7:
+    answer = 'A'
+elif density > 0.5:
+    answer = 'B'
+elif density > 0.3:
+    answer = 'C'
+else:
+    answer = 'D'
+
+for i in range(100):
+    process(i)
+\end{verbatim}
+
+    \textbf{重构后：使用有意义的常量}
+\begin{verbatim}
+# 常量定义
+THRESHOLD_HIGH = 0.7
+THRESHOLD_MEDIUM = 0.5
+THRESHOLD_LOW = 0.3
+MAX_ITERATIONS = 100
+
+# 使用
+if density > THRESHOLD_HIGH:
+    answer = 'A'
+elif density > THRESHOLD_MEDIUM:
+    answer = 'B'
+
+for i in range(MAX_ITERATIONS):
+    process(i)
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{模块化重构实战}
+    \textbf{单体结构（避免）：}
+\begin{verbatim}
+# 所有功能在一个文件中
+# grading_system.py (1000行)
+class AutoGradingSystem:
+    def load(self): pass
+    def preprocess(self): pass
+    def detect(self): pass
+    def recognize(self): pass
+    def grade(self): pass
+    def export(self): pass
+    # ... 更多方法
+\end{verbatim}
+
+    \textbf{模块化结构（推荐）：}
+\begin{verbatim}
+# 清晰的模块划分
+grading_system/
+├── __init__.py
+├── preprocessor/
+│   ├── __init__.py
+│   ├── loader.py
+│   └── enhancer.py
+├── detector/
+│   ├── __init__.py
+│   └── region_detector.py
+├── recognizer/
+│   ├── __init__.py
+│   ├── omr.py
+│   └── handwriting.py
+└── grader/
+    ├── __init__.py
+    └── calculator.py
+\end{verbatim}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{错误处理与日志实战}
+%----------------------------------------------------------
+
+\begin{frame}[fragile]{自定义异常层次}
+    \textbf{定义异常体系：}
+\begin{verbatim}
+# 基类异常
+class GradingError(Exception):
+    """阅卷系统基础异常"""
+    pass
+
+# 具体异常
+class ImageLoadError(GradingError):
+    """图像加载失败"""
+    pass
+
+class RegionDetectionError(GradingError):
+    """区域检测失败"""
+    pass
+
+class RecognitionError(GradingError):
+    """识别失败"""
+    pass
+
+class ConfigError(GradingError):
+    """配置错误"""
+    pass
+\end{verbatim}
+
+    \textbf{使用自定义异常：}
+\begin{verbatim}
+def load_image(path):
+    img = cv2.imread(path)
+    if img is None:
+        raise ImageLoadError(f"无法加载图像: {path}")
+    return img
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{异常捕获策略}
+    \textbf{策略一：在合适层级捕获异常}
+\begin{verbatim}
+# 低层函数：抛出异常
+def load_image(path):
+    img = cv2.imread(path)
+    if img is None:
+        raise ImageLoadError(f"无法加载: {path}")
+    return img
+
+# 中层函数：转换异常
+def process_sheet(path):
+    try:
+        img = load_image(path)
+    except ImageLoadError as e:
+        logger.error(f"加载失败: {e}")
+        return None
+    # 继续处理...
+
+# 高层函数：捕获所有
+def main():
+    try:
+        result = process_sheet(path)
+    except GradingError as e:
+        handle_error(e)
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{防御式编程实战}
+    \textbf{输入验证：}
+\begin{verbatim}
+def recognize_choice(image, options, threshold=0.5):
+    # 输入验证
+    if image is None:
+        raise ValueError("图像不能为空")
+    if image.size == 0:
+        raise ValueError("图像尺寸无效")
+    if not options:
+        raise ValueError("选项列表不能为空")
+    if not 0 < threshold < 1:
+        raise ValueError(f"阈值必须在0-1之间，实际: {threshold}")
+
+    # 业务逻辑
+    result = _do_recognize(image, options, threshold)
+    return result
+\end{verbatim}
+
+    \textbf{断言使用：}
+\begin{verbatim}
+def calculate_score(answers, correct_answers):
+    assert len(answers) == len(correct_answers), \
+        f"答案数量不匹配: {len(answers)} vs {len(correct_answers)}"
+
+    score = sum(a == c for a, c in zip(answers, correct_answers))
+    return score
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{日志系统配置}
+    \textbf{完整日志配置：}
+\begin{verbatim}
+import logging
+from logging.handlers import RotatingFileHandler
+
+def setup_logging(name):
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+
+    # 文件处理器（带轮转）
+    file_handler = RotatingFileHandler(
+        'grading.log', maxBytes=10*1024*1024, backupCount=5
+    )
+    file_handler.setLevel(logging.INFO)
+
+    # 控制台处理器
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.WARNING)
+
+    # 格式化
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    return logger
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{结构化日志输出}
+    \textbf{结构化日志：}
+\begin{verbatim}
+import json
+import logging
+
+class StructuredLogger:
+    def __init__(self, name):
+        self.logger = logging.getLogger(name)
+
+    def log_event(self, level, event, **context):
+        log_data = {
+            'event': event,
+            'timestamp': datetime.now().isoformat(),
+            **context
+        }
+        self.logger.log(level, json.dumps(log_data))
+
+    def info(self, event, **kwargs):
+        self.log_event(logging.INFO, event, **kwargs)
+
+# 使用
+logger = StructuredLogger('grading')
+logger.info('image_loaded', path='test.jpg', size=(800, 600))
+logger.info('region_detected', count=5, areas=[100, 200, 300])
+\end{verbatim}
+
+    \textbf{日志输出示例：}
+\begin{verbatim}
+{"event": "image_loaded", "timestamp": "2025-02-06T10:30:00",
+ "path": "test.jpg", "size": [800, 600]}
+\end{verbatim}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{调试技术实战}
+%----------------------------------------------------------
+
+\begin{frame}[fragile]{条件断点实战}
+    \textbf{场景：循环中只关心特定情况}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{问题代码：}
+\begin{verbatim}
+results = []
+for i in range(10000):
+    region = detect_region(i)
+    result = recognize(region)
+    results.append(result)
+    # 只有i=5000时出错
+\end{verbatim}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{条件断点设置：}
+\begin{verbatim}
+# 在IDE中设置：
+# 行号: "result = recognize(region)"
+# 条件: i == 5000
+
+# 或使用代码：
+for i in range(10000):
+    region = detect_region(i)
+    if i == 5000:
+        breakpoint()  # 只在这里暂停
+    result = recognize(region)
+\end{verbatim}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{复杂条件示例：}
+\begin{verbatim}
+# 只在密度异常时暂停
+if density < 0.3 or density > 0.9:
+    breakpoint()
+
+# 只在特定数据时暂停
+if user_id == 'problematic_user_123':
+    breakpoint()
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{异常断点使用}
+    \textbf{自动在异常时暂停：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{IDE设置：}
+            \begin{itemize}
+                \item PyCharm：Run $\to$ View Breakpoints $\to$ Python Exception
+                \item VS Code：调试面板 $\to$ Breakpoints $\to$ 异常
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            \textbf{选择捕获：}
+            \begin{itemize}
+                \item Raise：抛出异常时
+                \item Caught：捕获异常时
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{代码中的异常捕获：}
+\begin{verbatim}
+# 在可疑代码块外
+try:
+    complex_operation()
+except Exception as e:
+    # 自动暂停并查看
+    breakpoint()
+    raise  # 重新抛出
+\end{verbatim}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{使用场景}
+        \begin{itemize}
+            \item 代码中某个位置抛出异常，但不知道原因
+            \item 异常被上层捕获，难以定位源头
+            \item 第三方库中抛出的异常
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{二分法定位问题}
+    \textbf{场景：长流程中某处出错}
+
+\begin{verbatim}
+def process_exam(image_path):
+    # 第一步
+    image = load_image(image_path)
+    print(f"[1] 图像加载: {image.shape if image is not None else 'None'}")
+
+    # 第二步
+    preprocessed = preprocess(image)
+    print(f"[2] 预处理: {preprocessed.shape}")
+
+    # 第三步
+    regions = detect_regions(preprocessed)
+    print(f"[3] 检测到区域: {len(regions)}")
+
+    # 第四步
+    answers = recognize(regions)
+    print(f"[4] 识别结果: {answers}")
+
+    return answers
+\end{verbatim}
+
+    \textbf{定位技巧：}
+    \begin{itemize}
+        \item 如果[2]输出正常但[3]失败，问题在detect\_regions
+        \item 使用二分法快速缩小问题范围
+        \item 在关键步骤添加检查点
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{性能分析与优化}
+    \textbf{使用cProfile分析性能：}
+\begin{verbatim}
+import cProfile
+import pstats
+
+def profile_process():
+    profiler = cProfile.Profile()
+    profiler.enable()
+
+    # 执行要分析的代码
+    result = process_exam("test.jpg")
+
+    profiler.disable()
+
+    # 输出统计
+    stats = pstats.Stats(profiler)
+    stats.sort_stats('cumulative')
+    stats.print_stats(20)  # 打印前20个最耗时的函数
+
+profile_process()
+\end{verbatim}
+
+    \textbf{典型输出：}
+\begin{verbatim}
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      100    0.003    0.000    0.003    0.000 detector.py:45(detect)
+        1    0.002    0.002    0.015    0.015 main.py:10(process)
+     1000    0.001    0.000    0.001    0.000 recognizer.py:23(recognize)
+\end{verbatim}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{AI辅助调试实战}
+%----------------------------------------------------------
+
+\begin{frame}[fragile]{用AI理解复杂代码}
+    \textbf{场景：不理解OpenCV函数参数含义}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{向AI提问（RTF框架）：}
+\begin{verbatim}
+角色：OpenCV专家
+任务：解释这个函数的参数
+格式：分点说明，举例说明
+
+cv2.findContours(
+    binary, cv2.RETR_EXTERNAL,
+    cv2.CHAIN_APPROX_SIMPLE
+)
+\end{verbatim}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{AI会解释：}
+            \begin{itemize}
+                \item \textbf{binary}: 输入的二值图像
+                \item \textbf{RETR\_EXTERNAL}: 只检测外轮廓
+                \item \textbf{CHAIN\_APPROX\_SIMPLE}: 压缩轮廓存储
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            \textbf{AI还会提供：}
+            \begin{itemize}
+                \item 返回值说明（轮廓列表、层次结构）
+                \item 使用示例代码
+                \item 常见错误及解决方案
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{用AI生成测试用例}
+    \textbf{场景：为填涂识别函数生成测试}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{代码函数：}
+\begin{verbatim}
+def recognize_filled(image):
+    gray = cv2.cvtColor(image,
+        cv2.COLOR_BGR2GRAY)
+    density = np.sum(gray > 127) /
+               gray.size
+    return density > 0.5
+\end{verbatim}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Prompt模板：}
+\begin{verbatim}
+为这个函数生成pytest测试用例
+覆盖以下场景：
+1. 填涂区域（应返回True）
+2. 空白区域（应返回False）
+3. 部分填涂（边界情况）
+4. 空图像（异常处理）
+\end{verbatim}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \textbf{AI生成的测试：}
+\begin{verbatim}
+@pytest.mark.parametrize("image,expected", [
+    (create_filled_img(), True),
+    (create_empty_img(), False),
+    (create_partial_img(0.6), True),
+    (create_partial_img(0.4), False),
+])
+def test_recognize_filled(image, expected):
+    assert recognize_filled(image) == expected
+
+def test_empty_image():
+    with pytest.raises(ValueError):
+        recognize_filled(None)
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{用AI辅助重构}
+    \textbf{场景：识别长函数中的Code Smell}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{原始代码（有坏味道）：}
+\begin{verbatim}
+def process_sheet(path):
+    img = cv2.imread(path)
+    gray = cv2.cvtColor(img,
+        cv2.COLOR_BGR2GRAY)
+    binary = cv2.threshold(
+        gray, 127, 255,
+        cv2.THRESH_BINARY)[1]
+    # ...100+行混杂逻辑
+\end{verbatim}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{向AI提问：}
+\begin{verbatim}
+这段代码有什么Code Smell？
+请重构为更清晰的模块化结构
+要求：
+1. 提取独立函数
+2. 添加文档字符串
+3. 处理错误情况
+4. 使用类型注解
+\end{verbatim}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \textbf{AI重构建议：}
+\begin{itemize}
+    \item 提取 \texttt{load\_image()} 函数
+    \item 提取 \texttt{binarize()} 函数
+    \item 提取 \texttt{find\_regions()} 函数
+    \item 使用异常处理而非返回None
+    \item 添加类型注解提高可读性
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助错误诊断}
+    \textbf{场景：遇到难以理解的错误信息}
+
+    \textbf{错误信息：}
+\begin{verbatim}
+OpenCV Error: Assertion failed
+((npoints == prevpoints.size()) && ...
+\end{verbatim}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{有效的Prompt：}
+\begin{verbatim}
+我遇到了OpenCV错误：
+[粘贴完整错误信息和相关代码]
+
+请告诉我：
+1. 这个错误的可能原因是什么？
+2. 如何定位具体问题？
+3. 有哪些解决方案？
+\end{verbatim}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{AI诊断流程：}
+            \begin{enumerate}
+                \item 分析错误类型（断言失败）
+                \item 指出可能原因（点集数量变化）
+                \item 提供检查步骤（打印变量值）
+                \item 给出修复方案（检查预处理逻辑）
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{AI辅助调试最佳实践}
+    \textbf{何时使用AI辅助：}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{8cm}}
+            \toprule
+            \textbf{场景} & \textbf{最佳实践} \\
+            \midrule
+            理解API文档 & 提供"角色+任务+格式"的Prompt \\
+            生成测试代码 & 指定测试框架和覆盖场景 \\
+            重构建议 & 说明具体重构目标和约束 \\
+            错误诊断 & 提供完整错误信息和上下文 \\
+            性能优化 & 描述当前性能和优化目标 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{Prompt工程技巧：}
+    \begin{itemize}
+        \item \textbf{RTF}：Role（角色）、Task（任务）、Format（格式）
+        \item \textbf{上下文}：提供足够的代码和错误信息
+        \item \textbf{约束}：明确输出格式和具体要求
+        \item \textbf{迭代}：根据结果逐步细化Prompt
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{测试驱动开发实战}
+%----------------------------------------------------------
+
+\begin{frame}[fragile]{TDD循环实践}
+    \textbf{场景：实现填涂识别功能}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{第一步：红灯（写失败的测试）}
+\begin{verbatim}
+def test_filled_recognized():
+    image = create_filled_image()
+    result = recognize_filled(image)
+    assert result == True
+    # 运行：失败！函数不存在
+\end{verbatim}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{第二步：绿灯（最少代码通过）}
+\begin{verbatim}
+def recognize_filled(image):
+    # 最简单的实现
+    return True
+    # 测试通过！
+\end{verbatim}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \textbf{第三步：重构（优化实现）}
+\begin{verbatim}
+# 添加更多测试
+def test_empty_not_recognized():
+    image = create_empty_image()
+    assert recognize_filled(image) == False
+
+# 重构实现
+def recognize_filled(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    density = np.sum(gray > 127) / gray.size
+    return density > 0.5
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{参数化测试}
+    \textbf{减少重复代码：}
+\begin{verbatim}
+# 传统方式：重复
+def test_threshold_0_3():
+    assert recognize(img, 0.3) == 'A'
+
+def test_threshold_0_5():
+    assert recognize(img, 0.5) == 'A'
+
+def test_threshold_0_7():
+    assert recognize(img, 0.7) == None
+
+# 参数化：简洁
+@pytest.mark.parametrize("threshold,expected", [
+    (0.3, 'A'),
+    (0.5, 'A'),
+    (0.7, None),
+])
+def test_recognize_threshold(threshold, expected):
+    assert recognize(test_img, threshold) == expected
+\end{verbatim}
+
+    \textbf{多参数组合：}
+\begin{verbatim}
+@pytest.mark.parametrize("image,threshold,expected", [
+    (filled_img, 0.5, 'A'),
+    (empty_img, 0.5, None),
+    (partial_img, 0.3, 'A'),
+    (partial_img, 0.7, None),
+])
+def test_recognize_variations(image, threshold, expected):
+    assert recognize(image, threshold) == expected
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Mock实战：隔离外部依赖}
+    \textbf{场景：测试图像加载，但不依赖真实文件}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{问题：测试依赖文件系统}
+\begin{verbatim}
+def test_load_image():
+    img = load_image("test.jpg")
+    # 需要真实文件
+    # 文件可能不存在
+    # 测试不稳定
+\end{verbatim}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{解决：Mock cv2.imread}
+\begin{verbatim}
+from unittest.mock import patch
+
+@patch('cv2.imread')
+def test_load_image(mock_imread):
+    # 设置返回值
+    mock_imread.return_value = fake_image
+
+    # 测试
+    result = load_image("any_path.jpg")
+
+    # 验证
+    assert result is not None
+    mock_imread.assert_called_once_with(
+        "any_path.jpg"
+    )
+\end{verbatim}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.2cm}
+
+    \textbf{Mock异常情况：}
+\begin{verbatim}
+@patch('cv2.imread')
+def test_load_failure(mock_imread):
+    mock_imread.return_value = None  # 模拟加载失败
+
+    with pytest.raises(ImageLoadError):
+        load_image("invalid.jpg")
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{测试夹具（Fixture）}
+    \textbf{复用测试数据：}
+\begin{verbatim}
+@pytest.fixture
+def sample_image():
+    """创建标准测试图像"""
+    return np.ones((100, 100, 3), dtype=np.uint8) * 255
+
+@pytest.fixture
+def sample_regions():
+    """创建标准测试区域"""
+    return [
+        Rectangle(10, 10, 20, 20),
+        Rectangle(40, 10, 20, 20),
+        Rectangle(70, 10, 20, 20),
+    ]
+
+def test_detect_with_sample(sample_image):
+    regions = detect(sample_image)
+    assert len(regions) > 0
+
+def test_recognize_with_regions(sample_regions):
+    for region in sample_regions:
+        result = recognize(region)
+        assert result is not None
+\end{verbatim}
+
+    \textbf{带清理的Fixture：}
+\begin{verbatim}
+@pytest.fixture
+def temp_file():
+    file = tempfile.NamedTemporaryFile(delete=False)
+    yield file.name
+    file.close()  # 清理
+    os.unlink(file.name)
+\end{verbatim}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{综合实战：完整系统开发}
+%----------------------------------------------------------
+
+\begin{frame}{系统架构实现}
+    \textbf{智能阅卷系统架构：}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.8cm,
+            box/.style={draw, fill=blue!15, minimum width=2.5cm, minimum height=0.7cm, align=center, font=\small},
+            arrow/.style={-Stealth, thick}
+        ]
+            % 顶层
+            \node[box, fill=green!30] (app) {Application\\应用层};
+            \node[box, below=of app] (svc) {GradingService\\服务层};
+            \node[box, below=of svc] (infra) {Infrastructure\\基础设施层};
+
+            % 第二层
+            \node[box, left=2cm of svc] (prep) {Preprocessor\\预处理};
+            \node[box, right=2cm of svc] (rec) {Recognizer\\识别};
+
+            % 箭头
+            \draw[arrow] (app) -- (svc);
+            \draw[arrow] (svc) -- (infra);
+            \draw[arrow, dashed] (svc) -- (prep);
+            \draw[arrow, dashed] (svc) -- (rec);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{开发顺序：}
+    \begin{enumerate}
+        \item 先实现基础设施层（图像加载、文件操作）
+        \item 再实现核心功能层（预处理、检测、识别）
+        \item 最后实现服务层和应用层（业务编排）
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{核心功能实现：预处理模块}
+\begin{verbatim}
+class ImagePreprocessor:
+    """图像预处理模块"""
+
+    def __init__(self, config: PreprocessConfig):
+        self.config = config
+        self.logger = setup_logging(self.__class__.__name__)
+
+    def load(self, path: str) -> np.ndarray:
+        """加载图像"""
+        self.logger.info(f"加载图像: {path}")
+        img = cv2.imread(path)
+        if img is None:
+            raise ImageLoadError(f"无法加载: {path}")
+        return img
+
+    def normalize(self, image: np.ndarray) -> np.ndarray:
+        """归一化处理"""
+        normalized = cv2.normalize(
+            image, None, 0, 255,
+            cv2.NORM_MINMAX
+        )
+        self.logger.debug(f"归一化: {image.shape}")
+        return normalized
+
+    def enhance(self, image: np.ndarray) -> np.ndarray:
+        """图像增强"""
+        # 去噪
+        denoised = cv2.fastNlMeansDenoisingColored(image)
+        # 对比度增强
+        lab = cv2.cvtColor(denoised, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab)
+        l = cv2.createCLAHE(clipLimit=2.0).apply(l)
+        enhanced = cv2.cvtColor(cv2.merge([l,a,b]), cv2.COLOR_LAB2BGR)
+        return enhanced
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{核心功能实现：识别模块}
+\begin{verbatim}
+class ChoiceRecognizer:
+    """选择题识别模块"""
+
+    def __init__(self, config: RecognitionConfig):
+        self.config = config
+        self.logger = setup_logging(self.__class__.__name__)
+
+    def recognize(self, image: np.ndarray,
+                  options: List[str]) -> Optional[str]:
+        """识别选择题答案"""
+        if image is None:
+            raise ValueError("图像不能为空")
+
+        self.logger.debug(f"识别选项: {options}")
+
+        results = {}
+        for idx, option in enumerate(options):
+            region = self._extract_region(image, idx)
+            density = self._calculate_density(region)
+            results[option] = density
+            self.logger.debug(f"{option}: {density:.3f}")
+
+        # 返回密度最高的选项
+        max_option = max(results.items(), key=lambda x: x[1])
+        if max_option[1] > self.config.threshold:
+            return max_option[0]
+        return None
+
+    def _calculate_density(self, image: np.ndarray) -> float:
+        """计算填涂密度"""
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        binary = cv2.threshold(gray, 127, 255,
+                              cv2.THRESH_BINARY)[1]
+        return np.sum(binary == 0) / binary.size
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{系统组装与集成}
+\begin{verbatim}
+class GradingService:
+    """阅卷服务"""
+
+    def __init__(self, config: SystemConfig):
+        self.prep = ImagePreprocessor(config.preprocess)
+        self.detector = RegionDetector(config.detect)
+        self.recognizer = ChoiceRecognizer(config.recognize)
+        self.calculator = GradeCalculator(config.grade)
+        self.logger = setup_logging(self.__class__.__name__)
+
+    def process(self, image_path: str) -> GradingResult:
+        """处理答题卡"""
+        try:
+            # 加载
+            image = self.prep.load(image_path)
+
+            # 预处理
+            normalized = self.prep.normalize(image)
+            enhanced = self.prep.enhance(normalized)
+
+            # 检测
+            regions = self.detector.find_regions(enhanced)
+            self.logger.info(f"检测到 {len(regions)} 个区域")
+
+            # 识别
+            answers = {}
+            for qid, region in regions.items():
+                result = self.recognizer.recognize(region, ['A','B','C','D'])
+                answers[qid] = result
+
+            # 评分
+            score = self.calculator.calculate(answers)
+
+            return GradingResult(answers=answers, score=score)
+
+        except GradingError as e:
+            self.logger.error(f"处理失败: {e}")
+            raise
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{单元测试与集成测试}
+    \textbf{单元测试：}
+    \begin{itemize}
+        \item 测试各模块独立功能
+        \item 使用Mock隔离依赖
+        \item 快速、稳定、可重复
+    \end{itemize}
+
+    \textbf{集成测试：}
+    \begin{itemize}
+        \item 测试模块间协作
+        \item 验证接口契约
+        \item 使用真实或测试数据
+    \end{itemize}
+
+    \begin{block}{测试策略}
+        \begin{itemize}
+            \item \textbf{Preprocessor}: 单元测试，Mock cv2函数
+            \item \textbf{Recognizer}: 单元测试 + 参数化测试
+            \item \textbf{GradingService}: 集成测试，验证完整流程
+            \item \textbf{端到端}: 测试真实图像文件处理
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+%----------------------------------------------------------
+% 本模块要点速查（新增）
+%----------------------------------------------------------
+
+\subsection{本模块要点速查}
+
+\begin{frame}{模块03-Live Coding：要点速查}
+    \begin{block}{重构技术}
+        \begin{itemize}
+            \item 提取函数（长函数→多个小函数）
+            \item 提取类（职责分离）
+            \item 参数对象（过多参数→配置类）
+            \item 替换魔法数字（有意义的常量）
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{异常处理策略}
+        \begin{itemize}
+            \item 自定义异常层次
+            \item 捕获底层异常→转换业务异常
+            \item 防御式编程：前置条件检查
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{TDD循环}
+        \texttt{红灯(测试失败) → 绿灯(最少代码) → 重构(优化)}
+    \end{block}
+\end{frame}
+
+%----------------------------------------------------------
+% 现场练习设计（新增）
+%----------------------------------------------------------
+
+\subsection{现场练习}
+
+\begin{frame}{现场练习：识别Bug}
+    \textbf{任务}：找出以下代码中的Bug（3分钟）
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+\begin{Shaded}
+def calculate_density(regions):
+    results = []
+    for region in regions:
+        if region is not None:
+            density = sum(region) / len(region)
+            results.append(density)
+    return results
+
+# 使用
+img = None
+result = calculate_density([img])
+print(result)
+\end{Shaded}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{提示}：运行这段代码会发生什么？
+
+            \vspace{0.3cm}
+
+            \textbf{Bug分析}：
+            \begin{itemize}
+                \item None对象无法参与运算
+                \item 应在循环内检查，而非循环前
+                \item 缺少异常处理
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{现场练习：完善代码}
+    \textbf{任务}：完善以下代码，添加错误处理（5分钟）
+
+    \begin{block}{待完善代码}
+\begin{Shaded}
+def recognize_choice(image, options):
+    results = {}
+    for option in options:
+        region = image[option]
+        density = np.sum(region > 127) / region.size
+        results[option] = density
+    return results
+\end{Shaded}
+    \end{block}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{需要处理的情况：}
+            \begin{itemize}
+                \item image为None
+                \item option不在image中
+                \item region为空
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{参考解答要点：}
+\begin{Shaded}
+if image is None:
+    raise ValueError(...)
+if option not in image:
+    raise KeyError(...)
+if region.size == 0:
+    continue  # 或return {}
+\end{Shaded}
+        \end{column}
+    \end{columns}
+\end{frame}

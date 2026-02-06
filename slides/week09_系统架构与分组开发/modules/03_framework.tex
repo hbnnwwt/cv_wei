@@ -1,0 +1,26 @@
+%===========================================================
+% 03_framework.tex - 项目框架
+%===========================================================
+
+\section{项目框架}
+
+\begin{frame}{代码结构}
+    \textbf{项目目录结构：}
+    \begin{verbatim}
+auto_grading_system/
+├── main.py                   # 主程序入口
+├── modules/                  # 功能模块
+│   ├── preprocess.py         # 预处理（已实现）
+│   ├── layout.py             # 版面分析（已实现）
+│   ├── choice_recognizer.py  # 选择题（待实现）
+│   ├── judge_recognizer.py   # 判断题（待实现）
+│   ├── essay_recognizer.py   # 简答题（待实现）
+│   └── grading.py            # 评分（待实现）
+├── utils/                    # 工具函数
+├── data/                     # 数据目录
+│   ├── input/                # 输入试卷
+│   ├── output/               # 输出结果
+│   └── templates/            # 标准答案
+└── tests/                    # 单元测试
+    \end{verbatim}
+\end{frame}

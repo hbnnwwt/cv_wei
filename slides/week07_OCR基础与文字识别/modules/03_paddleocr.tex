@@ -1,0 +1,91 @@
+%===========================================================
+% modules/03_paddleocr.tex - PaddleOCR快速上手
+%===========================================================
+
+\section{PaddleOCR快速上手}
+
+\begin{frame}[fragile]{PaddleOCR安装（70\%脚手架）}
+    \textbf{任务：}使用AI助手补全PaddleOCR安装命令
+
+    \textbf{提示词（Prompts）：}
+    \begin{itemize}
+        \item "How to install PaddlePaddle via pip"
+        \item "How to install PaddleOCR"
+        \item "pip install opencv-python and pillow"
+    \end{itemize}
+
+    \begin{lstlisting}
+# TODO: Install PaddlePaddle
+pip install _____________
+
+# TODO: Install PaddleOCR
+pip install _____________
+
+# TODO: Install image processing dependencies
+pip install _____________
+    \end{lstlisting}
+
+    \begin{alertblock}{注意}
+        \begin{itemize}
+            \item 首次使用会自动下载模型
+            \item 需要联网
+            \item 首次运行较慢
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{基础使用（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+from paddleocr import PaddleOCR
+
+# TODO: 使用AI助手（如Cursor的Ctrl+K）补全初始化参数
+# 提示词："配置PaddleOCR，需要支持中文识别和方向分类，用于试卷文字识别"
+ocr = PaddleOCR(
+    # TODO: 语言设置（提示词："PaddleOCR lang参数说明"）
+    lang='____',  # 如 'ch', 'en', 'ch_en'
+
+    # TODO: 启用方向分类（提示词："PaddleOCR use_angle_cls参数说明"）
+    use_angle_cls=____  # True/False
+)
+
+# TODO: 识别图像（提示词："PaddleOCR ocr方法参数说明"）
+result = ocr.ocr('____', cls=____)
+
+# TODO: 解析识别结果（提示词："PaddleOCR结果格式说明，如何提取文字和置信度"）
+for line in result[0]:
+    text = line[____][____]      # 提取文字内容
+    confidence = line[____][____]  # 提取置信度
+    print(f"{text} ({confidence:.4f})")
+    \end{lstlisting}
+
+    \begin{alertblock}{AI辅助编程提示}
+        使用Cursor/Claude Code时，可以这样Prompt：
+        \begin{itemize}
+            \item "PaddleOCR初始化需要哪些参数？用于中文试卷识别。"
+            \item "ocr.ocr()方法的返回值是什么格式？"
+            \item "如何从PaddleOCR结果中提取文字和置信度？"
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{结果格式}
+    \textbf{返回格式：}
+    \begin{verbatim}
+[
+  [
+    [[x1,y1], [x2,y2], [x3,y3], [x4,y4]],  # 文字框坐标
+    ('文字内容', 0.98)                        # 文字+置信度
+  ],
+  ...
+]
+    \end{verbatim}
+
+    \vspace{0.2cm}
+
+    \textbf{字段说明：}
+    \begin{itemize}
+        \item 坐标：文字框的四个角点
+        \item 文字内容：识别出的文本
+        \item 置信度：0-1之间，越接近1越准确
+    \end{itemize}
+\end{frame}

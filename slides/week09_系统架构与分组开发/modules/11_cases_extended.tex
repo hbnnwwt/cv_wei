@@ -1,0 +1,567 @@
+%===========================================================
+% 11_cases_extended.tex - 案例分析与互动（扩充版）
+%===========================================================
+
+\section{真实系统架构案例}
+
+\begin{frame}{案例1：小型阅卷系统架构}
+    \textbf{项目背景：}
+    \begin{itemize}
+        \item 用户：单个班级（约30人）
+        \item 试卷量：每周100-500份
+        \item 功能：选择题+判断题识别
+        \item 团队：1-2人
+    \end{itemize}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.65, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2cm, minimum height=0.8cm, align=center}]
+
+            % 客户端
+            \node[box, fill=green!20] (web) at (0,0) {Web界面};
+
+            % 后端
+            \node[box, fill=yellow!20] (api) at (0,-1.5) {API服务器};
+
+            % 核心模块
+            \node[box] (pre) at (-3,-3) {预处理};
+            \node[box] (loc) at (-1,-3) {区域定位};
+            \node[box] (rec) at (1,-3) {识别};
+            \node[box] (grade) at (3,-3) {评分};
+
+            % 数据
+            \node[box, fill=red!15] (file) at (0,-4.5) {文件系统};
+
+            % 连接
+            \draw[->, thick] (web) -- (api);
+            \draw[->, thick] (api) -- (pre);
+            \draw[->, thick] (api) -- (loc);
+            \draw[->, thick] (api) -- (rec);
+            \draw[->, thick] (api) -- (grade);
+            \draw[->, thick] (pre) -- (file);
+            \draw[->, thick] (rec) -- (file);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{架构特点：}
+    \begin{itemize}
+        \item 单体应用，架构简单
+        \item SQLite文件存储
+        \item 顺序处理，无并行
+        \item 适合入门学习
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例2：中型阅卷系统架构}
+    \textbf{项目背景：}
+    \begin{itemize}
+        \item 用户：多班级/多学校（1000+人）
+        \item 试卷量：每日10000+份
+        \item 功能：全题型支持
+        \item 团队：5-10人
+    \end{itemize}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.65, transform shape,
+            box/.style={draw, rectangle, rounded corners, minimum width=2cm, minimum height=0.8cm, align=center}]
+
+            % 负载均衡
+            \node[box, fill=purple!15] (lb) at (0,0) {负载均衡};
+
+            % API服务
+            \node[box, fill=green!20] (api1) at (-3,-1.5) {API节点1};
+            \node[box, fill=green!20] (api2) at (0,-1.5) {API节点2};
+            \node[box, fill=green!20] (api3) at (3,-1.5) {API节点3};
+
+            % 处理服务
+            \node[box, fill=yellow!20] (proc1) at (-4,-3) {处理服务1};
+            \node[box, fill=yellow!20] (proc2) at (-1,-3) {处理服务2};
+            \node[box, fill=yellow!20] (proc3) at (2,-3) {处理服务3};
+
+            % 数据层
+            \node[box, fill=red!15] (redis) at (-3,-4.5) {Redis缓存};
+            \node[box, fill=red!15] (mysql) at (0,-4.5) {MySQL};
+            \node[box, fill=red!15] (oss) at (3,-4.5) {对象存储};
+
+            % 连接
+            \draw[->, thick] (lb) -- (api1);
+            \draw[->, thick] (lb) -- (api2);
+            \draw[->, thick] (lb) -- (api3);
+            \draw[->, thick] (api1) -- (proc1);
+            \draw[->, thick] (api2) -- (proc2);
+            \draw[->, thick] (api3) -- (proc3);
+            \draw[->, thick] (proc1) -- (redis);
+            \draw[->, thick] (proc2) -- (mysql);
+            \draw[->, thick] (proc3) -- (oss);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{架构特点：}
+    \begin{itemize}
+        \item 微服务架构
+        \item 水平扩展能力
+        \item 数据库分库分表
+        \item 缓存优化
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例3：大型企业级阅卷系统}
+    \textbf{项目背景：}
+    \begin{itemize}
+        \item 用户：全国范围（百万用户）
+        \item 试卷量：每日百万级
+        \item 功能：全题型+AI辅助
+        \item 团队：50+人，多团队协作
+    \end{itemize}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.55, transform shape,
+            box/.style={draw, rectangle, rounded corners, minimum width=1.8cm, minimum height=0.7cm, align=center}]
+
+            % CDN
+            \node[box, fill=blue!15] (cdn) at (-5,0) {CDN};
+
+            % API网关
+            \node[box, fill=purple!15] (gateway) at (-2,0) {API网关};
+
+            % 服务层
+            \node[box, fill=green!15] (upload) at (-5,-2) {上传服务};
+            \node[box, fill=green!15] (process) at (-2.5,-2) {处理服务};
+            \node[box, fill=green!15] (recognize) at (0,-2) {识别服务};
+            \node[box, fill=green!15] (grade) at (2.5,-2) {评分服务};
+            \node[box, fill=green!15] (report) at (5,-2) {报告服务};
+
+            % ML服务
+            \node[box, fill=yellow!15] (ml1) at (0,-4) {OCR服务};
+            \node[box, fill=yellow!15] (ml2) at (3,-4) {NLP服务};
+
+            % 数据层
+            \node[box, fill=red!15] (es) at (-3,-5.5) {ES搜索};
+            \node[box, fill=red!15] (mysql) at (0,-5.5) {TiDB};
+            \node[box, fill=red!15] (redis) at (3,-5.5) {Redis集群};
+
+            % 连接
+            \draw[->, thick] (cdn) -- (gateway);
+            \draw[->, thick] (gateway) -- (upload);
+            \draw[->, thick] (gateway) -- (process);
+            \draw[->, thick] (gateway) -- (recognize);
+            \draw[->, thick] (gateway) -- (grade);
+            \draw[->, thick] (gateway) -- (report);
+            \draw[->, thick] (recognize) -- (ml1);
+            \draw[->, thick] (recognize) -- (ml2);
+            \draw[->, thick] (upload) -- (es);
+            \draw[->, thick] (grade) -- (mysql);
+            \draw[->, thick] (report) -- (redis);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{架构特点：}
+    \begin{itemize}
+        \item 云原生架构
+        \item 容器化部署（K8s）
+        \item 多活容灾
+        \item AI深度集成
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{案例对比分析}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2cm}p{3cm}p{3cm}p{3.5cm}}
+            \toprule
+            \textbf{维度} & \textbf{小型} & \textbf{中型} & \textbf{大型} \\
+            \midrule
+            用户规模 & <1000 & 1000-10万 & 10万+ \\
+            试卷量级 & 10份/天 & 1万份/天 & 100万份/天 \\
+            团队规模 & 1-2人 & 5-10人 & 50+人 \\
+            架构风格 & 单体分层 & 微服务 & 云原生 \\
+            部署方式 & 单机部署 & 集群部署 & K8s+多活 \\
+            扩展策略 & 垂直扩展 & 水平扩展 & 自动扩缩容 \\
+            数据存储 & SQLite & MySQL & TiDB+ES \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{alertblock}{选型建议}
+        学生课程项目建议采用：单体分层架构 + 管道过滤器模式
+        足够简单支撑当前需求，同时为未来扩展预留空间。
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{架构演进路线}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=3cm, minimum height=0.8cm, align=center},
+            arrow/.style={->, thick}]
+
+            \node[box, fill=green!20] (phase1) at (0,0) {Phase 1: 单体\\快速上线};
+            \node[box, fill=yellow!20] (phase2) at (4,0) {Phase 2: 分层\\模块解耦};
+            \node[box, fill=orange!20] (phase3) at (8,0) {Phase 3: 微服务\\独立部署};
+            \node[box, fill=red!20] (phase4) at (12,0) {Phase 4: 云原生\\弹性扩展};
+
+            \draw[arrow] (phase1) -- (phase2);
+            \draw[arrow] (phase2) -- (phase3);
+            \draw[arrow] (phase3) -- (phase4);
+
+            \node[box, fill=gray!15] at (6,-1.5) {
+                按需演进\\
+                不要过度设计
+            };
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{演进原则：}
+    \begin{itemize}
+        \item 业务驱动：扩展跟不上业务时再演进
+        \item 渐进式：逐步拆分，而非一次性重写
+        \item 可逆性：保持模块可独立部署能力
+    \end{itemize}
+\end{frame}
+
+\section{行业最佳实践}
+
+\begin{frame}{微服务架构最佳实践}
+    \textbf{服务拆分原则：}
+    \begin{enumerate}
+        \item 按业务能力拆分（不是按技术）
+        \item 每个服务独立数据库
+        \item 服务间通过API通信
+        \item 避免分布式事务
+    \end{enumerate}
+
+    \textbf{服务治理：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{必须：}
+        \begin{itemize}
+            \item 服务注册发现
+            \item 负载均衡
+            \item 熔断降级
+            \item 链路追踪
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{建议：}
+        \begin{itemize}
+            \item API网关
+            \item 配置中心
+            \item 消息队列
+            \item 限流
+        \end{itemize}
+    \end{columns}
+
+    \begin{exampleblock}{常见问题}
+        \begin{itemize}
+            \item 服务拆分过细：运维复杂
+            \item 服务耦合：修改影响多个服务
+            \item 分布式事务：数据不一致
+        \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{领域驱动设计（DDD）实践}
+    \textbf{核心概念：}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{战略设计：}
+        \begin{itemize}
+            \item 限界上下文（Bounded Context）
+            \item 领域（Domain）
+            \item 子域（Subdomain）
+            \item 上下文映射（Context Map）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{战术设计：}
+        \begin{itemize}
+            \item 实体（Entity）
+            \item 值对象（Value Object）
+            \item 聚合（Aggregate）
+            \item 领域服务（Domain Service）
+        \end{itemize}
+    \end{columns}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.65, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=0.8cm}]
+            \node[box] (domain) at (0,0) {阅卷领域};
+            \node[box] (sub1) at (-3,-1.5) {试卷管理};
+            \node[box] (sub2) at (0,-1.5) {图像处理};
+            \node[box] (sub3) at (3,-1.5) {识别评分};
+            \node[box] (sub4) at (0,-3) {成绩管理};
+
+            \draw[->, thick] (sub1) -- (domain);
+            \draw[->, thick] (sub2) -- (domain);
+            \draw[->, thick] (sub3) -- (domain);
+            \draw[->, thick] (sub4) -- (domain);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{DevOps与CI/CD最佳实践}
+    \textbf{CI/CD流水线：}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.65, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=1.8cm, minimum height=0.7cm}]
+
+            \node[box, fill=green!20] (code) at (0,0) {代码提交};
+            \node[box] (build) at (2.5,0) {构建};
+            \node[box] (test) at (5,0) {测试};
+            \node[box] (deploy) at (7.5,0) {部署};
+            \node[box, fill=red!20] (prod) at (10,0) {生产环境};
+
+            \draw[->, thick] (code) -- (build);
+            \draw[->, thick] (build) -- (test);
+            \draw[->, thick] (test) -- (deploy);
+            \draw[->, thick] (deploy) -- (prod);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{GitHub Actions示例：}
+    \begin{block}{YAML配置示例}
+        \texttt{name: CI}\\
+        \texttt{on: [push, pull\_request]}\\[2mm]
+        \texttt{jobs:}\\
+        \texttt{  build:}\\
+        \texttt{    runs-on: ubuntu-latest}\\
+        \texttt{    steps:}\\
+        \texttt{      - uses: actions/checkout@v3}\\
+        \texttt{      - name: Run tests}\\
+        \texttt{        run: |}\\
+        \texttt{          pip install -r requirements.txt}\\
+        \texttt{          pytest}
+    \end{block}
+\end{frame}
+
+\begin{frame}{测试策略最佳实践}
+    \textbf{测试金字塔：}
+
+    \begin{block}{测试分层}
+        \texttt{单元测试（70\%）}\\
+        \texttt{  test\_preprocessor.py, test\_recognizer.py, ...}\\[2mm]
+        \texttt{集成测试（20\%）}\\
+        \texttt{  test\_pipeline\_integration.py, test\_engine\_integration.py}\\[2mm]
+        \texttt{端到端测试（10\%）}\\
+        \texttt{  test\_full\_workflow.py, test\_api\_endpoints.py}\\[2mm]
+        \texttt{快速、稳定 \hspace{3cm} 慢、复杂}
+    \end{block}
+
+    \textbf{测试原则：}
+    \begin{itemize}
+        \item 测试覆盖核心业务逻辑
+        \item Mock外部依赖
+        \item 保持测试独立
+        \item 测试代码也要维护
+    \end{itemize}
+\end{frame}
+
+\section{课堂互动与Quiz}
+
+\begin{frame}{Quiz 1：架构设计判断}
+    \textbf{判断正误：}
+
+    \begin{enumerate}
+        \item[1.] 微服务比单体架构更好，所以应该一开始就采用微服务。
+
+        \item[2.] 分层架构中，上层可以跳过中间层直接调用下层。
+
+        \item[3.] SOLID原则中的"开闭原则"指的是软件应该对扩展开放，对修改关闭。
+
+        \item[4.] 管道-过滤器架构适合处理图像数据流。
+
+        \item[5.] 识别器注册表可以让我们在不修改引擎代码的情况下添加新的识别算法。
+    \end{enumerate}
+
+    \begin{alertblock}{答案}
+        1. 错  2. 错  3. 对  4. 对  5. 对
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Quiz 2：设计模式选择}
+    \textbf{场景匹配：}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{5cm}p{5cm}}
+            \toprule
+            \textbf{场景} & \textbf{设计模式} \\
+            \midrule
+            需要在运行时切换不同的识别算法 & \\
+            需要为一个类动态添加日志功能 & \\
+            需要确保全局只有一个配置实例 & \\
+            需要将复杂对象的构建分步骤进行 & \\
+            需要在识别完成后通知评分模块 & \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{alertblock}{参考答案}
+        \begin{itemize}
+            \item 运行时切换算法：策略模式
+            \item 动态添加日志：装饰器模式
+            \item 全局唯一实例：单例模式
+            \item 分步构建：建造者模式
+            \item 识别后通知：观察者模式
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Quiz 3：架构问题诊断}
+    \textbf{案例分析：}
+
+    \begin{block}{问题描述}
+        小明的智能阅卷系统运行一年后，代码变得难以维护。每次添加新题型都需要修改识别引擎的核心代码，而且经常导致原有功能出错。
+    \end{block}
+
+    \textbf{问题诊断：}
+    \begin{enumerate}
+        \item[1.] 识别引擎违反了哪个设计原则？
+        \item[2.] 如何用设计模式解决这个问题？
+        \item[3.] 如何重构代码使其更易扩展？
+    \end{enumerate}
+
+    \begin{alertblock}{参考答案}
+        \begin{enumerate}
+            \item 违反了开闭原则（OCP）和单一职责原则（SRP）
+            \item 应用策略模式，将识别算法抽象为接口
+            \item 使用工厂模式创建识别器，使用注册表管理识别器
+        \end{enumerate}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Quiz 4：场景设计}
+    \textbf{设计练习：}
+
+    \begin{block}{题目}
+        请为以下场景设计解决方案：
+        \begin{enumerate}
+            \item[1.] 需要支持多种预处理算法（高斯滤波、中值滤波、双边滤波），用户可以选择使用哪种算法。
+            \item[2.] 识别系统需要能够处理多种图片格式（PNG、JPG、TIFF）。
+            \item[3.] 处理过程中需要记录每个步骤的详细信息，便于调试。
+        \end{enumerate}
+    \end{block}
+
+    \textbf{设计要点：}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.75, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=4cm, minimum height=0.8cm}]
+            \node[box] (q1) at (0,0) {1. 策略模式+工厂模式};
+            \node[box] (q2) at (5,0) {2. 适配器模式};
+            \node[box] (q3) at (10,0) {3. 观察者模式+日志};
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{讨论：架构决策}
+    \begin{block}{讨论题目}
+        在实际项目中，架构设计常常面临取舍：
+        \begin{enumerate}
+            \item[1.] 简单vs可扩展：对于课程项目，什么程度的架构设计是"恰到好处"？
+            \item[2.] 规范vs速度：严格遵循代码规范是否会拖慢开发进度？
+            \item[3.] 个人vs团队：在小团队中是否有必要使用复杂的版本控制流程？
+        \end{enumerate}
+    \end{block}
+
+    \textbf{讨论要点：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{支持严格规范：}
+        \begin{itemize}
+            \item 长远看节省时间
+            \item 减少沟通成本
+            \item 代码更易维护
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{适度灵活：}
+        \begin{itemize}
+            \item 根据项目阶段调整
+            \item 平衡成本和收益
+            \item 保持核心原则
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{最佳实践投票（实时互动）}
+    \begin{block}{手机投票说明}
+        \textbf{问卷星实时投票}: 请拿出手机，扫描二维码参与投票
+        \begin{itemize}
+            \item 投票结果实时显示在主屏
+            \item 看看其他小组的选择
+            \item 准备分享你们组的决策理由
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{投票题目：}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{enumerate}
+            \item[1.] 你们组打算采用什么分支策略？
+                \begin{itemize}
+                    \item A. Git Flow（规范）
+                    \item B. GitHub Flow（简洁）
+                    \item C. 主干开发（极致简化）
+                \end{itemize}
+
+            \item[2.] 识别算法通过什么方式扩展？
+                \begin{itemize}
+                    \item A. 配置文件（灵活）
+                    \item B. 注册表（专业）
+                    \item C. 硬编码（简单）
+                \end{itemize}
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \begin{enumerate}
+            \setcounter{enumi}{2}
+            \item[3.] 代码审查的频率？
+                \begin{itemize}
+                    \item A. 每次PR都审查（严格）
+                    \item B. 每日审查（平衡）
+                    \item C. 合并前审查（宽松）
+                \end{itemize}
+        \end{enumerate}
+
+        \vspace{0.5cm}
+
+        \begin{center}
+            \framebox[0.8\textwidth]{\begin{minipage}{0.75\textwidth}
+                \centering
+                \textbf{【扫码投票】}\\
+                \vspace{0.2cm}
+                \textit{（此处放置问卷星二维码）}
+            \end{minipage}}
+        \end{center}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{投票后讨论}
+        投票完成后，请选择不同选项的小组分享理由，看看能否说服对方！
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{思考题}
+    \begin{block}{课后思考}
+        \begin{enumerate}
+            \item[1.] 在识别引擎中，如果某个识别算法的准确率突然下降，如何快速定位问题？
+            \item[2.] 如果要支持实时识别（边扫描边识别），流水线架构需要如何调整？
+            \item[3.] 在团队协作中，如何平衡代码审查的严格程度和开发效率？
+        \end{enumerate}
+    \end{block}
+
+    \begin{alertblock}{提示}
+        \begin{itemize}
+            \item 考虑添加监控和日志
+            \item 考虑使用流式处理
+            \item 考虑自动化检查工具
+        \end{itemize}
+    \end{alertblock}
+\end{frame}

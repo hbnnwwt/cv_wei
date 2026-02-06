@@ -1,0 +1,301 @@
+%===========================================================
+% main.tex - 主控文件
+%===========================================================
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 导入配置文件
+\input{preamble.tex}
+
+% 学校信息（包含 logo 图片）
+\institute{%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../name.png}}\hspace{0.5cm}%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../xiaohui.png}}\hspace{0.3cm}%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
+\begin{document}
+
+%===========================================================
+% 标题页与目录
+%===========================================================
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \textbf{本周内容：}
+        \begin{itemize}
+            \item 手写识别概述
+            \item PaddleOCR手写识别
+            \item TrOCR高精度识别
+            \item 图像预处理优化
+            \item 思考题与作业
+        \end{itemize}
+
+        \column{0.55\textwidth}
+        \textbf{学期项目：AI阅卷助手}
+        \begin{enumerate}
+            \item 图像采集与预处理
+            \item 答题卡定位（Timing Marks）
+            \item 填涂检测与识别
+            \item 手写文字 OCR（本周重点）
+            \item 成绩统计与输出
+        \end{enumerate}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周时间分配（160分钟 = 3学时）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第1学时（45分钟）：}
+        \begin{itemize}
+            \item[00:00-00:15] 手写识别概述（15min）
+            \item[00:15-00:35] PaddleOCR手写识别（20min）
+            \item[00:35-00:45] 讨论与答疑（10min）
+        \end{itemize}
+
+        \textbf{第2学时（45分钟）：}
+        \begin{itemize}
+            \item[00:45-01:15] TrOCR高精度识别（30min）
+            \item[01:15-01:30] 图像预处理优化（15min）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{第3学时（70分钟）：}
+        \begin{itemize}
+            \item[01:30-02:00] 代码实战：手写识别（30min）
+            \item[02:00-02:20] 参数调优实践（20min）
+            \item[02:20-02:35] 互动测验（15min）
+            \item[02:35-02:45] 总结与作业（10min）
+        \end{itemize}
+
+        \vspace{0.5cm}
+        \begin{alertblock}{时间控制提示}
+        如果进度落后，建议跳过"挑战任务"
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{预备知识（课前5分钟视频）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{视频1：神经网络基础（2分钟）}
+
+        \vspace{0.2cm}
+
+        \textbf{神经元模型：}
+        \begin{itemize}
+            \item 模拟人脑神经元
+            \item 输入→加权和→激活→输出
+            \item 可学习的权重和偏置
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{神经网络层次：}
+        \begin{itemize}
+            \item 输入层：接收数据
+            \item 隐藏层：特征提取
+            \item 输出层：产生结果
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{视频2：卷积运算直观理解（3分钟）}
+
+        \vspace{0.2cm}
+
+        \textbf{什么是卷积？}
+        \begin{itemize}
+            \item 滑动窗口提取特征
+            \item 卷积核（滤波器）
+            \item 特征图（Feature Map）
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{卷积在手写识别中的作用：}
+        \begin{itemize}
+            \item 提取笔画特征
+            \item 捕获局部结构
+            \item 平移不变性
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{常见卷积操作：}
+        \begin{itemize}
+            \item Valid卷积：尺寸减小
+            \item Same卷积：保持尺寸
+            \item 池化（Pooling）：下采样
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{课前测试}
+        观看视频后，请回答：
+        \begin{enumerate}
+            \item 神经网络的基本单元是什么？
+            \item 卷积运算有什么特点？
+            \item 卷积在手写识别中起什么作用？
+        \end{enumerate}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{本周分组策略}
+    \textbf{分组原则：}
+    \begin{itemize}
+        \item 每4人为一组
+        \item 确保不同专业背景混合
+        \item 建议包含：理工科、文科、无编程基础、有编程基础
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{角色分工：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{角色} & \textbf{职责} & \textbf{适合} \\
+            \midrule
+            组长 & 统筹协调、进度管理 & 组织能力强的 \\
+            算法实现者 & 实现OCR代码、模型调用 & 有编程基础的 \\
+            参数调优者 & 调整识别参数、优化效果 & 细心负责的 \\
+            测试者 & 收集测试用例、报告问题 & 细心负责的 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{本周协作任务}
+        实现手写文字识别，对比PaddleOCR和TrOCR效果
+    \end{block}
+\end{frame}
+
+\begin{frame}{本周在智能阅卷系统中的位置}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{已完成模块：}
+        \begin{enumerate}
+            \item \textcolor{green!60!black}{✓} 图像预处理（第3周）
+            \item \textcolor{green!60!black}{✓} 版面分析（第4周）
+            \item \textcolor{green!60!black}{✓} 选择题识别（第5周）
+            \item \textcolor{green!60!black}{✓} 判断题识别（第6周）
+            \item \textcolor{green!60!black}{✓} 印刷文字识别（第7周）
+        \end{enumerate}
+
+        \vspace{0.3cm}
+
+        \textbf{本周目标：}
+        \begin{itemize}
+            \item \textcolor{blue}{🔄} 识别手写简答答案
+            \item \textcolor{blue}{🔄} 对比PaddleOCR vs TrOCR
+            \item \textcolor{blue}{🔄} 优化预处理参数
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{智能阅卷流程：}
+
+        \vspace{0.2cm}
+
+        \begin{center}
+            \begin{tikzpicture}[
+                node distance=0.4cm,
+                box/.style={rectangle, draw=black, minimum width=1.8cm, minimum height=0.5cm, font=\scriptsize, rounded corners},
+                arrow/.style={->, thick},
+                current/.style={rectangle, draw=blue, fill=blue!20, minimum width=1.8cm, minimum height=0.5cm, font=\scriptsize, rounded corners}
+            ]
+                \node[box] (p1) {预处理};
+                \node[box, right=0.05cm of p1] (p2) {版面};
+                \node[box, right=0.05cm of p2] (p3) {选/判};
+                \node[box, right=0.05cm of p3] (p4) {印刷};
+                \node[current, right=0.05cm of p4] (p5) {手写};
+                \node[box, dashed, right=0.05cm of p5] (p6) {评分};
+
+                \draw[arrow] (p1) -- (p2);
+                \draw[arrow] (p2) -- (p3);
+                \draw[arrow] (p3) -- (p4);
+                \draw[arrow] (p4) -- (p5);
+                \draw[arrow] (p5) -- (p6);
+            \end{tikzpicture}
+        \end{center}
+
+        \vspace{0.3cm}
+
+        \textit{\textcolor{blue}{从"印刷文字"到"手写文字"的跨越}}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{手写识别在智能阅卷中的作用}
+        \begin{itemize}
+            \item \textbf{简答题自动识别}：将学生手写答案转换为可编辑文本
+            \item \textbf{关键词提取}：从手写答案中提取关键信息
+            \item \textbf{辅助评分}：为教师提供参考，加快批改速度
+            \item \textbf{答案存档}：数字化保存学生手写答案
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{多屏协同设计}
+    \textbf{本课程采用多屏协同教学方式：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{主屏（左侧）：理论讲解}
+        \begin{itemize}
+            \item PPT幻灯片
+            \item 概念和原理讲解
+            \item 图像和代码展示
+            \item 互动测验
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{侧屏（右侧）：实时演示}
+        \begin{itemize}
+            \item OCR代码实时演示
+            \item 手写识别效果展示
+            \item 参数调整实时反馈
+            \item 调试过程展示
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{移动设备互动}
+        使用手机参与互动测验（问卷星）
+    \end{block}
+\end{frame}
+
+%===========================================================
+% 教学模块
+%===========================================================
+\input{modules/01_overview.tex}
+\input{modules/02_paddleocr.tex}
+\input{modules/03_trocr.tex}
+\input{modules/04_preprocessing.tex}
+\input{modules/05_exercises.tex}
+
+%===========================================================
+% AI调试助手
+%===========================================================
+\input{modules/06_debug_helper.tex}
+
+%===========================================================
+% 总结与作业
+%===========================================================
+\input{sections/summary.tex}
+
+\end{document}

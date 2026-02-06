@@ -1,0 +1,144 @@
+%===========================================================
+% main.tex - 主控文件
+%===========================================================
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 导入配置文件
+\input{preamble.tex}
+
+% 学校信息（包含 logo 图片）
+\institute{%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../name.png}}\hspace{0.5cm}%
+    \raisebox{-0.5cm}{\includegraphics[height=1.2cm]{../xiaohui.png}}\hspace{0.3cm}%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
+\begin{document}
+
+%===========================================================
+% 标题页与目录
+%===========================================================
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \textbf{本周内容：}
+        \begin{itemize}
+            \item 项目展示重要性
+            \item 技术演讲技巧
+            \item Demo演示方法
+            \item \textbf{AI辅助演讲准备}
+            \item 项目总结复盘
+            \item 成果展示实战
+        \end{itemize}
+
+        \column{0.55\textwidth}
+        \textbf{学期项目：AI阅卷助手}
+        \begin{enumerate}
+            \item 图像采集与预处理
+            \item 答题卡定位（Timing Marks）
+            \item 填涂检测与识别
+            \item 手写文字 OCR
+            \item 成绩统计与输出
+        \end{enumerate}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周时间分配（100分钟 = 2学时）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第1学时（45分钟）：}
+        \begin{itemize}
+            \item[00:00-00:15] 背景知识铺垫（15min）
+            \item[00:15-00:30] 核心理论讲解（15min）
+            \item[00:30-00:45] 工具环境介绍（15min）
+        \end{itemize}
+
+        \textbf{第2学时（55分钟）：}
+        \begin{itemize}
+            \item[00:45-01:15] Live Coding实战（30min）
+            \item[01:15-01:30] 案例分析与互动（15min）
+            \item[01:30-01:40] 展示规则说明（10min）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{时间控制提示}
+        理论部分简洁，重点放在实战演练
+        \end{alertblock}
+
+        \vspace{0.3cm}
+
+        \begin{block}{展示顺序}
+        抽签决定，确保公平公正
+        \end{block}
+    \end{columns}
+\end{frame}
+
+%===========================================================
+% 00. 背景知识铺垫 (8-12页)
+%===========================================================
+\input{modules/00_background/01_presentation_importance.tex}
+\input{modules/00_background/02_presentation_forms.tex}
+\input{modules/00_background/03_reflection_methods.tex}
+
+%===========================================================
+% 01. 核心理论与原理 (12-18页)
+%===========================================================
+\input{modules/01_theory/01_speech_structure.tex}
+\input{modules/01_theory/02_speech_design.tex}
+\input{modules/01_theory/03_speech_delivery.tex}
+\input{modules/01_theory/04_qa_techniques.tex}
+\input{modules/01_theory/05_demo_preparation.tex}
+\input{modules/01_theory/06_demo_execution.tex}
+
+%===========================================================
+% 02. 工具与环境介绍 (5-8页)
+%===========================================================
+\input{modules/02_tools/01_presentation_tools.tex}
+\input{modules/02_tools/02_demo_tools.tex}
+\input{modules/02_tools/03_documentation_tools.tex}
+\input{modules/02_tools/04_ai_presentation_tools.tex}
+
+%===========================================================
+% 03. Live Coding实战 (20-25页) ⭐核心
+%===========================================================
+\input{modules/03_practice/01_speech_prep_practice.tex}
+\input{modules/03_practice/02_demo_practice.tex}
+\input{modules/03_practice/03_doc_writing_practice.tex}
+\input{modules/03_practice/04_review_practice.tex}
+\input{modules/03_practice/05_integrated_practice.tex}
+
+%===========================================================
+% 04. 案例分析与互动 (5-8页)
+%===========================================================
+\input{modules/04_cases/01_best_cases.tex}
+\input{modules/04_cases/02_pitfalls.tex}
+\input{modules/04_cases/04_grading_system_cases.tex}
+\input{modules/04_cases/03_quiz.tex}
+
+%===========================================================
+% 05. 展示规则与总结
+%===========================================================
+\section{展示规则}
+\input{modules/05_summary/01_presentation_rules.tex}
+\input{modules/05_summary/02_grading_criteria.tex}
+\input{modules/05_summary/03_presentation_structure.tex}
+\input{modules/05_summary/04_course_review.tex}
+\input{modules/05_summary/05_ai_programming_review.tex}
+\input{modules/05_summary/07_differentiated_presentation.tex}
+\input{modules/05_summary/06_future_learning.tex}
+
+%===========================================================
+% 总结与思考题
+%===========================================================
+\input{sections/summary.tex}
+
+\end{document}

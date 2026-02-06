@@ -1,0 +1,524 @@
+%===========================================================
+% 04_preprocessing.tex - 图像预处理优化
+%===========================================================
+
+\section{图像预处理优化}
+
+\begin{frame}[fragile]{手写图像预处理}
+    \begin{lstlisting}
+def preprocess_handwriting(image):
+    """手写图像预处理完整流程"""
+    # TODO: 使用AI助手补全手写图像预处理代码
+    # 提示词："OpenCV手写图像预处理：灰度化→去噪→对比度增强→二值化"
+
+    # ========== 第一步：转灰度 ==========
+    # TODO: 使用cv2.cvtColor将图像转为灰度图
+    # 提示词："cv2.cvtColor BGR2GRAY转换"
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # ========== 第二步：去噪 ==========
+    # TODO: 使用fastNlMeansDenoising进行非局部均值去噪
+    # 提示词："cv2.fastNlMeansDenoising参数说明和推荐值"
+    denoised = cv2.fastNlMeansDenoising(gray, None, 10, 7, 21)
+
+    # ========== 第三步：对比度增强 ==========
+    # TODO: 创建CLAHE对象并应用自适应直方图均衡化
+    # 提示词："cv2.createCLAHE clipLimit和tileGridSize参数调优"
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(denoised)
+
+    # ========== 第四步：二值化 ==========
+    # TODO: 使用Otsu自适应阈值进行二值化
+    # 提示词："cv2.threshold OTSU二值化参数设置"
+    _, binary = cv2.threshold(
+        enhanced, 0, 255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    return binary
+    \end{lstlisting}
+
+    \textbf{关键提示：} 手写图像需要更强的预处理，特别是去噪和对比度增强！
+\end{frame}
+
+\begin{frame}{文本行检测与分割}{水平投影法}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{水平投影法原理}
+            \begin{itemize}
+                \item 对二值图像按行求和
+                \item 文字区域投影值高
+                \item 空白行投影值接近0
+                \item 通过阈值分割出行位置
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{适用场景：}
+            \begin{itemize}
+                \item 工整手写或印刷体
+                \item 水平排列文本
+                \item 行间距较明显
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+def horizontal_projection(binary_img):
+    """水平投影法行分割"""
+    # TODO: 使用AI助手补全水平投影代码
+    # 提示词："NumPy水平投影计算：对每行求和"
+
+    # 对每一行求和
+    h_proj = np.sum(binary_img, axis=1)
+
+    # 可视化投影
+    plt.figure(figsize=(10, 5))
+    plt.subplot(121)
+    plt.imshow(binary_img, cmap='gray')
+    plt.title('Binary Image')
+
+    plt.subplot(122)
+    plt.plot(h_proj, range(len(h_proj)))
+    plt.title('Horizontal Projection')
+    plt.gca().invert_yaxis()
+
+    return h_proj
+
+def find_text_lines(h_proj, threshold=100):
+    """从投影中找到文本行位置"""
+    # TODO: 使用AI助手补全文本行检测逻辑
+    # 提示词："基于投影阈值分割文本行，处理行间隙"
+
+    text_lines = []
+    in_line = False
+    start = 0
+
+    for i, proj in enumerate(h_proj):
+        if proj > threshold and not in_line:
+            # 行开始
+            start = i
+            in_line = True
+        elif proj <= threshold and in_line:
+            # 行结束
+            end = i
+            text_lines.append((start, end))
+            in_line = False
+
+    # 处理最后一个字符
+    if not in_line:
+        text_lines.append((start, len(h_proj)))
+
+    return text_lines
+            \end{lstlisting}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{文本行检测与分割}{连通域分析与深度学习方法}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{连通域分析法}
+
+            \textbf{步骤：}
+            \begin{enumerate}
+                \item 对二值图像进行连通域标记
+                \item 计算每个连通域的外接矩形
+                \item 根据垂直位置进行聚类
+                \item 合并同一行的连通域
+            \end{enumerate}
+
+            \vspace{0.3cm}
+            \textbf{优点：}
+            \begin{itemize}
+                \item 能处理倾斜文本
+                \item 对行间距不均匀适应性好
+                \item 可识别弯曲行
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{基于深度学习的方法}
+
+            \textbf{DBNet (Differentiable Binarization)}
+            \begin{itemize}
+                \item 端到端文本检测
+                \item 可检测任意形状文本
+                \item 速度快、精度高
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{EAST}
+            \begin{itemize}
+                \item 全卷积网络
+                \item 直接预测文本框
+                \item 支持多方向文本
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{适用场景：}
+            \begin{itemize}
+                \item 复杂背景文档
+                \item 自然场景文本
+                \item 弯曲/倾斜文本行
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{单字/单词分割}{垂直投影与改进方法}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{垂直投影分割原理}
+            \begin{itemize}
+                \item 对文本行图像按列求和
+                \item 字符区域投影值高
+                \item 字符间隙投影值接近0
+                \item 通过阈值确定分割点
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{存在的问题：}
+            \begin{itemize}
+                \item 粘连字符难以分割
+                \item 汉字偏旁可能被分开
+                \item 间距不均影响效果
+                \item 对手写体适应性差
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+def vertical_projection_split(line_img,
+                                threshold=50):
+    """
+    垂直投影法分割字符
+    """
+    # TODO: 使用AI助手补全垂直投影分割代码
+    # 提示词："NumPy垂直投影：对每列求和找字符间隙"
+
+    # 对每一列求和
+    v_proj = np.sum(line_img, axis=0)
+
+    # 找到投影小于阈值的列（间隙）
+    gaps = v_proj < threshold
+
+    # 找出间隙的起止位置
+    char_regions = []
+    in_gap = False
+    start = 0
+
+    for i, is_gap in enumerate(gaps):
+        if is_gap and not in_gap:
+            # 字符区域结束
+            end = i
+            char_regions.append((start, end))
+            in_gap = True
+        elif not is_gap and in_gap:
+            # 字符区域开始
+            start = i
+            in_gap = False
+
+    # 处理最后一个字符
+    if not in_gap:
+        char_regions.append((start, len(v_proj)))
+
+    return char_regions, v_proj
+            \end{lstlisting}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{单字/单词分割}{高级分割方法}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{最小生成树(MST)分割}
+
+            \textbf{算法步骤：}
+            \begin{enumerate}
+                \item 提取所有连通域
+                \item 构建连通域之间的距离图
+                \item 使用Kruskal算法构建MST
+                \item 切割权重最大的边
+                \item 得到分割结果
+            \end{enumerate}
+
+            \vspace{0.3cm}
+            \textbf{优点：}
+            \begin{itemize}
+                \item 考虑全局信息
+                \item 对粘连字符效果好
+                \item 分割边界合理
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{基于聚类的分割}
+
+            \textbf{K-means聚类：}
+            \begin{itemize}
+                \item 提取每个连通域特征
+                \item 使用笔画宽度、宽高比等
+                \item 聚类确定字符分组
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{过度分割与合并策略：}
+
+            \textbf{过度分割：}
+            \begin{itemize}
+                \item 先进行细粒度分割
+                \item 保证每个字符都被切开
+                \item 可能产生过多片段
+            \end{itemize}
+
+            \textbf{合并策略：}
+            \begin{itemize}
+                \item 根据几何特征合并
+                \item 笔画宽度一致性
+                \item 相邻片段的空间关系
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{文字规范化}{倾斜校正与尺寸归一化}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{倾斜校正算法}
+
+            \textbf{1. 基于投影的校正：}
+            \begin{itemize}
+                \item 尝试不同角度旋转
+                \item 计算水平投影的方差
+                \item 选择方差最大的角度
+            \end{itemize}
+
+            \textbf{2. 基于Hough变换：}
+            \begin{itemize}
+                \item 检测文本行基线
+                \item 计算倾斜角度
+                \item 进行旋转校正
+            \end{itemize}
+
+            \textbf{3. 基于主成分分析(PCA)：}
+            \begin{itemize}
+                \item 计算文字点云的主轴
+                \item 确定倾斜角度
+                \item 旋转校正
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{尺寸归一化}
+
+            \textbf{为什么要归一化：}
+            \begin{itemize}
+                \item 统一输入尺寸
+                \item 消除大小差异
+                \item 提高模型泛化能力
+            \end{itemize}
+
+            \textbf{常用方法：}
+
+            \textbf{1. 线性缩放：}
+            \begin{itemize}
+                \item 直接缩放到固定尺寸
+                \item 保持宽高比或拉伸
+            \end{itemize}
+
+            \textbf{2. 保持比例填充：}
+            \begin{itemize}
+                \item 等比例缩放
+                \item 不足部分填充背景色
+                \item 保持字符原有比例
+            \end{itemize}
+
+            \textbf{3. 重心对齐：}
+            \begin{itemize}
+                \item 计算字符重心
+                \item 归一化到固定位置
+                \item 提高识别鲁棒性
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{文字规范化}{笔画宽度归一化与骨架提取}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{笔画宽度归一化}
+
+            \textbf{目的：}
+            \begin{itemize}
+                \item 消除不同笔迹粗细差异
+                \item 统一笔画宽度便于识别
+                \item 提高模型泛化能力
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{实现方法：}
+
+            \textbf{1. 笔画宽度变换(SWT)：}
+            \begin{itemize}
+                \item 计算每个像素笔画宽度
+                \item 根据宽度进行归一化
+                \item 保持笔画连通性
+            \end{itemize}
+
+            \textbf{2. 形态学操作：}
+            \begin{itemize}
+                \item 膨胀/腐蚀调整笔画粗细
+                \item 开运算去除细小噪声
+                \item 闭运算连接断裂笔画
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{骨架提取}
+
+            \textbf{什么是骨架：}
+            \begin{itemize}
+                \item 保持字符拓扑结构的细线
+                \item 笔画中心线
+                \item 宽度为1像素的线条
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \textbf{常用算法：}
+
+            \textbf{1. 中轴变换(Medial Axis Transform)}
+
+            \textbf{2. 细化算法(Thinning)：}
+            \begin{itemize}
+                \item Zhang-Suen算法
+                \item Guo-Hall算法
+            \end{itemize}
+
+            \vspace{0.3cm}
+            \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+import cv2
+import numpy as np
+
+def skeletonize(image):
+    """
+    使用OpenCV提取骨架
+    """
+    # TODO: 使用AI助手补全骨架提取代码
+    # 提示词："OpenCV骨架提取：使用ximgproc.thinning"
+
+    # 确保二值图像
+    # TODO: 使用阈值处理确保图像为二值
+    _, binary = cv2.threshold(image, 0, 255,
+                              cv2.THRESH_BINARY)
+
+    # 使用OpenCV的细化算法
+    # TODO: 调用cv2.ximgproc.thinning提取骨架
+    skeleton = cv2.ximgproc.thinning(binary)
+
+    return skeleton
+            \end{lstlisting}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{完整预处理流程可视化}
+    \begin{lstlisting}
+def visualize_preprocessing(image_path):
+    """
+    预处理全流程可视化（TODO脚手架版本）
+    """
+    # TODO: 使用AI助手补全可视化代码
+    # 提示词："matplotlib子图展示图像预处理各阶段结果"
+
+    import matplotlib.pyplot as plt
+
+    # TODO: 读取原图
+    original = cv2.imread(_____)
+
+    # 创建子图布局
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+
+    # ========== 1. 原图 ==========
+    # TODO: 显示原图
+    # 提示词："OpenCV BGR转RGB用于matplotlib显示"
+    axes[0, 0].imshow(cv2.cvtColor(original, cv2._______))
+    axes[0, 0].set_title('1. Original Image')
+    axes[0, 0].axis('off')
+
+    # ========== 2. 灰度图 ==========
+    # TODO: 转灰度图
+    gray = cv2.cvtColor(original, cv2._______)
+    axes[0, 1].imshow(gray, cmap='gray')
+    axes[0, 1].set_title('2. Grayscale')
+    axes[0, 1].axis('off')
+
+    # ========== 3. 去噪 ==========
+    # TODO: 使用fastNlMeansDenoising去噪
+    # 提示词："fastNlMeansDenoising参数：h=10, templateWindow=7, searchWindow=21"
+    denoised = cv2.fastNlMeansDenoising(gray, None, __, __, __)
+    axes[0, 2].imshow(denoised, cmap='gray')
+    axes[0, 2].set_title('3. Denoised')
+    axes[0, 2].axis('off')
+
+    # ========== 4. 对比度增强 ==========
+    # TODO: 创建CLAHE并应用
+    # 提示词："CLAHE clipLimit=2.0, tileGridSize=(8,8)"
+    clahe = cv2.createCLAHE(clipLimit=____, tileGridSize=(__, __))
+    enhanced = clahe.apply(_____)
+    axes[1, 0].imshow(enhanced, cmap='gray')
+    axes[1, 0].set_title('4. Contrast Enhanced')
+    axes[1, 0].axis('off')
+
+    # ========== 5. 二值化 ==========
+    # TODO: 使用Otsu阈值进行二值化
+    _, binary = cv2.threshold(enhanced, __, __,
+                               cv2.THRESH_BINARY + cv2._____)
+    axes[1, 1].imshow(binary, cmap='gray')
+    axes[1, 1].set_title('5. Binary (Final)')
+    axes[1, 1].axis('off')
+
+    # ========== 6. 水平投影 ==========
+    # TODO: 计算水平投影用于行分割
+    h_proj = np.sum(binary, axis=__)
+    axes[1, 2].plot(h_proj, range(len(h_proj)))
+    axes[1, 2].set_title('6. Horizontal Projection')
+    axes[1, 2].invert_yaxis()
+
+    plt.tight_layout()
+    plt.savefig('preprocessing_pipeline.png', dpi=150)
+    plt.show()
+
+    return binary
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{预处理效果对比}
+    \begin{table}
+        \centering
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{预处理步骤} & \textbf{OCR准确率} & \textbf{速度} & \textbf{推荐} \\
+            \midrule
+            无预处理 & 65\% & 快 & \textcolor{red}{✗} \\
+            仅灰度化 & 72\% & 快 & \textcolor{red}{✗} \\
+            灰度+去噪 & 80\% & 中等 & \textcolor{orange}{△} \\
+            完整预处理 & \textbf{90\%+} & 慢 & \textcolor{green}{✓} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{建议：}
+            \begin{itemize}
+                \item 生产环境：使用完整预处理
+                \item 快速测试：至少灰度+去噪
+                \item 实时应用：平衡速度与精度
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{关键参数：}
+            \begin{itemize}
+                \item CLAHE clipLimit: 2.0-4.0
+                \item 去噪强度: h=10-20
+                \item 二值化阈值: OTSU自适应
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}

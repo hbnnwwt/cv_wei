@@ -1,0 +1,58 @@
+%===========================================================
+% modules/02_ocr_overview.tex - OCR技术概述
+%===========================================================
+
+\section{OCR技术概述}
+
+\begin{frame}{什么是OCR？}
+    \begin{block}{OCR：Optical Character Recognition}
+        光学字符识别 —— 将图像中的文字转换为计算机可编辑的文本
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{应用场景：}
+    \begin{itemize}
+        \item 文档数字化
+        \item 车牌识别
+        \item 证件识别
+        \item \textbf{试卷文字识别}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{OCR技术发展}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{阶段} & \textbf{技术} & \textbf{准确率} \\
+            \midrule
+            传统方法 & 模板匹配、特征提取 & 60-70\% \\
+            机器学习 & SVM、HMM & 80-85\% \\
+            深度学习 & CNN、RNN & 90-92\% \\
+            Transformer & TrOCR、Donut & 95\%+ \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{当前：} 端到端大模型时代
+\end{frame}
+
+\begin{frame}{主流OCR工具对比}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{4cm}lp{3cm}}
+            \toprule
+            \textbf{工具} & \textbf{优点} & \textbf{缺点} & \textbf{适用} \\
+            \midrule
+            Tesseract & 开源免费 & 中文准确率一般 & 英文文档 \\
+            PaddleOCR & 中文准确率高 & 需要下载模型 & \textbf{中文场景} \\
+            EasyOCR & 多语言支持 & 速度较慢 & 多语言混合 \\
+            TrOCR & 准确率最高 & 资源占用大 & 高精度场景 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \textbf{本课程推荐：} PaddleOCR（中文友好、易用）
+\end{frame}

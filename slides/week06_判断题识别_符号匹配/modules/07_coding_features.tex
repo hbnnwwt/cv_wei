@@ -1,0 +1,116 @@
+%===========================================================
+% 07_coding_features.tex - Live Coding: 特征提取实战
+%===========================================================
+\section{Live Coding: 特征提取}
+
+\begin{frame}[fragile]{AI辅助编程：特征提取}
+    \begin{block}{AI辅助提示}
+        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助你实现轮廓特征提取。
+
+        \textbf{推荐Prompt：}
+        \texttt{请用Python和OpenCV实现轮廓特征提取函数，并解释每个特征的含义。}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+def extract_features(contour):
+    """提取轮廓特征"""
+    features = {}
+
+    # TODO: 使用AI助手完成以下代码
+    # 提示：使用cv2.contourArea()计算轮廓面积
+    features['area'] = cv2.contourArea(contour)
+
+    # TODO: 计算轮廓周长
+    # 提示：使用cv2.arcLength(contour, True)，True表示闭合轮廓
+    features['perimeter'] = cv2.arcLength(contour, True)
+
+    # TODO: 计算长宽比
+    # 提示：先获取边界矩形 x,y,w,h = cv2.boundingRect(contour)
+    x, y, w, h = cv2.boundingRect(contour)
+    features['aspect_ratio'] = float(w) / h if h > 0 else 0
+
+    # TODO: 计算圆度
+    # 提示：公式 C = 4π × Area / Perimeter²
+    features['circularity'] = 4 * np.pi * features['area'] / (features['perimeter'] ** 2) if features['perimeter'] > 0 else 0
+
+    # TODO: 计算凸性
+    # 提示：先获取凸包 hull = cv2.convexHull(contour)
+    hull = cv2.convexHull(contour)
+    hull_area = cv2.contourArea(hull)
+    features['convexity'] = features['area'] / hull_area if hull_area > 0 else 0
+
+    return features
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{特征可视化}
+    \textbf{任务：} 可视化展示特征提取结果
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def visualize_features(image, contour, features):
+    """可视化特征"""
+    result = image.copy()
+
+    # TODO: 绘制轮廓（绿色）
+    # 提示：cv2.drawContours(图像, 轮廓列表, 轮廓索引, 颜色, 线宽)
+    cv2.drawContours(result, [contour], -1, (0, 255, 0), 2)
+
+    # TODO: 绘制边界矩形（蓝色）
+    # 提示：cv2.rectangle(图像, 左上角, 右下角, 颜色, 线宽)
+    x, y, w, h = cv2.boundingRect(contour)
+    cv2.rectangle(result, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+    # TODO: 绘制凸包（红色）
+    # 提示：先获取凸包，再绘制
+    hull = cv2.convexHull(contour)
+    cv2.drawContours(result, [hull], -1, (0, 0, 255), 2)
+
+    # TODO: 显示特征值文本
+    # 提示：使用cv2.putText()在图像上添加文字
+    text = f"C={features['circularity']:.2f} Conv={features['convexity']:.2f}"
+    cv2.putText(result, text, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+
+    return result
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{基于特征的分类器}
+    \textbf{任务：} 实现基于特征的符号分类器
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def classify_by_features(features):
+    """基于特征的符号分类"""
+    # TODO: 提取特征值
+    circularity = features['circularity']
+    convexity = features['convexity']
+
+    # TODO: 实现分类规则
+    # 规则1：圆度接近1 -> 圆圈
+    if circularity > 0.8:
+        return 'circle'
+
+    # TODO: 添加凸性判断规则
+    # 提示：对号的凸性明显小于1（因为有凹陷）
+    if convexity < 0.85:
+        return 'check'
+
+    # TODO: 添加错号判断规则
+    # 提示：错号的圆度较低
+    if circularity < 0.5:
+        return 'cross'
+
+    # 默认返回未知
+    return 'unknown'
+
+# 测试代码
+# TODO: 运行并测试你的分类器
+features = extract_features(contour)
+symbol_type = classify_by_features(features)
+print(f"识别结果: {symbol_type}")
+    \end{lstlisting}
+\end{frame}

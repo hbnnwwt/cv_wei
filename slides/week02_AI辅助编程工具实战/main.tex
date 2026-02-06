@@ -65,14 +65,122 @@
 \end{frame}
 
 % -----------------------------------------------------------------------------
+% 教学安排（新增）
+% -----------------------------------------------------------------------------
+\begin{frame}{教学安排}
+	\begin{block}{3课时时间分配}
+		\begin{table}
+			\centering
+			\small
+			\begin{tabular}{cll}
+				\toprule
+				\textbf{时间} & \textbf{环节} & \textbf{内容} \\
+				\midrule
+				09:00-09:20 & 理论讲解 & AI编程范式与工具发展史 \\
+				09:20-09:40 & 现场演示 & Cursor IDE实战演示 \\
+				09:40-10:20 & 实践环节 & Prompt工程练习（小组协作） \\
+				10:20-10:30 & \textbf{课间休息} & 休息10分钟 \\
+				10:30-11:00 & 小组讨论 & 案例分析与代码优化 \\
+				11:00-11:15 & 难点突破 & 调试与重构技巧 \\
+				11:15-11:30 & 成果分享 & 小组展示与总结 \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+	\end{block}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 学习模式（新增）
+% -----------------------------------------------------------------------------
+\begin{frame}{三种参与模式}
+	\begin{columns}
+		\column{0.33\textwidth}
+		\begin{block}{观察者模式}
+			\textbf{适合：}编程基础较弱的同学
+			\begin{itemize}
+				\item 理解AI编程概念
+				\item 观看教师演示
+				\item 理解Prompt设计原理
+			\end{itemize}
+			\textbf{目标：}能用自然语言描述需求
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{使用者模式}
+			\textbf{适合：}有一定编程基础的同学
+			\begin{itemize}
+				\item 使用AI工具生成代码
+				\item 运行并测试代码
+				\item 调整参数优化结果
+			\end{itemize}
+			\textbf{目标：}能独立完成基础任务
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{创造者模式}
+			\textbf{适合：}编程基础较好的同学
+			\begin{itemize}
+				\item 设计高质量的Prompt
+				\item 修改和优化AI生成的代码
+				\item 探索创新解决方案
+			\end{itemize}
+			\textbf{目标：}能设计和优化系统
+		\end{block}
+	\end{columns}
+
+	\vspace{0.5cm}
+
+	\begin{center}
+		\textit{提示：本周作业提供基础版/进阶版/挑战版，可根据自身水平选择}
+	\end{center}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 小组协作（新增）
+% -----------------------------------------------------------------------------
+\begin{frame}{小组协作安排}
+	\begin{block}{分组原则}
+		\begin{itemize}
+			\item 每\textbf{4人}一组，不同专业背景混合
+			\item 确保每组至少有一名有编程基础的同学
+			\item 鼓励强弱搭配，互相帮助
+		\end{itemize}
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{角色分工：}
+		\begin{enumerate}
+			\item \textbf{组长}：协调进度，分配任务
+			\item \textbf{技术负责人}：把关代码质量，审核AI生成的代码
+			\item \textbf{开发者A}：负责Prompt设计
+			\item \textbf{开发者B}：负责代码测试与优化
+		\end{enumerate}
+
+		\column{0.5\textwidth}
+		\textbf{协作建议：}
+		\begin{itemize}
+			\item 观察者模式同学可担任组长
+			\item 使用者模式同学担任开发者
+			\item 创造者模式同学担任技术负责人
+			\item 鼓励角色轮换，体验不同角色
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
 % 教学模块
 % -----------------------------------------------------------------------------
+\input{modules/00_history.tex}
 \input{modules/01_paradigm.tex}
 \input{modules/02_tools.tex}
 \input{modules/03_prompt.tex}
 \input{modules/04_cv_practice.tex}
 \input{modules/04_practice.tex}
 \input{modules/05_debug.tex}
+\input{modules/07_case_studies.tex}
 \input{modules/06_summary.tex}
 
 \end{document}

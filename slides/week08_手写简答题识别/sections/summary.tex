@@ -1,0 +1,544 @@
+%===========================================================
+% summary.tex - 总结与作业
+%===========================================================
+
+\section*{总结与作业}
+
+\begin{frame}{差异化学习路径}
+    \textbf{三种角色，三种任务：}
+
+    \vspace{0.3cm}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{4cm}p{4cm}}
+            \toprule
+            \textbf{角色} \u0026 \textbf{基础任务（60分）} \u0026 \textbf{进阶/挑战任务（40分）} \\
+            \midrule
+            \textbf{观察者} \u0026
+            跟着运行PaddleOCR手写识别代码，理解识别流程 \u0026
+            分析不同预处理方法（去噪强度、CLAHE参数）对识别效果的影响差异 \\
+            \midrule
+            \textbf{使用者} \u0026
+            完成手写文字识别功能，能识别简单手写答案 \u0026
+            对比PaddleOCR和TrOCR的识别效果，分析准确率和速度差异 \\
+            \midrule
+            \textbf{创造者} \u0026
+            完成所有基础功能 \u0026
+            设计新的手写识别场景（如签名识别、公式识别），并实现端到端识别系统 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \textbf{选择建议：}
+    \begin{itemize}
+        \item 无编程基础或时间紧张：选择\textbf{"观察者"}
+        \item 有基础但时间有限：选择\textbf{"使用者"}
+        \item 有基础且兴趣浓厚：选择\textbf{"创造者"}
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{提示}
+        不同角色可以使用不同的OCR工具：
+        \begin{itemize}
+            \item 观察者：使用PaddleOCR基础版
+            \item 使用者：使用PaddleOCR + 参数优化
+            \item 创造者：尝试TrOCR或对比多种工具
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{本周要点总结}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{手写识别概述}
+        \begin{itemize}
+            \item 字形差异大、连笔问题
+            \item 准确率95\%+ (TrOCR)
+            \item 工具选择：PaddleOCR vs TrOCR
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{PaddleOCR}
+        \begin{itemize}
+            \item 中文支持好
+            \item 速度快
+            \item 配置灵活
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{TrOCR}
+        \begin{itemize}
+            \item 准确率最高
+            \item Transformer架构
+            \item 适合高精度需求
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{预处理优化}
+        \begin{itemize}
+            \item 灰度化 + 去噪
+            \item 对比度增强
+            \item 二值化
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------
+% 新增：手写识别完整流程图
+%----------------------------------------------------------
+\begin{frame}{手写识别完整流程图}
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.8cm and 1.2cm,
+        box/.style={
+            draw=themecolor,
+            fill=white,
+            minimum width=2.2cm,
+            minimum height=0.7cm,
+            font=\scriptsize,
+            align=center,
+            rounded corners=2pt
+        },
+        stage/.style={
+            draw=themecolor!70,
+            fill=themecolor!10,
+            minimum width=2.2cm,
+            minimum height=0.7cm,
+            font=\scriptsize\bfseries,
+            align=center,
+            rounded corners=2pt
+        },
+        arrow/.style={
+            ->,
+            >=stealth,
+            thick,
+            themecolor
+        },
+        tech/.style={
+            font=\tiny\color{gray},
+            align=center
+        }
+    ]
+        % 第一行：输入
+        \node[box, fill=themecolor!20] (input) {手写图像};
+
+        % 第二行：预处理
+        \node[stage, below=0.5cm of input] (pre) {预处理};
+
+        % 预处理技术节点
+        \node[box, below left=0.3cm and 0.1cm of pre] (gray) {灰度化};
+        \node[box, below=0.3cm of pre] (denoise) {去噪};
+        \node[box, below right=0.3cm and 0.1cm of pre] (enhance) {对比度增强};
+
+        % 第三行：文本行检测
+        \node[stage, below=1.5cm of pre] (detect) {文本行检测};
+
+        % 第四行：字符分割
+        \node[stage, below=0.5cm of detect] (split) {字符分割};
+
+        % 第五行：特征提取与识别
+        \node[stage, below=0.5cm of split] (recognize) {特征提取与识别};
+
+        % 第六行：后处理
+        \node[stage, below=0.5cm of recognize] (post) {后处理};
+
+        % 第七行：输出
+        \node[box, fill=themecolor!20, below=0.5cm of post] (output) {识别文本};
+
+        % 连接箭头
+        \draw[arrow] (input) -- (pre);
+        \draw[arrow] (gray) -- (detect);
+        \draw[arrow] (denoise) -- (detect);
+        \draw[arrow] (enhance) -- (detect);
+        \draw[arrow] (detect) -- (split);
+        \draw[arrow] (split) -- (recognize);
+        \draw[arrow] (recognize) -- (post);
+        \draw[arrow] (post) -- (output);
+
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{手写识别流程详解}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{1. 预处理阶段}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{灰度化}：降低计算复杂度
+                \item \textbf{去噪}：高斯滤波、中值滤波
+                \item \textbf{对比度增强}：直方图均衡化、CLAHE
+                \item \textbf{二值化}：自适应阈值分割
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{block}{2. 文本行检测}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{投影法}：水平投影分割行
+                \item \textbf{连通域分析}：DBSCAN、MSER
+                \item \textbf{深度学习方法}：EAST、CRAFT、PSENet
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{3. 字符分割与识别}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{字符分割}：垂直投影、Viterbi算法
+                \item \textbf{特征提取}：
+                \begin{itemize}
+                    \footnotesize
+                    \item 传统：HOG、SIFT、Gabor特征
+                    \item 深度学习：CNN特征、Transformer特征
+                \end{itemize}
+                \item \textbf{分类识别}：SVM、CNN、Transformer
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{block}{4. 后处理优化}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{语言模型校正}：N-gram、RNNLM
+                \item \textbf{词典匹配}：模糊匹配、编辑距离
+                \item \textbf{上下文校正}：BERT-based纠错
+            \end{itemize}
+        \end{block}
+
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------
+% 新增：传统方法 vs 深度学习方法对比表
+%----------------------------------------------------------
+\begin{frame}{传统方法 vs 深度学习方法对比}
+    \begin{table}
+        \centering
+        \footnotesize
+        \begin{tabular}{>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{4.5cm}|>{\raggedright\arraybackslash}p{4.5cm}}
+            \toprule
+            \textbf{对比维度} & \textbf{传统方法} & \textbf{深度学习方法} \\
+            \midrule
+            \textbf{特征提取} &
+            人工设计特征：HOG、SIFT、Gabor特征、投影特征等。需要领域专家知识，特征设计耗时。 &
+            自动学习特征：CNN自动提取层次化特征，Transformer捕捉长距离依赖。无需人工设计。 \\
+            \midrule
+            \textbf{模型复杂度} &
+            模型简单：SVM、KNN、HMM等，参数量小，可解释性强。 &
+            模型复杂：深度神经网络，参数量大（百万至十亿级），计算量大。 \\
+            \midrule
+            \textbf{数据需求} &
+            数据需求小：在少量样本上也能取得不错效果，适合数据稀缺场景。 &
+            数据需求大：需要大量标注数据训练，但在大数据下性能显著优于传统方法。 \\
+            \bottomrule
+        \end{tabular}
+        \caption{传统方法与深度学习方法对比（一）}
+    \end{table}
+\end{frame}
+
+\begin{frame}{传统方法 vs 深度学习方法对比（续）}
+    \begin{table}
+        \centering
+        \footnotesize
+        \begin{tabular}{>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{4.5cm}|>{\raggedright\arraybackslash}p{4.5cm}}
+            \toprule
+            \textbf{对比维度} & \textbf{传统方法} & \textbf{深度学习方法} \\
+            \midrule
+            \textbf{准确率} &
+            准确率有限：手写汉字识别率通常在70-85\%，对复杂变形、连笔、噪声敏感。 &
+            准确率高：TrOCR等模型可达95\%+，对复杂场景鲁棒性强，泛化能力好。 \\
+            \midrule
+            \textbf{推理速度} &
+            速度快：轻量级模型，CPU上可实时处理，适合边缘设备部署。 &
+            速度较慢：需要GPU加速，大模型推理延迟较高，但可通过量化、剪枝优化。 \\
+            \midrule
+            \textbf{可解释性} &
+            可解释性强：特征工程清晰，决策过程透明，易于调试和分析错误。 &
+            可解释性弱：黑盒模型，难以理解内部决策机制，需要特殊工具（如注意力可视化）。 \\
+            \midrule
+            \textbf{适用场景} &
+            资源受限、数据稀缺、需要快速部署、对可解释性要求高的场景。 &
+            追求高准确率、有充足数据和计算资源、对实时性要求不极端的场景。 \\
+            \bottomrule
+        \end{tabular}
+        \caption{传统方法与深度学习方法对比（二）}
+    \end{table}
+\end{frame}
+
+%----------------------------------------------------------
+% 新增：各工具/框架对比表
+%----------------------------------------------------------
+\begin{frame}{主流OCR工具/框架对比}
+    \begin{table}
+        \centering
+        \scriptsize
+        \begin{tabular}{>{\raggedright\arraybackslash}p{1.8cm}|>{\centering\arraybackslash}p{1.8cm}|>{\centering\arraybackslash}p{1.8cm}|>{\centering\arraybackslash}p{1.8cm}|>{\centering\arraybackslash}p{1.8cm}}
+            \toprule
+            \textbf{对比维度} & \textbf{PaddleOCR} & \textbf{TrOCR} & \textbf{Tesseract} & \textbf{EasyOCR} \\
+            \midrule
+            \textbf{开发团队} & 百度 & Microsoft & Google & 社区开源 \\
+            \midrule
+            \textbf{支持语言} & 80+种，中文优秀 & 多语言，英文最优 & 100+种 & 80+种 \\
+            \midrule
+            \textbf{手写识别} & 良好（需微调） & 优秀（原生支持） & 一般 & 一般 \\
+            \midrule
+            \textbf{印刷体识别} & 优秀 & 优秀 & 良好 & 良好 \\
+            \midrule
+            \textbf{准确率} & 85-90\% & 95\%+ & 70-80\% & 75-85\% \\
+            \midrule
+            \textbf{推理速度} & 快（GPU/CPU） & 中等（需GPU） & 快（CPU） & 中等 \\
+            \midrule
+            \textbf{模型大小} & 轻量-中等 & 大（Transformer） & 轻量 & 中等 \\
+            \midrule
+            \textbf{部署难度} & 简单 & 中等 & 简单 & 简单 \\
+            \midrule
+            \textbf{文档完善度} & 优秀 & 良好 & 良好 & 一般 \\
+            \midrule
+            \textbf{社区活跃度} & 高（Star 40k+） & 中等 & 高 & 中等 \\
+            \midrule
+            \textbf{适用场景} & 中文场景、移动端 & 高精度需求 & 多语言、轻量 & 快速原型 \\
+            \bottomrule
+        \end{tabular}
+        \caption{主流OCR工具/框架全面对比}
+    \end{table}
+\end{frame}
+
+%----------------------------------------------------------
+% 新增：工具选择建议
+%----------------------------------------------------------
+\begin{frame}{OCR工具选择决策树}
+    \begin{columns}
+        \column{0.6\textwidth}
+        \begin{tikzpicture}[
+            node distance=0.5cm,
+            decision/.style={
+                draw=themecolor,
+                fill=themecolor!10,
+                minimum width=3cm,
+                minimum height=0.6cm,
+                font=\scriptsize,
+                align=center,
+                rounded corners=2pt
+            },
+            result/.style={
+                draw=themecolor!70,
+                fill=white,
+                minimum width=2.5cm,
+                minimum height=0.6cm,
+                font=\scriptsize\bfseries,
+                align=center,
+                rounded corners=2pt
+            },
+            arrow/.style={
+                ->,
+                >=stealth,
+                thick,
+                themecolor
+            }
+        ]
+            % 根节点
+            \node[decision] (root) {主要识别语言？};
+
+            % 第二层
+            \node[decision, below left=0.6cm and 0.3cm of root] (chinese) {中文为主};
+            \node[decision, below right=0.6cm and 0.3cm of root] (english) {英文为主};
+
+            % 第三层
+            \node[decision, below=0.5cm of chinese] (gpu) {有GPU资源？};
+            \node[decision, below=0.5cm of english] (accuracy) {精度要求？};
+
+            % 第四层 - 结果
+            \node[result, below left=0.5cm and 0.1cm of gpu] (paddle) {PaddleOCR};
+            \node[result, below right=0.5cm and 0.1cm of gpu] (tesseract) {Tesseract};
+            \node[result, below left=0.5cm and 0.1cm of accuracy] (trocr) {TrOCR};
+            \node[result, below right=0.5cm and 0.1cm of accuracy] (easyocr) {EasyOCR};
+
+            % 连接
+            \draw[arrow] (root) -- (chinese);
+            \draw[arrow] (root) -- (english);
+            \draw[arrow] (chinese) -- (gpu);
+            \draw[arrow] (english) -- (accuracy);
+            \draw[arrow] (gpu) -- (paddle);
+            \draw[arrow] (gpu) -- (tesseract);
+            \draw[arrow] (accuracy) -- (trocr);
+            \draw[arrow] (accuracy) -- (easyocr);
+
+        \end{tikzpicture}
+
+        \column{0.4\textwidth}
+        \footnotesize
+        \begin{block}{选择建议}
+            \textbf{中文场景：}
+            \begin{itemize}
+                \item 有GPU：PaddleOCR
+                \item 无GPU：Tesseract
+            \end{itemize}
+
+            \textbf{英文场景：}
+            \begin{itemize}
+                \item 高精度：TrOCR
+                \item 快速部署：EasyOCR
+            \end{itemize}
+        \end{block}
+
+        \begin{alertblock}{提示}
+            实际选择时还需考虑：\\
+            - 硬件资源限制\\
+            - 实时性要求\\
+            - 维护成本
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------
+% 新增：常见问题解决方案
+%----------------------------------------------------------
+\begin{frame}{常见问题与解决方案（一）}
+    \begin{block}{问题1：识别准确率低}
+        \footnotesize
+        \textbf{原因分析：}
+        \begin{itemize}
+            \item 图像质量差：噪声、模糊、光照不均
+            \item 预处理不足：未进行有效的去噪和增强
+            \item 模型不匹配：选择的模型不适合特定场景
+            \item 字体/书写风格差异：训练数据覆盖不足
+        \end{itemize}
+
+        \textbf{解决方案：}
+        \begin{enumerate}
+            \item 加强预处理：使用自适应阈值、CLAHE增强对比度
+            \item 尝试多种去噪算法：高斯滤波、中值滤波、双边滤波
+            \item 更换或组合模型：如PaddleOCR + TrOCR结果融合
+            \item 针对性微调：使用领域数据对模型进行微调
+        \end{enumerate}
+    \end{block}
+\end{frame}
+
+\begin{frame}{常见问题与解决方案（二）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{问题2：处理速度慢}
+            \footnotesize
+            \textbf{优化方案：}
+            \begin{itemize}
+                \item \textbf{硬件加速：}使用GPU替代CPU，批量处理
+                \item \textbf{模型轻量化：}使用轻量级模型（如PaddleOCR mobile版）
+                \item \textbf{推理优化：}ONNX导出、TensorRT加速、量化压缩
+                \item \textbf{多线程并行：}利用多核CPU并行处理多图像
+                \item \textbf{预处理优化：}降低输入图像分辨率（保持宽高比）
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{问题3：内存不足}
+            \footnotesize
+            \textbf{解决方案：}
+            \begin{itemize}
+                \item \textbf{分批处理：}避免一次性加载所有图像
+                \item \textbf{降低batch size：}减少同时处理的样本数
+                \item \textbf{模型精简：}使用更小的模型变体
+                \item \textbf{清空缓存：}及时处理释放不再使用的变量
+                \item \textbf{使用16位浮点：}FP16混合精度训练/推理
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{block}{问题4：特殊字符识别困难}
+            \footnotesize
+            \begin{itemize}
+                \item 扩充训练数据覆盖特殊字符
+                \item 使用专用字体数据集微调
+                \item 添加字符级后处理规则
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{常见问题解答}
+    \begin{block}{Q1：手写识别准确率能达到多少？}
+        A：TrOCR可以达到95\%+，PaddleOCR约85-90\%，取决于预处理质量。
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Q2：如何提高识别准确率？}
+        A：
+        \begin{enumerate}
+            \item 优化图像预处理（去噪、增强对比度）
+            \item 使用更高精度的模型（TrOCR large）
+            \item 针对特定场景进行微调训练
+        \end{enumerate}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{block}{Q3：连笔字如何处理？}
+        A：TrOCR对连笔字识别效果更好，因为Transformer能捕捉上下文关系。
+    \end{block}
+\end{frame}
+
+\begin{frame}{作业提交要求}
+    \begin{block}{作业名称}
+        week08\_手写简答题识别.ipynb
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{提交内容：}
+    \begin{enumerate}
+        \item \textbf{代码部分}（60\%）
+        \begin{itemize}
+            \item 模型配置与加载
+            \item 预处理函数实现
+            \item 手写文字识别
+            \item 结果可视化
+        \end{itemize}
+
+        \item \textbf{分析报告}（40\%）
+        \begin{itemize}
+            \item 识别准确率分析
+            \item 不同模型的对比
+            \item 遇到的问题及解决方案
+        \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{评分标准细则}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}c}
+            \toprule
+            \textbf{评分项} & \textbf{具体要求} & \textbf{分值} \\
+            \midrule
+            模型配置 & 正确加载PaddleOCR或TrOCR模型 & 25分 \\
+            预处理优化 & 实现灰度化、去噪、增强、二值化 & 25分 \\
+            识别效果 & 能正确识别手写文字，准确率高 & 30分 \\
+            分析报告 & 对比分析、问题总结、改进建议 & 20分 \\
+            \midrule
+            \textbf{总分} & & \textbf{100分} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{加分项}
+        \begin{itemize}
+            \item 同时实现PaddleOCR和TrOCR并对比（+5分）
+            \item 实现批处理多张手写图片（+5分）
+            \item 可视化识别结果（标注识别区域）（+5分）
+        \end{itemize}
+    \end{alertblock}
+\end{frame}

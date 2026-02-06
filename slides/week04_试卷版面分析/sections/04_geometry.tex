@@ -94,7 +94,17 @@ cv2.drawContours(img, [box], 0, (0, 0, 255), 2)
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{多边形逼近代码}
+\begin{frame}[fragile]{AI辅助编程：多边形逼近}
+    \begin{block}{AI辅助提示}
+        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助你实现多边形逼近。
+
+        \textbf{Prompt示例：}
+        \texttt{请用Python和OpenCV实现多边形逼近，解释approxPolyDP的参数含义。}
+    \end{block}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 使用AI助手完成以下代码
+# Prompt: 请用Python和OpenCV实现多边形逼近，精度为0.02*周长
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 # 计算周长
 peri = cv2.arcLength(contour, True)

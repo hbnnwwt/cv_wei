@@ -1,0 +1,104 @@
+%===========================================================
+% modules/05_optimization.tex - OCR优化技巧
+%===========================================================
+
+\section{OCR优化}
+
+\begin{frame}[fragile]{图像预处理优化}
+    \textbf{专门的OCR预处理（70\%脚手架）：}
+    \begin{lstlisting}
+def preprocess_for_ocr(image):
+    """OCR优化预处理"""
+    # TODO: 使用AI助手补全代码
+    # 提示词："如何将BGR图像转为灰度图用于OCR预处理"
+
+    # TODO: 转灰度
+    gray = cv2.cvtColor(____, ____)
+
+    # TODO: 去噪（提示词："OpenCV非局部均值去噪方法"）
+    denoised = cv2.____(gray)
+
+    # TODO: 二值化（提示词："OTSU自动阈值二值化"）
+    _, binary = cv2.threshold(
+        ____, 0, 255,
+        ____ + ____(____)
+    )
+
+    return binary
+    \end{lstlisting}
+
+    \begin{alertblock}{AI辅助编程提示}
+        不知道cv2函数的参数？\textbf{选中函数名，按Ctrl+K问AI：}
+        "cv2.fastNlMeansDenoising的参数是什么？"
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{识别参数优化（70\%脚手架）}
+    \textbf{PaddleOCR初始化参数：}
+    \begin{lstlisting}
+# TODO: 使用AI助手配置PaddleOCR参数
+# 提示词："配置PaddleOCR参数，需要：1)中文识别 2)方向分类
+# 3)检测阈值0.3 4)置信度阈值0.5"
+
+ocr = PaddleOCR(
+    # TODO: 语言设置（提示词："PaddleOCR中文语言代码"）
+    lang=____,
+
+    # TODO: 方向分类（提示词："PaddleOCR启用方向分类参数"）
+    use_angle_cls=____,
+
+    # TODO: 检测阈值（默认0.3，越小检测越严格）
+    det_db_thresh=____,
+    det_db_box_thresh=____,
+
+    # TODO: 识别置信度阈值（默认0.5）
+    rec_score_thres=____,
+
+    # 性能参数（可选）
+    use_gpu=____,        # 是否使用GPU
+    show_log=____        # 是否显示日志
+)
+    \end{lstlisting}
+
+    \begin{alertblock}{AI辅助配置提示}
+        不知道参数值？\textbf{选中PaddleOCR，按Ctrl+K问AI：}
+        "PaddleOCR的det_db_thresh参数是什么意思，推荐值是多少？"
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{常见优化技巧}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{1. 图像层面}
+        \begin{itemize}
+            \item 提高扫描分辨率（300dpi以上）
+            \item 校正图像倾斜角度
+            \item 去除噪点和干扰线
+            \item 适当增强对比度
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{2. 预处理层面}
+        \begin{itemize}
+            \item 先进行版面分析
+            \item 按区域分别识别
+            \item 文字区域精确定位
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{3. 后处理层面}
+        \begin{itemize}
+            \item 根据置信度过滤
+            \item 利用上下文纠错
+            \item 正则表达式匹配
+            \item 词典校验
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \begin{block}{核心原则}
+            OCR是系统工程，\textbf{预处理 > 算法 > 后处理}
+        \end{block}
+    \end{columns}
+\end{frame}

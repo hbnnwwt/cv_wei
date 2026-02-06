@@ -1,0 +1,504 @@
+%===========================================================
+% 07_patterns.tex - 架构设计模式与原则
+%===========================================================
+
+\section{分层架构模式}
+
+\begin{frame}{分层架构的概念与优势}
+    \begin{definition}[分层架构]
+        将系统按职责划分为多个层次，每层只与相邻层交互，上层依赖下层，下层不依赖上层。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{经典三层架构：}
+        \begin{enumerate}
+            \item \textbf{表现层}：UI、用户交互
+            \item \textbf{业务层}：业务逻辑、规则
+            \item \textbf{数据层}：数据访问、存储
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.8, transform shape,
+                box/.style={draw, rectangle, minimum width=3cm, minimum height=0.8cm, align=center}]
+                \node[box, fill=blue!20] (ui) at (0,0) {表现层\\(Presentation)};
+                \node[box, fill=green!20] (biz) at (0,-1.2) {业务层\\(Business)};
+                \node[box, fill=red!20] (data) at (0,-2.4) {数据层\\(Data)};
+
+                \draw[->, thick] (ui) -- (biz);
+                \draw[->, thick] (biz) -- (data);
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{分层架构的优势：}
+    \begin{itemize}
+        \item 关注点分离，职责清晰
+        \item 易于测试（每层可独立测试）
+        \item 便于维护（修改一层不影响其他层）
+        \item 支持替换（如更换数据库）
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{层间通信与依赖管理}
+    \textbf{依赖方向：}
+    \begin{itemize}
+        \item 依赖只能从上到下
+        \item 上层调用下层接口
+        \item 下层通过回调/事件通知上层
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{依赖倒置原则（DIP）应用：}
+    \begin{lstlisting}
+# 不好的做法：上层直接依赖下层实现
+class GradeService:
+    def __init__(self):
+        self.db = MySQLDatabase()  # 直接依赖具体实现
+
+# 好的做法：依赖抽象接口
+class GradeService:
+    def __init__(self, db: DatabaseInterface):
+        self.db = db  # 依赖抽象接口
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{分层架构的适用场景}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{8cm}}
+            \toprule
+            \textbf{适用场景} \& \textbf{说明} \\
+            \midrule
+            企业应用 \& ERP、CRM等业务系统，业务逻辑复杂 \\
+            Web应用 \& 前后端分离的Web系统 \\
+            桌面应用 \& 具有复杂业务逻辑的单机软件 \\
+            移动端应用 \& 具有本地业务处理的App \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{不适用场景}
+        \begin{itemize}
+            \item 简单脚本工具（过度设计）
+            \item 高性能计算（层间开销）
+            \item 事件驱动系统（更适合其他架构）
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\section{微服务架构模式}
+
+\begin{frame}{微服务的定义与特点}
+    \begin{definition}[微服务架构]
+        将应用拆分为一组小型、独立部署的服务，每个服务运行在自己的进程中，通过轻量级机制通信。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{微服务的核心特点：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item 单一职责
+            \item 独立部署
+            \item 技术异构
+            \item 容错隔离
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item 去中心化治理
+            \item 独立扩展
+            \item 团队自治
+            \item 自动化运维
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{阅卷系统微服务拆分}
+        上传服务、预处理服务、识别服务、评分服务、报告服务
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{服务拆分策略}
+    \textbf{拆分原则：}
+    \begin{enumerate}
+        \item \textbf{按业务能力拆分}：识别领域边界
+        \item \textbf{按数据边界拆分}：数据独立管理
+        \item \textbf{按团队边界拆分}：康威定律
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \textbf{拆分粒度：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{3cm}p{4.5cm}}
+            \toprule
+            \textbf{粒度} \& \textbf{服务数量} \& \textbf{适用场景} \\
+            \midrule
+            粗粒度 \& 5-10个 \& 中小型团队、业务稳定 \\
+            中等粒度 \& 10-30个 \& 中大型团队、业务演进 \\
+            细粒度 \& 30+个 \& 大型团队、平台化建设 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{服务间通信方式}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{同步通信：}
+        \begin{itemize}
+            \item \textbf{REST API}：HTTP + JSON，简单通用
+            \item \textbf{gRPC}：高性能，基于HTTP/2
+            \item \textbf{GraphQL}：灵活查询，减少往返
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{异步通信：}
+        \begin{itemize}
+            \item \textbf{消息队列}：RabbitMQ, Kafka
+            \item \textbf{事件总线}：解耦服务
+            \item \textbf{发布订阅}：一对多通知
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{选择建议}
+            \textbf{同步：}
+            \begin{itemize}
+                \item 实时性要求高
+                \item 需要立即响应
+                \item 调用链路短
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{异步：}
+            \begin{itemize}
+                \item 削峰填谷
+                \item 最终一致性
+                \item 解耦服务
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\section{管道-过滤器架构}
+
+\begin{frame}{管道-过滤器模式}
+    \begin{definition}[管道-过滤器架构]
+        数据从数据源流入，经过一系列处理组件（过滤器）转换，最终输出到数据池。过滤器之间通过管道连接。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.8, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=1.8cm, minimum height=1cm}]
+            \node[box] (f1) at (0,0) {过滤器1};
+            \node[box] (f2) at (3,0) {过滤器2};
+            \node[box] (f3) at (6,0) {过滤器3};
+            \node[box] (f4) at (9,0) {过滤器4};
+
+            \draw[->, thick] (f1) -- (f2) node[midway, above] {管道};
+            \draw[->, thick] (f2) -- (f3) node[midway, above] {管道};
+            \draw[->, thick] (f3) -- (f4) node[midway, above] {管道};
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{特点：}
+    \begin{itemize}
+        \item 数据流驱动，单向流动
+        \item 过滤器独立，可复用
+        \item 易于扩展，新增过滤器
+        \item 支持并行处理
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{过滤器组合与复用}
+    \textbf{组合方式：}
+    \begin{enumerate}
+        \item \textbf{线性管道}：A → B → C
+        \item \textbf{分支管道}：A → B/C → D
+        \item \textbf{合并管道}：A/B → C
+        \item \textbf{反馈管道}：输出反馈到输入
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{图像处理流水线示例}
+        \begin{center}
+            \begin{tikzpicture}[scale=0.7, transform shape,
+                box/.style={draw, rectangle, rounded corners, fill=green!15, minimum width=1.5cm, minimum height=0.8cm}]
+                \node[box] (in) at (0,0) {输入图像};
+                \node[box] (denoise) at (2.5,0) {去噪};
+                \node[box] (binary) at (5,0) {二值化};
+                \node[box] (correct) at (7.5,0) {矫正};
+                \node[box] (out) at (10,0) {输出图像};
+
+                \draw[->, thick] (in) -- (denoise);
+                \draw[->, thick] (denoise) -- (binary);
+                \draw[->, thick] (binary) -- (correct);
+                \draw[->, thick] (correct) -- (out);
+            \end{tikzpicture}
+        \end{center}
+    \end{exampleblock}
+\end{frame}
+
+\section{SOLID原则详解}
+
+\begin{frame}{单一职责原则（SRP）}
+    \begin{definition}[单一职责原则]
+        一个类应该只有一个引起它变化的原因。换句话说，一个类应该只负责一件事。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{违反SRP的例子：}
+    \begin{lstlisting}
+class ExamProcessor:
+    def load_image(self, path): ...  # 图像加载
+    def preprocess(self, img): ...   # 预处理
+    def recognize(self, img): ...    # 识别
+    def save_result(self, result): ... # 保存结果
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{改进方案：}
+    \begin{lstlisting}
+class ImageLoader: ...      # 只负责加载
+class Preprocessor: ...     # 只负责预处理
+class Recognizer: ...       # 只负责识别
+class ResultSaver: ...      # 只负责保存
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{开闭原则（OCP）}
+    \begin{definition}[开闭原则]
+        软件实体应该对扩展开放，对修改关闭。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{实现方式：}
+    \begin{itemize}
+        \item 抽象基类 + 具体实现
+        \item 策略模式
+        \item 依赖注入
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{lstlisting}
+class RecognizerInterface(ABC):
+    @abstractmethod
+    def recognize(self, image): pass
+
+class ChoiceRecognizer(RecognizerInterface): ...
+class JudgeRecognizer(RecognizerInterface): ...
+class EssayRecognizer(RecognizerInterface): ...
+
+# 新增识别器时，不需要修改原有代码
+class NewRecognizer(RecognizerInterface): ...
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{里氏替换原则（LSP）}
+    \begin{definition}[里氏替换原则]
+        子类型必须能够替换其基类型，而程序的行为不会改变。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{关键要求：}
+    \begin{itemize}
+        \item 子类不改变父类的前置条件（输入）
+        \item 子类不强化父类的后置条件（输出）
+        \item 子类保持父类的不变性
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{正确示例}
+        \begin{lstlisting}
+class Recognizer:
+    def recognize(self, img) -> Result:
+        return Result(confidence=0.0, text="")
+
+class OcrRecognizer(Recognizer):
+    def recognize(self, img) -> Result:
+        # 返回更精确的结果，但类型相同
+        return Result(confidence=0.95, text="答案")
+        \end{lstlisting}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{接口隔离原则（ISP）}
+    \begin{definition}[接口隔离原则]
+        客户端不应该被迫依赖它不使用的方法。应该将大接口拆分为小接口。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{不好的设计：}
+    \begin{lstlisting}
+class BigInterface(ABC):  # 大接口
+    @abstractmethod
+    def preprocess(self, img): pass
+    @abstractmethod
+    def recognize(self, img): pass
+    @abstractmethod
+    def grade(self, answers): pass
+    \end{lstlisting}
+
+    \textbf{改进设计：}
+    \begin{lstlisting}
+class PreprocessorInterface(ABC): ...  # 小接口1
+class RecognizerInterface(ABC): ...    # 小接口2
+class GraderInterface(ABC): ...       # 小接口3
+
+# 类按需实现接口
+class ImageProcessor(PreprocessorInterface): ...
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{依赖倒置原则（DIP）}
+    \begin{definition}[依赖倒置原则]
+        高层模块不应该依赖低层模块，两者都应该依赖抽象。抽象不应该依赖细节，细节应该依赖抽象。
+    \end{definition}
+
+    \vspace{0.3cm}
+
+    \textbf{传统方式（违反DIP）：}
+    \begin{lstlisting}
+class GradeService:  # 高层
+    def __init__(self):
+        self.db = MySQLDatabase()  # 依赖具体低层
+    \end{lstlisting}
+
+    \textbf{改进方式（遵循DIP）：}
+    \begin{lstlisting}
+class DatabaseInterface(ABC): ...  # 抽象
+
+class MySQLDatabase(DatabaseInterface): ...
+class MongoDB(DatabaseInterface): ...
+
+class GradeService:  # 高层依赖抽象
+    def __init__(self, db: DatabaseInterface):
+        self.db = db
+    \end{lstlisting}
+\end{frame}
+
+\section{设计模式}
+
+\begin{frame}{创建型模式}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{4cm}p{4cm}}
+            \toprule
+            \textbf{模式} \& \textbf{用途} \& \textbf{应用场景} \\
+            \midrule
+            工厂模式 \& 创建对象，解耦创建与使用 \& 根据条件创建不同类型对象 \\
+            单例模式 \& 确保只有一个实例 \& 数据库连接、配置管理 \\
+            建造者模式 \& 分步骤构建复杂对象 \& 复杂配置对象构建 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{lstlisting}
+# 工厂模式示例
+class RecognizerFactory:
+    @staticmethod
+    def create_recognizer(type_name):
+        if type_name == "choice":
+            return ChoiceRecognizer()
+        elif type_name == "judge":
+            return JudgeRecognizer()
+        # ...
+
+# 使用
+recognizer = RecognizerFactory.create_recognizer("choice")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{结构型模式}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{4cm}p{4cm}}
+            \toprule
+            \textbf{模式} \& \textbf{用途} \& \textbf{应用场景} \\
+            \midrule
+            适配器模式 \& 接口转换，兼容旧代码 \& 集成第三方库 \\
+            装饰器模式 \& 动态添加功能 \& 日志、缓存、权限检查 \\
+            代理模式 \& 控制对象访问 \& 延迟加载、访问控制 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{lstlisting}
+# 装饰器模式示例
+class RecognizerDecorator:
+    def __init__(self, recognizer):
+        self._recognizer = recognizer
+
+    def recognize(self, image):
+        print(f"开始识别: {time.time()}")  # 添加日志
+        result = self._recognizer.recognize(image)
+        print(f"识别完成: {time.time()}")
+        return result
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{行为型模式}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{4cm}p{4cm}}
+            \toprule
+            \textbf{模式} \& \textbf{用途} \& \textbf{应用场景} \\
+            \midrule
+            观察者模式 \& 状态变化通知 \& 事件监听、消息订阅 \\
+            策略模式 \& 算法互换 \& 不同识别算法切换 \\
+            模板方法 \& 定义算法骨架 \& 通用处理流程 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{lstlisting}
+# 策略模式示例
+class RecognitionStrategy(ABC):
+    @abstractmethod
+    def recognize(self, image): pass
+
+class TemplateMatchStrategy(RecognitionStrategy): ...
+class DeepLearningStrategy(RecognitionStrategy): ...
+
+# 运行时切换策略
+recognizer.set_strategy(TemplateMatchStrategy())
+    \end{lstlisting}
+\end{frame}

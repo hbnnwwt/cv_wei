@@ -1,0 +1,77 @@
+%===========================================================
+% modules/17_ocr_overview_detailed.tex - OCR技术概述（详细）
+%===========================================================
+
+\section{OCR技术概述（详细）}
+
+\begin{frame}{OCR技术发展历程}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第一代：模板匹配时代（1960s-1980s）}
+        \begin{itemize}
+            \item 基于字符模板匹配
+            \item 只能识别特定字体
+            \item 对噪声敏感
+            \item 代表：IBM 1287
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{第二代：特征提取时代（1980s-2000s）}
+        \begin{itemize}
+            \item 基于结构/统计特征
+            \item 支持多字体识别
+            \item 使用ML分类器（SVM、KNN）
+            \item 代表：Tesseract（早期版本）
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{第三代：深度学习时代（2012-至今）}
+        \begin{itemize}
+            \item 基于CNN/RNN/Transformer
+            \item 端到端识别
+            \item 支持场景文字
+            \item 代表：CRNN、PaddleOCR、TrOCR
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{OCR技术发展里程碑：}
+
+        \vspace{0.3cm}
+
+        \begin{table}
+            \centering
+            \small
+            \begin{tabular}{lll}
+                \toprule
+                \textbf{年份} & \textbf{里程碑} & \textbf{影响} \\
+                \midrule
+                1914 & 第一台OCR设备 & 起源 \\
+                1965 & IBM 1287 & 商用化 \\
+                1974 & Kurzweil OCR & 多字体支持 \\
+                1985 & Tesseract诞生 & 开源化 \\
+                1995 & OCR标准化 & 行业规范 \\
+                2006 & Deep Learning兴起 & 技术革命 \\
+                2012 & AlexNet突破 & 深度学习OCR \\
+                2015 & CRNN提出 & 序列OCR \\
+                2017 & Transformer提出 & 注意力机制 \\
+                2020 & TrOCR发布 & 端到端Transformer OCR \\
+                2021 & PaddleOCR 2.0 & 产业级OCR \\
+                2023 & GPT-4V & 多模态OCR \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
+
+        \vspace{0.3cm}
+
+        \textbf{OCR技术发展趋势：}
+        \begin{itemize}
+            \item \textbf{通用化}：从印刷体到手写体、场景文字
+            \item \textbf{多语言}：支持更多语种和混合文本
+            \item \textbf{端到端}：从流水线到一体化模型
+            \item \textbf{大模型}：基于Transformer的OCR大模型
+            \item \textbf{多模态}：结合视觉-语言理解
+        \end{itemize}
+    \end{columns}
+\end{frame}

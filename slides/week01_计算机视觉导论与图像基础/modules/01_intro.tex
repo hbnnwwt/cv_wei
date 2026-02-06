@@ -4,6 +4,160 @@
 
 \section{计算机视觉导论}
 
+\begin{frame}{课前预备知识}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{需要的预备知识：}
+        \begin{itemize}
+            \item \textbf{NumPy基础}
+            \begin{itemize}
+                \item 数组索引与切片
+                \item 矩阵运算
+            \end{itemize}
+            \item \textbf{Python基础}
+            \begin{itemize}
+                \item 函数定义
+                \item 循环与条件判断
+            \end{itemize}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{预备视频链接：}
+        \begin{itemize}
+            \item NumPy基础（5分钟）
+            \begin{itemize}
+                \item \url{https://...}
+            \end{itemize}
+            \item Python基础（10分钟）
+            \begin{itemize}
+                \item \url{https://...}
+            \end{itemize}
+        \end{itemize}
+
+        \vspace{0.5cm}
+        \begin{alertblock}{重要提示}
+            如果你从未接触过Python，建议先看预备视频！
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{选择适合你的学习路径}
+    根据你的基础和兴趣，选择适合的学习路径：
+
+    \begin{columns}[t]
+        \column{0.32\textwidth}
+        \begin{block}{观察者路径}
+            \textbf{适合}: 无编程基础的学生
+            \vspace{0.2cm}
+            \begin{itemize}
+                \small
+                \item 理解原理和概念
+                \item 观看代码演示
+                \item 完成基础任务
+                \item 参与课堂讨论
+            \end{itemize}
+            \vspace{0.2cm}
+            \centering
+            \textit{"理解原理最重要"}
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{使用者路径}
+            \textbf{适合}: 有一定编程基础
+            \vspace{0.2cm}
+            \begin{itemize}
+                \small
+                \item 运行示例代码
+                \item 调整参数观察效果
+                \item 完成核心任务
+                \item 用AI辅助学习
+            \end{itemize}
+            \vspace{0.2cm}
+            \centering
+            \textit{"动手实践出真知"}
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{创造者路径}
+            \textbf{适合}: 编程基础较好
+            \vspace{0.2cm}
+            \begin{itemize}
+                \small
+                \item 修改和优化算法
+                \item 创新功能实现
+                \item 完成挑战任务
+                \item 帮助他人解决问题
+            \end{itemize}
+            \vspace{0.2cm}
+            \centering
+            \textit{"探索与创新"}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \begin{center}
+        \textbf{你可以随时在不同路径间切换！}\\
+        \small 本课程鼓励互助学习，创造者路径的同学可以协助观察者路径的同学
+    \end{center}
+\end{frame}
+
+\begin{frame}{AI辅助学习：向AI提问的技巧}
+    \textbf{场景1：理解OpenCV概念}
+    \begin{exampleblock}{Prompt示例}
+        请解释OpenCV中的BGR和RGB有什么区别，为什么OpenCV默认使用BGR？
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{场景2：调试OpenCV代码}
+    \begin{exampleblock}{Prompt示例}
+        我的OpenCV代码显示的图像颜色不对。
+
+        运行环境：Windows 11, Python 3.9.7, OpenCV 4.8.0
+
+        相关代码：
+        \texttt{img = cv2.imread('test.jpg')}
+        \texttt{plt.imshow(img)}
+
+        请帮我分析原因并提供解决方案。
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{场景3：学习OpenCV函数}
+    \begin{exampleblock}{Prompt示例}
+        请解释cv2.cvtColor()函数的用途，并给我一个代码示例演示BGR转RGB。
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{AI编程工具推荐}
+    \textbf{本周虽然重点是学习OpenCV，但强烈推荐了解AI编程工具：}
+
+    \vspace{0.3cm}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{4cm}l}
+            \toprule
+            \textbf{工具} & \textbf{特点} & \textbf{适用} \\
+            \midrule
+            Cursor & AI原生IDE，Ctrl+K原地编辑 & \textbf{最推荐} \\
+            ChatGPT & 对话能力强，代码生成准确 & 学习、调试 \\
+            Claude & 代码分析深入 & 代码审查 \\
+            通义千问 & 中文友好，国内可用 & 中文问题 \\
+            DeepSeek & 编程能力强，开源 & 代码生成 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{重要}
+        下周（Week 2）我们将系统学习这些AI工具的使用方法！
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}[fragile]{视觉：人类获取信息的最主要渠道}
     \begin{columns}
         \column{0.5\textwidth}
@@ -317,6 +471,37 @@ print(f"检测到 {len(marks)} 个定位点")
     \end{center}
 \end{frame}
 
+\begin{frame}{AI工具使用规范}
+    \textbf{本课程AI工具：}
+    \begin{itemize}
+        \item \textbf{Claude Code}：代码生成与解释
+        \item \textbf{通义千问}：中文友好，国内可用
+        \item \textbf{ChatGPT}：通用编程助手
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{使用规范：}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item[\textcolor{green}{\checkmark}] \textbf{允许}：用AI解释概念、调试错误、优化代码
+            \item[\textcolor{green}{\checkmark}] \textbf{鼓励}：用AI生成对比实验、可视化结果
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item[\textcolor{red}{$\times$}] \textbf{禁止}：直接复制完整代码、用AI完成全部作业
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \begin{block}{核心理念}
+        理解原理 > 复制代码\\
+        AI是助手，不是替代者
+    \end{block}
+\end{frame}
+
 \begin{frame}[fragile]{本学期AI工具使用计划}
     \begin{columns}
         \column{0.5\textwidth}
@@ -349,7 +534,7 @@ print(f"检测到 {len(marks)} 个定位点")
         \begin{itemize}
             \item \textcolor{green!60!black}{\checkmark} 允许：用AI解释概念、调试错误、优化代码
             \item \textcolor{green!60!black}{\checkmark} 鼓励：用AI生成对比实验、可视化结果
-            \item \textcolor{red}{\times} 禁止：直接复制完整代码、用AI完成全部作业
+            \item \textcolor{red}{$\times$} 禁止：直接复制完整代码、用AI完成全部作业
         \end{itemize}
 
         \vspace{0.3cm}

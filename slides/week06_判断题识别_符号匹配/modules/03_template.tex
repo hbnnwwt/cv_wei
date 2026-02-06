@@ -1,0 +1,136 @@
+%===========================================================
+% 03_template.tex - 模板匹配方法
+%===========================================================
+\section{模板匹配方法}
+
+\begin{frame}{模板匹配原理}
+    \textbf{基本思想：}
+    \begin{itemize}
+        \item 在图像中滑动模板窗口
+        \item 计算每个位置的相似度
+        \item 找到相似度最高的位置
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{工作流程：}
+    \begin{enumerate}
+        \item 准备标准符号模板图像
+        \item 将模板在待识别图像上滑动
+        \item 计算每个位置的匹配分数
+        \item 选择分数最高的位置和符号类型
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{相似度度量方法}
+    \textbf{OpenCV提供6种匹配方法：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{l|l}
+        \toprule
+        \textbf{方法} & \textbf{特点} \\
+        \midrule
+        TM\_SQDIFF & 差值平方和，越小越匹配 \\
+        TM\_SQDIFF\_NORMED & 归一化差值平方和，范围[0,1] \\
+        TM\_CCORR & 相关性，越大越匹配 \\
+        TM\_CCORR\_NORMED & 归一化相关性，范围[0,1] \\
+        TM\_CCOEFF & 相关系数，范围[-1,1] \\
+        TM\_CCOEFF\_NORMED & 归一化相关系数，范围[-1,1] \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{alertblock}{推荐使用}
+    TM\_CCOEFF\_NORMED：1表示完美匹配，-1表示完全不匹配
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{模板匹配演示}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.8]
+        % 待识别图像
+        \draw[step=0.5, gray!30, thin] (0,0) grid (4,4);
+        \draw[thick] (0,0) rectangle (4,4);
+        \node at (2,-0.5) {待识别图像};
+
+        % 模板窗口
+        \draw[red, thick] (1,1) rectangle (2,2);
+        \node[red] at (1.5,2.3) {模板};
+
+        % 匹配结果示意
+        \draw[->, thick, blue] (4.5,2) -- (5.5,2);
+        \node at (6,2) {匹配分数};
+
+        % 模板库
+        \draw[step=0.5, gray!30, thin] (7,0) grid (8,1);
+        \draw[thick] (7,0) rectangle (8,1);
+        \node at (7.5,-0.3) {模板1: $\checkmark$};
+
+        \draw[step=0.5, gray!30, thin] (7,1.5) grid (8,2.5);
+        \draw[thick] (7,1.5) rectangle (8,2.5);
+        \node at (7.5,1.2) {模板2: $\times$};
+
+        \node at (7.5,3) {模板库};
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{模板匹配的优势与局限}
+    \textbf{优势：}
+    \begin{itemize}
+        \item 简单直观，易于理解和实现
+        \item 无需训练过程
+        \item 识别速度快
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{局限性：}
+    \begin{itemize}
+        \item 对尺度变化敏感（需要resize）
+        \item 对旋转敏感（需要多角度模板）
+        \item 对形变敏感（手写符号变化大）
+        \item 需要准备足够的模板
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{多尺度模板匹配}
+    \textbf{问题：} 手写符号大小不一
+
+    \textbf{解决方案：图像金字塔}
+    \begin{itemize}
+        \item 构建多尺度图像金字塔
+        \item 在每个尺度上进行模板匹配
+        \item 选择所有尺度中最佳匹配结果
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{实现思路：}
+    \begin{enumerate}
+        \item 生成不同尺度的图像（0.8倍递减）
+        \item 对每个尺度执行模板匹配
+        \item 记录最佳匹配的尺度、位置、分数
+        \item 返回最高分数对应的符号类型
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{模板库构建策略}
+    \textbf{模板采集原则：}
+    \begin{itemize}
+        \item 覆盖不同书写风格
+        \item 包含不同大小和角度
+        \item 数量适中（每类10-20个）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{模板标准化：}
+    \begin{enumerate}
+        \item 统一尺寸（如32$\times$32像素）
+        \item 统一粗细（形态学处理）
+        \item 去除噪声（滤波处理）
+        \item 归一化颜色（转灰度、二值化）
+    \end{enumerate}
+\end{frame}

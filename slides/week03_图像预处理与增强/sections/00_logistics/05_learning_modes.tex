@@ -1,0 +1,132 @@
+%===========================================================
+% 05_learning_modes.tex - 学习模式说明
+%===========================================================
+
+\section{学习模式}
+
+\begin{frame}{三种学习路径}
+    根据你的基础和时间，选择适合的学习模式：
+
+    \vspace{0.5cm}
+
+    \begin{columns}
+        \column{0.32\textwidth}
+        \begin{block}{观察者模式}
+            \textbf{适合：}
+            \begin{itemize}
+                \item 编程基础较弱
+                \item 时间有限
+                \item 侧重理解原理
+            \end{itemize}
+
+            \vspace{0.2cm}
+            \textbf{学习方式：}
+            \begin{itemize}
+                \item 理解滤波器原理
+                \item 观看演示效果
+                \item 运行完整代码
+                \item 修改参数对比
+            \end{itemize}
+
+            \vspace{0.2cm}
+            \textbf{目标：} 能解释预处理的作用
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{使用者模式}
+            \textbf{适合：}
+            \begin{itemize}
+                \item 有一定编程基础
+                \item 能独立调试
+                \item 希望动手实践
+            \end{itemize}
+
+            \vspace{0.2cm}
+            \textbf{学习方式：}
+            \begin{itemize}
+                \item 运行代码模板
+                \item 调整滤波参数
+                \item 对比不同方法
+                \item 调试代码错误
+            \end{itemize}
+
+            \vspace{0.2cm}
+            \textbf{目标：} 能完成基本预处理任务
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{创造者模式}
+            \textbf{适合：}
+            \begin{itemize}
+                \item 编程基础扎实
+                \item 喜欢挑战
+                \item 追求深入理解
+            \end{itemize}
+
+            \vspace{0.2cm}
+            \textbf{学习方式：}
+            \begin{itemize}
+                \item 从零编写代码
+                \item 优化算法性能
+                \item 探索新方法
+                \item 创新应用场景
+            \end{itemize}
+
+            \vspace{0.2cm}
+            \textbf{目标：} 能设计预处理方案
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周任务分层}
+    \begin{table}
+        \centering
+        \begin{tabular}{lp{8cm}l}
+            \toprule
+            \textbf{模式} & \textbf{任务要求} & \textbf{评分} \\
+            \midrule
+            观察者 & 理解原理，运行代码，完成实验报告 & 最高60分 \\
+            使用者 & 修改参数，对比效果，调试代码 & 最高85分 \\
+            创造者 & 编写代码，优化算法，创新应用 & 100分+15分 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{重要提示}
+        \begin{itemize}
+            \item 所有模式都需要提交实验报告
+            \item 可以在学期中随时切换到更高级模式
+            \item 鼓励跨越模式学习，挑战自我
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助：三种模式的Prompt示例}
+    \textbf{观察者模式Prompt：}
+    \begin{lstlisting}
+"请解释中值滤波和高斯滤波的区别，用通俗的语言"
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{使用者模式Prompt：}
+    \begin{lstlisting}
+"帮我用OpenCV实现中值滤波去噪，并解释每个参数的作用"
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{创造者模式Prompt：}
+    \begin{lstlisting}
+"如何设计一个自适应滤波器，能根据噪声类型自动选择
+最合适的滤波方法？请给出完整方案和代码实现"
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{提示}
+        选择适合你当前水平的Prompt，逐步提升难度！
+    \end{exampleblock}
+\end{frame}

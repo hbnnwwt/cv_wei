@@ -1,0 +1,438 @@
+%===========================================================
+% 补充模块：渐进式学习增强内容
+%===========================================================
+
+%----------------------------------------------------------
+% 前置知识检查（在00_background.tex开头插入）
+%----------------------------------------------------------
+
+\begin{frame}{前置知识自检}
+    \textbf{学习本课程前，请确认已掌握以下知识：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Python基础}
+            \begin{itemize}
+                \item 变量、数据类型、运算符
+                \item 条件判断（if/elif/else）
+                \item 循环结构（for/while）
+                \item 函数定义与调用
+                \item 类与对象基础
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{文件操作}
+            \begin{itemize}
+                \item 读取/写入文本文件
+                \item 路径处理（os.path）
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{版本控制基础}
+            \begin{itemize}
+                \item Git基本概念（仓库、提交）
+                \item 基本命令（add/commit/push）
+                \item 分支概念（可选）
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{数学基础}
+            \begin{itemize}
+                \item 矩阵/数组基本概念
+                \item 百分比计算
+                \item 集合论基础（可选）
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{如需补充学习}
+        \begin{itemize}
+            \item Python入门：\href{https://www.liaoxuefeng.com/wiki/1016959663602400}{廖雪峰Python教程}
+            \item Git入门：\href{https://git-scm.com/book/zh/v2}{Pro Git中文版}
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+%----------------------------------------------------------
+% 学习路径导航
+%----------------------------------------------------------
+
+\begin{frame}{本课程学习路径}
+    \textbf{三条学习路径，适合不同基础的你：}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.6cm,
+            path/.style={draw, fill=blue!10, minimum width=2.2cm, minimum height=0.8cm, align=center, font=\small},
+            arrow/.style={-Stealth, thick}
+        ]
+            % 三条路径
+            \node[path, fill=green!20] (observe) {观察者路径\\基础60分};
+            \node[path, fill=yellow!20, right=0.8cm of observe] (use) {使用者路径\\进阶+20分};
+            \node[path, fill=red!20, right=0.8cm of use] (create) {创造者路径\\挑战+20分};
+
+            % 适用人群标签
+            \node[below=0.2cm of observe, font=\fontsize{8}{9}\selectfont] {适合：编程基础较弱};
+            \node[below=0.2cm of use, font=\fontsize{8}{9}\selectfont] {适合：有编程基础};
+            \node[below=0.2cm of create, font=\fontsize{8}{9}\selectfont] {适合：编程能力较强};
+
+            % 学习建议框
+            \node[below=1.8cm of observe, draw, fill=blue!5, minimum width=10cm, minimum height=1.2cm, align=left, font=\small] {
+                \textbf{学习建议：}
+                \begin{itemize}
+                    \item \textbf{观察者}：重点学习模块1-2，直接运行代码示例
+                    \item \textbf{使用者}：完成全部模块，重点实践模块3-4
+                    \item \textbf{创造者}：深入学习全部内容，完成模块4挑战任务
+                \end{itemize}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------
+% 术语表（在核心理论模块末尾插入）
+%----------------------------------------------------------
+
+\begin{frame}{核心术语速查}
+    \begin{table}
+        \centering
+        \small
+        \resizebox{\linewidth}{!}{
+        \begin{tabular}{lp{6cm}}
+            \toprule
+            \textbf{术语} & \textbf{含义} \\
+            \midrule
+            \textbf{模块化} & 将系统分解为独立、可复用的部分 \\
+            \textbf{重构} & 不改变功能，优化代码内部结构 \\
+            \textbf{高内聚低耦合} & 模块内部紧密相关，模块间依赖最小 \\
+            \textbf{TDD} & 测试驱动开发：先写测试，再写代码 \\
+            \textbf{Mock} & 模拟对象，隔离外部依赖进行测试 \\
+            \textbf{Code Smell} & 代码中的设计问题指示信号 \\
+            \textbf{断点调试} & 在指定行暂停，检查程序状态 \\
+            \textbf{覆盖率} & 测试用例覆盖代码的比例 \\
+            \bottomrule
+        \end{tabular}
+        }
+    \end{table}
+\end{frame}
+
+%----------------------------------------------------------
+% 非计算机专业补充说明框
+%----------------------------------------------------------
+
+\begin{frame}{概念补充：什么是重构？}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{生活类比}
+
+            \begin{block}{整理房间}
+                \begin{itemize}
+                    \item 房间很乱（代码可读性差）
+                    \item 不改变房间里的东西（功能不变）
+                    \item 只是重新整理收纳（优化结构）
+                    \item 目的是更容易找到东西（更容易维护）
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{代码示例}
+
+            \begin{block}{重构前}
+                \lstinline|def f(x):|\\
+                \lstinline|# 100行代码|
+            \end{block}
+
+            \begin{block}{重构后}
+                \lstinline|def process():|\\
+                \lstinline|load()|\\
+                \lstinline|process_data()|\\
+                \lstinline|save()|
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{概念补充：什么是测试驱动开发？}
+    \textbf{想象学做菜的过程：}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.5cm,
+            box/.style={draw, fill=blue!10, minimum width=3cm, minimum height=1cm, align=center, font=\small},
+            arrow/.style={-Stealth, thick}
+        ]
+            \node[box, fill=red!20] (red) {1. 先定标准\\（写测试）};
+            \node[box, fill=green!20, right=of red] (green) {2. 做最简单能通过的\\（写最少代码）};
+            \node[box, fill=yellow!20, right=of green] (refactor) {3. 改进做法\\（重构优化）};
+
+            \draw[arrow] (red) -- (green);
+            \draw[arrow] (green) -- (refactor);
+            \draw[arrow, dashed] (refactor.south) to[bend right=45] (red.south);
+        \end{tikzpicture}
+    \end{center}
+
+    \begin{block}{好处}
+        \begin{itemize}
+            \item 确保做出来的东西符合要求（测试通过）
+            \item 避免过度设计（只写最少代码）
+            \item 持续改进质量（每次都优化一点）
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+%----------------------------------------------------------
+% 课堂Quiz（在案例模块增加）
+%----------------------------------------------------------
+
+\begin{frame}{课堂Quiz 1：识别Code Smell}
+    \textbf{以下函数有什么问题？（单选）}
+
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            \begin{block}{代码}
+\begin{verbatim}
+def p(img, thresh=127, mode=1,
+      debug=False):
+    # 处理图片
+    # 50行代码...
+    # 如果调试模式
+    if debug:
+        print("处理中...")
+    return result
+\end{verbatim}
+            \end{block}
+        \end{column}
+        \begin{column}{0.4\textwidth}
+            \begin{block}{选项}
+                A. 语法错误
+
+                B. 参数太多
+
+                C. 函数名不规范
+
+                D. 以上都是
+            \end{block}
+
+            \vspace{0.5cm}
+
+            \textbf{答案：D}\\$\newline$
+            (函数名p应改为process_image，参数过多应封装为配置类)
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{课堂Quiz 2：异常处理}
+    \textbf{以下异常处理方式最好的是？}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{选项A}
+\begin{Shaded}
+try:
+    f()
+except:
+    pass
+\end{Shaded}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{选项B}
+\begin{Shaded}
+try:
+    f()
+except ValueError as e:
+    logger.error(e)
+    raise
+except Exception:
+    logger.exception()
+\end{Shaded}
+        \end{column}
+    \end{columns}
+
+    \begin{block}{}
+        \textbf{答案：B}\\$\newline$
+        原因：1. 不捕获所有异常（避免掩盖bug）\\
+        2. 记录错误信息\\
+        3. 重新抛出异常让上层处理
+    \end{block}
+\end{frame}
+
+%----------------------------------------------------------
+% 现场练习设计（在Live Coding模块增加）
+%----------------------------------------------------------
+
+\begin{frame}{现场练习：识别Bug}
+    \textbf{任务}：找出以下代码中的Bug（3分钟）
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+\begin{Shaded}
+def calculate_density(regions):
+    results = []
+    for region in regions:
+        if region is not None:
+            density = sum(region) / len(region)
+            results.append(density)
+    return results
+
+# 使用
+img = None
+result = calculate_density([img])
+print(result)
+\end{Shaded}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{提示}：运行这段代码会发生什么？
+
+            \vspace{0.3cm}
+
+            \textbf{Bug分析}：
+            \begin{itemize}
+                \item None对象无法参与运算
+                \item 应在循环内检查，而非循环前
+                \item 缺少异常处理
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{现场练习：完善代码}
+    \textbf{任务}：完善以下代码，添加错误处理（5分钟）
+
+    \begin{block}{待完善代码}
+\begin{Shaded}
+def recognize_choice(image, options):
+    results = {}
+    for option in options:
+        region = image[option]
+        density = np.sum(region > 127) / region.size
+        results[option] = density
+    return results
+\end{Shaded}
+    \end{block}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{需要处理的情况：}
+            \begin{itemize}
+                \item image为None
+                \item option不在image中
+                \item region为空
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{参考解答要点：}
+\begin{Shaded}
+if image is None:
+    raise ValueError(...)
+if option not in image:
+    raise KeyError(...)
+if region.size == 0:
+    continue  # 或return {}
+\end{Shaded}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------
+% 要点速查页模板（每个模块末尾使用）
+%----------------------------------------------------------
+
+\subsection{本模块要点速查}
+
+\begin{frame}{模块00-背景知识：要点速查}
+    \begin{block}{核心概念}
+        \begin{itemize}
+            \item \textbf{SDLC}：软件开发生命周期（需求→设计→编码→测试→部署）
+            \item \textbf{敏捷开发}：迭代增量，快速反馈（2-4周Sprint）
+            \item \textbf{CI/CD}：持续集成与持续部署（自动化构建、测试、发布）
+            \item \textbf{Code Review}：代码审查，对事不对人，小步快跑
+            \item \textbf{重构}：不改变外部行为，改善内部结构
+        \end{itemize}
+    \end{block}
+
+    \begin{alertblock}{关键公式}
+        \begin{itemize}
+            \item \textbf{高内聚} = 模块内元素紧密相关
+            \item \textbf{低耦合} = 模块间依赖最小
+        \end{itemize}
+    \end{alertblock}
+
+    \begin{exampleblock}{下一步学习}
+        进入核心理论模块，学习模块化设计和面向对象编程
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{模块01-核心理论：要点速查}
+    \begin{block}{设计原则}
+        \begin{itemize}
+            \item \textbf{SOLID原则}：单一职责、开闭原则、里氏替换、接口隔离、依赖倒置
+            \item \textbf{封装}：隐藏实现细节，暴露必要接口
+            \item \textbf{继承与多态}：代码复用，灵活扩展
+            \item \textbf{纯函数}：相同输入→相同输出，无副作用
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{调试流程}
+        \texttt{发现问题 → 复现问题 → 建立假设 → 验证假设 → 修复问题}
+    \end{block}
+
+    \begin{block}{测试金字塔}
+        大量单元测试(70\%) + 适量集成测试(20\%) + 少量E2E测试(10\%)
+    \end{block}
+\end{frame}
+
+\begin{frame}{模块02-工具环境：要点速查}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{开发工具选择}
+            \begin{itemize}
+                \item 大型项目：PyCharm
+                \item 多语言/轻量：VS Code
+                \item 数据分析：Jupyter
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{代码质量工具}
+            \begin{itemize}
+                \item 检查：flake8、pylint
+                \item 格式化：black
+                \item 类型检查：mypy
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \begin{block}{AI编程工具}
+        \begin{itemize}
+            \item Cursor：AI原生IDE（Cmd+L对话）
+            \item Claude Code：命令行助手
+            \item Copilot：代码补全
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{模块03-Live Coding：要点速查}
+    \begin{block}{重构技术}
+        \begin{itemize}
+            \item 提取函数（长函数→多个小函数）
+            \item 提取类（职责分离）
+            \item 参数对象（过多参数→配置类）
+            \item 替换魔法数字（有意义的常量）
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{异常处理策略}
+        \begin{itemize}
+            \item 自定义异常层次
+            \item 捕获底层异常→转换业务异常
+            \item 防御式编程：前置条件检查
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{TDD循环}
+        \texttt{红灯(测试失败) → 绿灯(最少代码) → 重构(优化)}
+    \end{block}
+\end{frame}

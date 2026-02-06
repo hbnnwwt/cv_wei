@@ -1,0 +1,183 @@
+%===========================================================
+% 02_advanced_morphology.tex - 高级形态学操作
+%===========================================================
+\section{高级形态学操作}
+
+\begin{frame}{形态学梯度（Gradient）}
+    \textbf{定义：} 膨胀图像减去腐蚀图像
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{数学表达：}
+        \[ \text{gradient}(A) = A \oplus B - A \ominus B \]
+
+        \textbf{效果：}
+        \begin{itemize}
+            \item 提取物体边界
+            \item 突出边缘信息
+            \item 保留细节特征
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{OpenCV实现}
+        \aihint{} "请用OpenCV实现形态学梯度，解释它如何提取边界"
+        \begin{lstlisting}
+# TODO: 可使用AI助手完成
+gradient = cv2.morphologyEx(
+    binary_image,
+    cv2.MORPH_GRADIENT,
+    kernel
+)
+        \end{lstlisting}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{应用：} 检测填涂区域边界，辅助判断填涂完整度
+\end{frame}
+
+\begin{frame}{顶帽变换（Top Hat）}
+    \textbf{定义：} 原图像减去开运算结果
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{数学表达：}
+        \[ \text{Tophat}(A) = A - (A \circ B) \]
+
+        \textbf{效果：}
+        \begin{itemize}
+            \item 提取比结构元素小的亮区域
+            \item 去除不均匀光照
+            \item 增强细小目标
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{OpenCV实现}
+        \aihint{} "请用OpenCV实现顶帽变换，解释它如何去除光照不均"
+        \begin{lstlisting}
+# TODO: 可使用AI助手完成
+tophat = cv2.morphologyEx(
+    image,
+    cv2.MORPH_TOPHAT,
+    kernel
+)
+        \end{lstlisting}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{应用：} 去除答题卡背景光照不均，突出填涂区域
+\end{frame}
+
+\begin{frame}{黑帽变换（Black Hat）}
+    \textbf{定义：} 闭运算结果减去原图像
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{数学表达：}
+        \[ \text{Blackhat}(A) = (A \bullet B) - A \]
+
+        \textbf{效果：}
+        \begin{itemize}
+            \item 提取比结构元素小的暗区域
+            \item 检测孔洞和缺口
+            \item 增强暗部细节
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{OpenCV实现}
+        \aihint{} "请用OpenCV实现黑帽变换，解释它如何检测孔洞"
+        \begin{lstlisting}
+# TODO: 可使用AI助手完成
+blackhat = cv2.morphologyEx(
+    image,
+    cv2.MORPH_BLACKHAT,
+    kernel
+)
+        \end{lstlisting}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{应用：} 检测填涂区域的孔洞，辅助完整性判断
+\end{frame}
+
+\begin{frame}[fragile]{Live Coding：高级形态学操作对比}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现高级形态学操作对比代码，包括梯度、顶帽、黑帽变换的可视化"
+    \end{block}
+
+    \begin{block}{任务：对比5种形态学操作的效果}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 读取填涂区域图像
+img = cv2.imread("option_roi.png", cv2.IMREAD_GRAYSCALE)
+
+# 创建结构元素
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+
+# TODO: 实现5种形态学操作
+gradient = cv2.morphologyEx(img, cv2.MORPH_GRADIENT, kernel)
+tophat = cv2.morphologyEx(img, cv2.MORPH_TOPHAT, kernel)
+blackhat = cv2.morphologyEx(img, cv2.MORPH_BLACKHAT, kernel)
+
+# 对比显示
+titles = ["原图", "梯度", "顶帽", "黑帽"]
+images = [img, gradient, tophat, blackhat]
+
+# TODO: 用Matplotlib 2x2网格显示，观察差异
+fig, axes = plt.subplots(2, 2, figsize=(10, 10))
+for ax, img, title in zip(axes.ravel(), images, titles):
+    ax.imshow(img, cmap='gray')
+    ax.set_title(title)
+    ax.axis('off')
+plt.tight_layout()
+plt.savefig("morphology_comparison.png")
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}{形态学操作选择决策树}
+    \begin{center}
+    \begin{tikzpicture}[
+        node distance=0.8cm and 1cm,
+        decision/.style={diamond, draw, fill=yellow!20, aspect=2},
+        action/.style={rectangle, draw, fill=green!20},
+        question/.style={rectangle, draw, fill=blue!10}
+    ]
+        \node[question] (problem) {问题类型？};
+        \node[decision, below=of problem] (noise) {有噪点？};
+        \node[decision, below left=of noise] (hole) {有孔洞？};
+        \node[decision, below right=of noise] (light) {光照不均？};
+        \node[action, below=of hole] (open) {开运算};
+        \node[action, below=of hole] (close) {闭运算};
+        \node[action, right=of close] (tophat) {顶帽变换};
+
+        \draw[->] (problem) -- (noise);
+        \draw[->] (noise) -- node[above left] {是} (hole);
+        \draw[->] (noise) -- node[above right] {否} (light);
+        \draw[->] (hole) -- node[left] {是} (close);
+        \draw[->] (hole) -- node[left] {否} (open);
+        \draw[->] (light) -- node[right] {是} (tophat);
+    \end{tikzpicture}
+    \end{center}
+
+    \textbf{填涂检测推荐流程：}
+    \begin{enumerate}
+        \item 先用开运算去除噪点
+        \item 再用闭运算填充孔洞
+        \item 可选：顶帽变换去除光照不均
+    \end{enumerate}
+\end{frame}

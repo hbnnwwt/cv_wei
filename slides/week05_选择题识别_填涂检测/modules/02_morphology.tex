@@ -1,0 +1,255 @@
+%===========================================================
+% 02_morphology.tex - 图像形态学处理
+%===========================================================
+\section{图像形态学处理}
+
+\begin{frame}{为什么需要形态学处理？}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{填涂图像的常见问题：}
+        \begin{itemize}
+            \item 铅笔痕迹不连续（有孔洞）
+            \item 填涂边缘不规则
+            \item 纸张上有噪点/污渍
+            \item 扫描时有颗粒噪声
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{形态学处理的作用：}
+        \begin{itemize}
+            \item \textcolor{blue}{膨胀}：填充孔洞，连接断点
+            \item \textcolor{red}{腐蚀}：去除噪点，分离目标
+            \item \textcolor{green}{开运算}：先腐后胀，去噪保形
+            \item \textcolor{orange}{闭运算}：先胀后腐，填充闭孔
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{结构元素（Structuring Element）}
+    \textbf{结构元素：} 形态学操作的"探针"，决定操作的范围和形状
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{常见形状：}
+        \begin{itemize}
+            \item 矩形（最常用）
+            \item 十字形
+            \item 椭圆形
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{大小选择：}
+        \begin{itemize}
+            \item 太小：效果不明显
+            \item 太大：过度处理
+            \item 推荐：(3,3) 或 (5,5)
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{block}{OpenCV创建结构元素}
+    \texttt{kernel = cv2.getStructuringElement(shape, ksize)}
+    \end{block}
+\end{frame}
+
+\begin{frame}{腐蚀（Erosion）}
+    \textbf{原理：} 用结构元素"扫描"图像，如果结构元素完全包含在前景中，则保留中心像素
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{效果：} 前景区域\textcolor{red}{缩小}，背景区域\textcolor{red}{扩大}
+            \item \textbf{用途：}
+                \begin{itemize}
+                    \item 去除细小噪点
+                    \item 分离连接的目标
+                \end{itemize}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{OpenCV实现}
+        \aihint{} "请用OpenCV实现图像腐蚀操作，kernel大小为3x3"
+        \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+kernel = np.ones((3,3), np.uint8)
+eroded = cv2.erode(
+    binary_image,
+    kernel,
+    iterations=1
+)
+        \end{lstlisting}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{膨胀（Dilation）}
+    \textbf{原理：} 用结构元素"扫描"图像，如果结构元素接触到前景，则将中心像素设为前景
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{效果：} 前景区域\textcolor{blue}{扩大}，背景区域\textcolor{blue}{缩小}
+            \item \textbf{用途：}
+                \begin{itemize}
+                    \item 填充孔洞
+                    \item 连接断开的区域
+                \end{itemize}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{OpenCV实现}
+        \aihint{} "请用OpenCV实现图像膨胀操作，解释它与腐蚀的区别"
+        \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+kernel = np.ones((3,3), np.uint8)
+dilated = cv2.dilate(
+    binary_image,
+    kernel,
+    iterations=1
+)
+        \end{lstlisting}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{开运算（Opening）}
+    \textbf{定义：} 先腐蚀后膨胀
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{效果：}
+        \begin{itemize}
+            \item 去除细小噪点
+            \item 平滑边界
+            \item \textcolor{green}{基本保持目标大小}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{OpenCV实现}
+        \aihint{} "请用OpenCV实现开运算（先腐后胀），解释它的应用场景"
+        \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+opening = cv2.morphologyEx(
+    binary_image,
+    cv2.MORPH_OPEN,
+    kernel
+)
+        \end{lstlisting}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{应用场景：} 填涂区域周围有散落的铅笔粉尘时
+\end{frame}
+
+\begin{frame}{闭运算（Closing）}
+    \textbf{定义：} 先膨胀后腐蚀
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{效果：}
+        \begin{itemize}
+            \item 填充内部孔洞
+            \item 连接邻近区域
+            \item \textcolor{orange}{基本保持目标大小}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{OpenCV实现}
+        \aihint{} "请用OpenCV实现闭运算（先胀后腐），解释为什么它适合填充孔洞"
+        \begin{lstlisting}
+# TODO: 可使用AI助手完成以下代码
+closing = cv2.morphologyEx(
+    binary_image,
+    cv2.MORPH_CLOSE,
+    kernel
+)
+        \end{lstlisting}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{应用场景：} \highlight{填涂不完整、有孔洞时（最常用！）}
+\end{frame}
+
+\begin{frame}[fragile]{Live Coding：形态学处理实战}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请用Python和OpenCV实现形态学处理对比，包括腐蚀、膨胀、开运算、闭运算"
+    \end{block}
+
+    \begin{block}{任务：对比不同形态学操作的效果}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+# 读取填涂区域图像
+option_img = cv2.imread("option_roi.png", cv2.IMREAD_GRAYSCALE)
+
+# 二值化
+_, binary = cv2.threshold(option_img, 127, 255, cv2.THRESH_BINARY_INV)
+
+# 创建结构元素
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+
+# TODO: 尝试不同的形态学操作
+eroded = cv2.erode(binary, kernel, iterations=1)      # 腐蚀
+dilated = cv2.dilate(binary, kernel, iterations=1)    # 膨胀
+opening = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)  # 开运算
+closing = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)  # 闭运算
+
+# 对比显示
+results = [binary, eroded, dilated, opening, closing]
+titles = ["原图", "腐蚀", "膨胀", "开运算", "闭运算"]
+# TODO: 用Matplotlib并排显示，观察差异
+    \end{lstlisting}
+    \end{block}
+\end{frame}
+
+\begin{frame}{形态学处理对填涂检测的影响}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{问题：填涂有孔洞}
+        \begin{itemize}
+            \item 密度计算偏小
+            \item 可能误判为未填涂
+        \end{itemize}
+        \vspace{0.2cm}
+        \textbf{解决方案：闭运算}
+        \begin{itemize}
+            \item 填充内部孔洞
+            \item 提高密度值
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{问题：周围有噪点}
+        \begin{itemize}
+            \item 噪点被计入密度
+            \item 可能误判为已填涂
+        \end{itemize}
+        \vspace{0.2cm}
+        \textbf{解决方案：开运算}
+        \begin{itemize}
+            \item 去除细小噪点
+            \item 降低干扰影响
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{最佳实践}
+    对于填涂检测，推荐使用\textbf{闭运算}填充孔洞，提高识别准确率
+    \end{alertblock}
+\end{frame}

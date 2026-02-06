@@ -1,0 +1,549 @@
+%===========================================================
+% 08_pipeline_extended.tex - 图像处理流水线实战（扩充版）
+%===========================================================
+
+\section{流水线架构设计详解}
+
+\begin{frame}{为什么选择管道-过滤器架构？}
+    \begin{definition}[管道-过滤器架构]
+        数据从数据源流入，经过一系列处理组件（过滤器）转换，最终输出到数据池。
+    \end{definition}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{图像处理的特点：}
+        \begin{itemize}
+            \item 数据流明确：输入 $\to$ 处理 $\to$ 输出
+            \item 步骤独立：去噪、增强、分割可独立工作
+            \item 可组合：不同场景需要不同处理组合
+            \item 可复用：过滤器可在多个流程中使用
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{管道-过滤器的优势：}
+        \begin{itemize}
+            \item 高内聚：每个过滤器职责单一
+            \item 低耦合：过滤器间通过标准接口连接
+            \item 易扩展：添加新过滤器不影响现有
+            \item 易测试：每个过滤器可独立测试
+        \end{itemize}
+    \end{columns}
+
+    \begin{block}{适用场景}
+        编译器、数据处理管道、音视频处理、图像处理、ETL流程
+    \end{block}
+\end{frame}
+
+\begin{frame}{流水线整体架构}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.2cm, minimum height=0.9cm, align=center},
+            pipe/.style={->, thick}]
+
+            % 数据源
+            \node[box, fill=green!20] (input) at (0,0) {原始图像};
+
+            % 过滤器
+            \node[box] (f1) at (2.8,0) {图像加载\\Loader};
+            \node[box] (f2) at (5.6,0) {去噪\\Denoise};
+            \node[box] (f3) at (8.4,0) {增强\\Enhance};
+            \node[box] (f4) at (11.2,0) {二值化\\Binarize};
+            \node[box] (f5) at (14,0) {矫正\\Correct};
+            \node[box] (f6) at (16.8,0) {区域定位\\Locate};
+
+            % 数据汇
+            \node[box, fill=red!20] (output) at (19.6,0) {处理后图像};
+
+            % 连接
+            \draw[pipe] (input) -- (f1);
+            \draw[pipe] (f1) -- (f2);
+            \draw[pipe] (f2) -- (f3);
+            \draw[pipe] (f3) -- (f4);
+            \draw[pipe] (f4) -- (f5);
+            \draw[pipe] (f5) -- (f6);
+            \draw[pipe] (f6) -- (output);
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{设计要点：}
+    \begin{itemize}
+        \item 每个过滤器职责单一
+        \item 过滤器之间松耦合
+        \item 支持动态组合
+        \item 中间结果可追溯
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{数据流转设计}
+    \begin{definition}[ImageData数据类]
+        流水线中传递的数据封装，包含图像本身和处理过程中的元数据。
+    \end{definition}
+
+    \begin{block}{ImageData结构}
+        \begin{itemize}
+            \item \texttt{image: np.ndarray} - 原始/处理后图像
+            \item \texttt{metadata: Dict} - 处理元数据（步骤、参数）
+            \item \texttt{step\_name: str} - 当前处理步骤
+            \item \texttt{confidence: float} - 处理置信度
+        \end{itemize}
+    \end{block}
+
+    \textbf{元数据内容：}
+    \begin{itemize}
+        \item 处理步骤历史
+        \item 每步参数配置
+        \item 中间结果引用
+        \item 时间戳记录
+        \item 异常信息记录
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{过滤器接口设计}
+    \begin{definition}[FilterInterface抽象基类]
+        所有过滤器必须实现的接口规范。
+    \end{definition}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5.5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{from abc import ABC, abstractmethod} \\
+                    \texttt{from dataclasses import dataclass} \\
+                    \texttt{from typing import Any, Dict} \\
+                    \\
+                    \texttt{@dataclass} \\
+                    \texttt{class ImageData:} \\
+                    \texttt{    """图像数据封装""" } \\
+                    \texttt{    image: np.ndarray} \\
+                    \texttt{    metadata: Dict[str, Any]} \\
+                    \\
+                    \texttt{class FilterInterface(ABC):} \\
+                    \texttt{    """过滤器接口""" } \\
+                    \\
+                    \texttt{    @abstractmethod} \\
+                    \texttt{    def process(self, data: ImageData) -> ImageData:} \\
+                    \texttt{        """处理图像数据，返回处理后的数据""" } \\
+                    \texttt{        pass} \\
+                    \\
+                    \texttt{    @abstractmethod} \\
+                    \texttt{    def get\_name(self) -> str:} \\
+                    \texttt{        """获取过滤器名称""" } \\
+                    \texttt{        pass} \\
+                    \\
+                    \texttt{    def configure(self, params: Dict[str, Any]) -> None:} \\
+                    \texttt{        """配置参数（可选）""" } \\
+                    \texttt{        pass}
+                \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\section{过滤器实现详解}
+
+\begin{frame}{去噪过滤器实现}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class DenoiseFilter(FilterInterface):} \\
+                    \texttt{    """去噪过滤器：高斯滤波""" } \\
+                    \\
+                    \texttt{    def \_\_init\_\_(self, kernel\_size=5):} \\
+                    \texttt{        self.kernel\_size = kernel\_size} \\
+                    \texttt{        self.name = "DenoiseFilter"} \\
+                    \\
+                    \texttt{    def get\_name(self) -> str:} \\
+                    \texttt{        return self.name} \\
+                    \\
+                    \texttt{    def process(self, data: ImageData) -> ImageData:} \\
+                    \texttt{        denoised = cv2.GaussianBlur(} \\
+                    \texttt{            data.image,} \\
+                    \texttt{            (self.kernel\_size, self.kernel\_size), 0} \\
+                    \texttt{        )} \\
+                    \texttt{        data.metadata['denoise\_applied'] = True} \\
+                    \texttt{        data.metadata['kernel\_size'] = self.kernel\_size} \\
+                    \texttt{        return ImageData(denoised, data.metadata)} \\
+                    \\
+                    \texttt{    def configure(self, params: Dict[str, Any]) -> None:} \\
+                    \texttt{        self.kernel\_size = params.get('kernel\_size', 5)}
+                \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+
+    \begin{itemize}
+        \item 参数可配置：核大小可调
+        \item 元数据记录：标记已应用去噪
+        \item 纯函数设计：输入输出明确
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{二值化过滤器实现}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class BinarizeFilter(FilterInterface):} \\
+                    \texttt{    """自适应二值化过滤器""" } \\
+                    \\
+                    \texttt{    def \_\_init\_\_(self, method='adaptive', block\_size=11):} \\
+                    \texttt{        self.method = method} \\
+                    \texttt{        self.block\_size = block\_size} \\
+                    \texttt{        self.name = "BinarizeFilter"} \\
+                    \\
+                    \texttt{    def process(self, data: ImageData) -> ImageData:} \\
+                    \texttt{        gray = cv2.cvtColor(data.image, cv2.COLOR\_BGR2GRAY)} \\
+                    \\
+                    \texttt{        if self.method == 'adaptive':} \\
+                    \texttt{            binary = cv2.adaptiveThreshold(} \\
+                    \texttt{                gray, 255, cv2.ADAPTIVE\_THRESH\_GAUSSIAN\_C,} \\
+                    \texttt{                cv2.THRESH\_BINARY, self.block\_size, 2} \\
+                    \texttt{            )} \\
+                    \texttt{        else:} \\
+                    \texttt{            \_, binary = cv2.threshold(gray, 127, 255, cv2.THRESH\_BINARY)} \\
+                    \\
+                    \texttt{        data.metadata['binarize\_method'] = self.method} \\
+                    \texttt{        return ImageData(binary, data.metadata)}
+                \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{透视矫正过滤器实现}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class PerspectiveCorrectionFilter(FilterInterface):} \\
+                    \texttt{    """透视矫正过滤器""" } \\
+                    \\
+                    \texttt{    def \_\_init\_\_(self, target\_points=None):} \\
+                    \texttt{        self.target\_points = target\_points} \\
+                    \texttt{        self.name = "PerspectiveCorrectionFilter"} \\
+                    \\
+                    \texttt{    def process(self, data: ImageData) -> ImageData:} \\
+                    \texttt{        \# 从元数据获取角点} \\
+                    \texttt{        corners = data.metadata.get('corners')} \\
+                        \texttt{        if corners is None:} \\
+                        \texttt{            return data  \# 无需矫正} \\
+                        \\
+                        \texttt{        \# 计算透视变换矩阵} \\
+                        \texttt{        h, w = data.image.shape[:2]} \\
+                        \texttt{        target = np.float32([[0, 0], [w, 0], [w, h], [0, h]])} \\
+                        \texttt{        matrix = cv2.getPerspectiveTransform(corners, target)} \\
+                        \\
+                        \texttt{        \# 应用变换} \\
+                        \texttt{        corrected = cv2.warpPerspective(data.image, matrix, (w, h))} \\
+                        \texttt{        return ImageData(corrected, data.metadata)}
+                    \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{区域定位过滤器}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class RegionLocatorFilter(FilterInterface):} \\
+                    \texttt{    """区域定位过滤器：识别答题区域""" } \\
+                    \\
+                    \texttt{    def process(self, data: ImageData) -> ImageData:} \\
+                    \texttt{        binary = data.image} \\
+                    \\
+                    \texttt{        \# 查找轮廓} \\
+                    \texttt{        contours, \_ = cv2.findContours(binary, cv2.RETR\_EXTERNAL, ...)} \\
+                    \\
+                    \texttt{        \# 筛选答题区域（根据面积、位置等）} \\
+                    \texttt{        regions = self.filter\_answer\_regions(contours)} \\
+                        \\
+                        \texttt{        \# 保存区域信息到元数据} \\
+                        \texttt{        data.metadata['answer\_regions'] = regions} \\
+                        \texttt{        data.metadata['region\_count'] = len(regions)} \\
+                        \\
+                        \texttt{        return data} \\
+                        \\
+                        \texttt{    def filter\_answer\_regions(self, contours):} \\
+                        \texttt{        \# 过滤非答题区域} \\
+                        \texttt{        return [c for c in contours if self.is\_valid\_region(c)]}
+                    \end{tabular}
+                \end{center}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\section{流水线执行引擎}
+
+\begin{frame}{流水线引擎核心实现}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5.5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class ImagePipeline:} \\
+                    \texttt{    """图像处理流水线""" } \\
+                    \\
+                    \texttt{    def \_\_init\_\_(self, name: str = "default"):} \\
+                    \texttt{        self.name = name} \\
+                    \texttt{        self.filters: List[FilterInterface] = []} \\
+                    \texttt{        self.intermediate\_results: List[ImageData] = []} \\
+                    \\
+                    \texttt{    def add\_filter(self, filter\_obj: FilterInterface) -> 'ImagePipeline':} \\
+                    \texttt{        """添加过滤器（支持链式调用）""" } \\
+                    \texttt{        self.filters.append(filter\_obj)} \\
+                    \texttt{        return self} \\
+                    \\
+                    \texttt{    def execute(self, image: np.ndarray) -> ImageData:} \\
+                    \texttt{        """执行流水线""" } \\
+                        \texttt{        data = ImageData(image, \{'pipeline': self.name\})} \\
+                        \texttt{        self.intermediate\_results = [data]} \\
+                        \\
+                        \texttt{        for filter\_obj in self.filters:} \\
+                        \texttt{            data = filter\_obj.process(data)} \\
+                        \texttt{            self.intermediate\_results.append(data)} \\
+                        \\
+                        \texttt{        return data}
+                    \end{tabular}
+                \end{center}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{流水线执行与监控}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5.5cm] {
+                \begin{tabular}{l}
+                    \texttt{    def execute\_with\_monitoring(self, image: np.ndarray) -> Dict:} \\
+                    \texttt{        """带监控的执行""" } \\
+                    \texttt{        import time} \\
+                    \texttt{        data = ImageData(image, \{'pipeline': self.name\})} \\
+                    \texttt{        execution\_log = []} \\
+                    \\
+                    \texttt{        for filter\_obj in self.filters:} \\
+                    \texttt{            start\_time = time.time()} \\
+                    \texttt{            data = filter\_obj.process(data)} \\
+                    \texttt{            elapsed = time.time() - start\_time} \\
+                    \\
+                    \texttt{            execution\_log.append(\{} \\
+                    \texttt{                'filter': filter\_obj.get\_name(),} \\
+                    \texttt{                'time\_ms': elapsed * 1000,} \\
+                    \texttt{                'image\_shape': data.image.shape} \\
+                    \texttt{            \})} \\
+                    \\
+                    \texttt{        return \{} \\
+                    \texttt{            'result': data,} \\
+                    \texttt{            'execution\_log': execution\_log,} \\
+                    \texttt{            'total\_time\_ms': sum(f['time\_ms'] for f in execution\_log)} \\
+                    \texttt{        \}}
+                \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+
+    \begin{itemize}
+        \item 记录每个过滤器的执行时间
+        \item 追踪图像尺寸变化
+        \item 便于性能分析和优化
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{流水线使用示例}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.75, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=4.5cm] {
+                \begin{tabular}{l}
+                    \texttt{\# 构建预处理流水线} \\
+                    \texttt{pipeline = ImagePipeline("exam\_preprocess")} \\
+                    \\
+                    \texttt{pipeline \textbackslash} \\
+                    \texttt{    .add\_filter(DenoiseFilter(kernel\_size=5)) \textbackslash} \\
+                    \texttt{    .add\_filter(BinarizeFilter(method='adaptive')) \textbackslash} \\
+                    \texttt{    .add\_filter(PerspectiveCorrectionFilter())} \\
+                    \\
+                    \texttt{\# 执行处理} \\
+                    \texttt{result = pipeline.execute(image)} \\
+                    \texttt{processed\_image = result.image} \\
+                    \\
+                    \texttt{\# 带监控执行} \\
+                    \texttt{monitored = pipeline.execute\_with\_monitoring(image)} \\
+                    \texttt{print(f"总耗时: \{monitored['total\_time\_ms']:.2f\}ms")} \\
+                    \texttt{for log in monitored['execution\_log']:} \\
+                    \texttt{    print(f"  \{log['filter']\}: \{log['time\_ms']:.2f\}ms")}
+                \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\section{高级特性}
+
+\begin{frame}{中间结果缓存}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5.5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class CachedPipeline(ImagePipeline):} \\
+                    \texttt{    """带缓存的流水线""" } \\
+                    \\
+                    \texttt{    def \_\_init\_\_(self, name: str = "cached", cache\_dir: str = "./cache"):} \\
+                    \texttt{        super().\_\_init\_\_(name)} \\
+                    \texttt{        self.cache\_dir = Path(cache\_dir)} \\
+                    \texttt{        self.cache\_dir.mkdir(exist\_ok=True)} \\
+                    \\
+                    \texttt{    def \_get\_cache\_key(self, image: np.ndarray, step: int) -> str:} \\
+                    \texttt{        """生成缓存键""" } \\
+                    \texttt{        import hashlib} \\
+                    \texttt{        image\_hash = hashlib.md5(image.tobytes()).hexdigest()} \\
+                    \texttt{        return f"cache\_\{self.name\}\_step\_\{step\}\_image\_\{image\_hash\}.jpg"} \\
+                        \\
+                        \texttt{    def execute(self, image: np.ndarray, use\_cache: bool = True) -> ImageData:} \\
+                        \texttt{        """支持缓存的执行""" } \\
+                        \texttt{        \# 检查缓存...} \\
+                        \texttt{        \# 命中则直接返回，否则执行并缓存}
+                    \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{异常处理与恢复}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5.5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class RobustPipeline(ImagePipeline):} \\
+                    \texttt{    """带异常处理的流水线""" } \\
+                    \\
+                    \texttt{    def execute(self, image: np.ndarray) -> ImageData:} \\
+                    \texttt{        data = ImageData(image, \{'pipeline': self.name\})} \\
+                    \\
+                    \texttt{        for i, filter\_obj in enumerate(self.filters):} \\
+                    \texttt{            try:} \\
+                    \texttt{                data = filter\_obj.process(data)} \\
+                    \texttt{            except Exception as e:} \\
+                    \texttt{                print(f"过滤器 \{filter\_obj.get\_name()\} 失败: \{e\}")} \\
+                    \\
+                    \texttt{                \# 策略1: 跳过当前过滤器} \\
+                    \texttt{                if self.skip\_on\_error:} \\
+                    \texttt{                    continue} \\
+                    \\
+                    \texttt{                \# 策略2: 使用备用过滤器} \\
+                    \texttt{                if i in self.fallback\_filters:} \\
+                    \texttt{                    fallback = self.fallback\_filters[i]} \\
+                    \texttt{                    data = fallback.process(data)} \\
+                    \\
+                    \texttt{        return data}
+                \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{过滤器组合模式}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class CompositeFilter(FilterInterface):} \\
+                    \texttt{    """组合过滤器：将多个过滤器视为一个""" } \\
+                    \\
+                    \texttt{    def \_\_init\_\_(self, name: str):} \\
+                    \texttt{        self.name = name} \\
+                    \texttt{        self.filters: List[FilterInterface] = []} \\
+                    \\
+                    \texttt{    def add(self, filter\_obj: FilterInterface) -> 'CompositeFilter':} \\
+                    \texttt{        self.filters.append(filter\_obj)} \\
+                    \texttt{        return self} \\
+                    \\
+                    \texttt{    def process(self, data: ImageData) -> ImageData:} \\
+                    \texttt{        for f in self.filters:} \\
+                    \texttt{            data = f.process(data)} \\
+                    \texttt{        return data} \\
+                    \\
+                    \texttt{    def get\_name(self) -> str:} \\
+                    \texttt{        return self.name} \\
+                    \\
+                    \texttt{\# 使用：创建可复用的预处理组合} \\
+                    \texttt{preprocess = CompositeFilter("preprocess")} \\
+                    \texttt{    .add(DenoiseFilter())} \\
+                    \texttt{    .add(BinarizeFilter())}
+                \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{并行流水线}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+            \node[draw, rectangle, fill=gray!10, minimum width=9cm, minimum height=5cm] {
+                \centering
+                \begin{tabular}{l}
+                    \texttt{class ParallelPipeline(ImagePipeline):} \\
+                    \texttt{    """支持并行处理的流水线""" } \\
+                    \\
+                    \texttt{    def \_\_init\_\_(self, name: str = "parallel", max\_workers: int = 4):} \\
+                    \texttt{        super().\_\_init\_\_(name)} \\
+                    \texttt{        self.max\_workers = max\_workers} \\
+                    \\
+                    \texttt{    def execute\_parallel(self, images: List[np.ndarray]) -> List[ImageData]:} \\
+                    \texttt{        """并行处理多张图像""" } \\
+                    \texttt{        from concurrent.futures import ThreadPoolExecutor} \\
+                    \\
+                    \texttt{        with ThreadPoolExecutor(max\_workers=self.max\_workers) as executor:} \\
+                    \texttt{            results = list(executor.map(self.execute, images))} \\
+                    \\
+                        \texttt{        return results} \\
+                        \\
+                        \texttt{    def execute\_filter\_parallel(self, data: ImageData) -> ImageData:} \\
+                        \texttt{        """过滤器内部并行（如分块处理）""" } \\
+                        \texttt{        \# 实现分块并行处理逻辑} \\
+                        \texttt{        pass}
+                    \end{tabular}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{流水线性能优化策略}
+    \textbf{优化方向：}
+    \begin{enumerate}
+        \item \textbf{惰性计算}：跳过不必要的处理步骤
+        \item \textbf{缓存机制}：缓存中间结果，避免重复计算
+        \item \textbf{并行处理}：多图像/多区域并行
+        \item \textbf{算法优化}：选择更高效的算法
+        \item \textbf{资源复用}：复用滤波器内核、连接池等
+    \end{enumerate}
+
+    \begin{center}
+        \begin{tikzpicture}[scale=0.8, transform shape,
+            box/.style={draw, rectangle, fill=blue!15, minimum width=3cm, minimum height=0.8cm}]
+            \node[box] (opt) at (0,0) {性能监控};
+            \node[box] (opt) at (4,0) {瓶颈分析};
+            \node[box] (opt) at (8,0) {针对性优化};
+
+            \draw[->, thick] (opt) -- (opt) node[midway, above] {循环迭代};
+        \end{tikzpicture}
+    \end{center}
+
+    \textbf{性能指标：}
+    \begin{itemize}
+        \item 吞吐量：每秒处理图像数
+        \item 延迟：单张图像处理时间
+        \item 资源占用：CPU、内存使用率
+    \end{itemize}
+\end{frame}

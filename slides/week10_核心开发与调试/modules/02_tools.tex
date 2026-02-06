@@ -1,0 +1,546 @@
+%===========================================================
+% 模块02：工具与环境介绍 (5-8页)
+%===========================================================
+
+\section{工具与环境}
+
+%----------------------------------------------------------
+\subsection{Python开发工具}
+%----------------------------------------------------------
+
+\begin{frame}{IDE选择与对比}
+    \begin{columns}
+        \begin{column}{0.32\textwidth}
+            \textbf{PyCharm}
+            \begin{itemize}
+                \item 专业Python IDE
+                \item 智能代码补全
+                \item 强大的调试器
+                \item 集成测试工具
+                \item 专业版收费
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \textbf{VS Code}
+            \begin{itemize}
+                \item 轻量编辑器
+                \item 插件生态丰富
+                \item Python扩展强大
+                \item 免费开源
+                \item 多语言支持
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \textbf{Jupyter}
+            \begin{itemize}
+                \item 交互式环境
+                \item 适合数据探索
+                \item 可视化集成
+                \item 文档混排
+                \item 教学演示友好
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{推荐选择}
+        \begin{itemize}
+            \item 大型项目开发：PyCharm（专业版）
+            \item 日常/多语言开发：VS Code
+            \item 数据分析/教学：Jupyter Notebook
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{调试工具详解}
+    \textbf{Python内置调试器pdb：}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import pdb
+
+def process_image(image_path):
+    image = load_image(image_path)
+    pdb.set_trace()  \#设置断点
+    result = analyze(image)
+    return result
+
+\#常用pdb命令
+\#n - 下一行（Step Over）
+\#s - 进入函数（Step Into）
+\#c - 继续执行
+\#p var - 打印变量
+\#q - 退出调试
+    \end{lstlisting}
+
+    \textbf{ipdb增强版：}
+    \begin{itemize}
+        \item 语法高亮
+        \item Tab自动补全
+        \item 更好的交互体验
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{性能分析工具}
+    \textbf{cProfile - 标准库性能分析：}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cProfile
+import pstats
+
+\#分析代码
+profiler = cProfile.Profile()
+profiler.enable()
+
+\#要分析的代码
+process_batch(images)
+
+profiler.disable()
+stats = pstats.Stats(profiler)
+stats.sort_stats('cumulative')
+stats.print_stats(20)  \#打印前20个热点
+    \end{lstlisting}
+
+    \vspace{0.3cm}
+
+    \textbf{line\_profiler - 逐行分析：}
+    \begin{itemize}
+        \item 精确到每行代码的耗时
+        \item 使用\texttt{@profile}装饰器标记
+        \item 适合定位性能瓶颈
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{代码质量工具}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{静态检查工具}
+            \begin{itemize}
+                \item \textbf{pylint}：全面代码检查
+                \item \textbf{flake8}：PEP 8 + 复杂度检查
+                \item \textbf{mypy}：静态类型检查
+                \item \textbf{bandit}：安全漏洞扫描
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{代码格式化工具}
+            \begin{itemize}
+                \item \textbf{black}：严格格式化，无配置
+                \item \textbf{autopep8}：PEP 8自动修复
+                \item \textbf{isort}：import排序
+                \item \textbf{yapf}：Google出品，可配置
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+\#使用示例
+$ flake8 myproject/          \#检查代码风格
+$ black myproject/           \#自动格式化
+$ mypy myproject/            \#类型检查
+$ bandit -r myproject/       \#安全扫描
+    \end{lstlisting}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{测试框架与工具}
+%----------------------------------------------------------
+
+\begin{frame}{pytest测试框架}
+    \textbf{为什么选择pytest？}
+
+    \begin{itemize}
+        \item 简洁的断言语法（无需\texttt{assertEqual}）
+        \item 强大的Fixture机制
+        \item 丰富的插件生态
+        \item 详细的失败报告
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{unittest风格：}
+    \begin{itemize}
+        \item[] \texttt{class TestRecognizer(unittest.TestCase):}
+        \item[] \hspace{1em} \texttt{def test(self):}
+        \item[] \hspace{2em} \texttt{assert result == 'A'}
+    \end{itemize}
+
+    \textbf{pytest风格：}
+    \begin{itemize}
+        \item[] \texttt{def test\_recognize():}
+        \item[] \hspace{1em} \texttt{assert result == 'A'}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Mock与测试隔离}
+    \textbf{为什么要Mock？}
+
+    \begin{itemize}
+        \item 隔离被测代码，避免外部依赖
+        \item 控制测试环境，确保可重复
+        \item 模拟异常情况，提高覆盖率
+        \item 加速测试执行（避免真实IO）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{Mock对象示例：}
+    \begin{itemize}
+        \item[] \texttt{from unittest.mock import Mock}
+        \item[] \texttt{mock = Mock()}
+        \item[] \texttt{mock.method.return\_value = 42}
+        \item[] \texttt{assert mock.method() == 42}
+    \end{itemize}
+
+    \textbf{Patch装饰器：}
+    \begin{itemize}
+        \item[] \texttt{@patch('module.function')}
+        \item[] \texttt{def test(mocked\_func):}
+        \item[] \hspace{1em} \texttt{mocked\_func.return\_value = 42}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{测试覆盖率}
+    \textbf{coverage.py使用：}
+
+    \begin{itemize}
+        \item[] \texttt{\$ pip install coverage pytest-cov}
+        \item[] \texttt{\$ coverage run -m pytest}
+        \item[] \texttt{\$ coverage report}
+        \item[] \texttt{\$ coverage html}
+        \item[] \texttt{\$ open htmlcov/index.html}
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{覆盖率目标：}
+    \begin{itemize}
+        \item 核心逻辑：80\%以上
+        \item 工具类：90\%以上
+        \item 但高覆盖率不等于高质量，关键是有效测试
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{版本控制与协作}
+%----------------------------------------------------------
+
+\begin{frame}{Git高级操作}
+    \textbf{常用高级命令：}
+
+    \begin{itemize}
+        \item \textbf{交互式暂存：} \texttt{git add -p}
+        \item \textbf{修改提交：} \texttt{git commit --amend}
+        \item \textbf{储存修改：} \texttt{git stash} / \texttt{git stash pop}
+        \item \textbf{变基整理：} \texttt{git rebase -i HEAD\textasciitilde{}3}
+        \item \textbf{二分调试：} \texttt{git bisect start}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Git工作流}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Feature Branch工作流}
+            \begin{itemize}
+                \item 主分支保持稳定
+                \item 每个功能新建分支
+                \item 完成后Code Review合并
+                \item 适合大多数团队
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Forking工作流}
+            \begin{itemize}
+                \item 开发者fork仓库
+                \item 在自己的仓库开发
+                \item 通过Pull Request贡献
+                \item 适合开源项目
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{Commit Message规范：}
+    \begin{itemize}
+        \item \texttt{feat:} 新功能
+        \item \texttt{fix:} 修复bug
+        \item \texttt{docs:} 文档更新
+        \item \texttt{refactor:} 重构
+        \item \texttt{test:} 测试相关
+        \item \texttt{chore:} 构建/工具
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{AI编程工具}
+%----------------------------------------------------------
+
+\begin{frame}{AI编程工具概览}
+    \textbf{AI改变编程方式：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{传统编程流程：}
+            \begin{enumerate}
+                \item 查阅文档
+                \item 编写代码
+                \item 调试测试
+                \item 优化重构
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{AI辅助编程流程：}
+            \begin{enumerate}
+                \item 描述需求
+                \item AI生成代码
+                \item 验证测试
+                \item AI辅助优化
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{主流AI编程工具：}
+    \begin{itemize}
+        \item \textbf{Cursor}：AI原生IDE，内置GPT-4
+        \item \textbf{Claude Code}：Anthropic官方CLI工具
+        \item \textbf{GitHub Copilot}：代码自动补全
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Cursor：AI原生IDE}
+    \textbf{核心特性：}
+    \begin{itemize}
+        \item \textbf{AI Chat}：内置对话界面，无需切换窗口
+        \item \textbf{代码生成}：根据描述生成完整函数
+        \item \textbf{代码解释}：选中代码即可获得详细解释
+        \item \textbf{重构建议}：自动识别Code Smell并优化
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{快捷键：}
+            \begin{itemize}
+                \item \texttt{Cmd+L}：打开AI Chat
+                \item \texttt{Cmd+K}：生成/编辑代码
+                \item \texttt{Cmd+I}：询问当前文件
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{适用场景：}
+            \begin{itemize}
+                \item 快速原型开发
+                \item 代码理解学习
+                \item 重构优化代码
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Claude Code：命令行AI助手}
+    \textbf{Claude Code特点：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{优势：}
+            \begin{itemize}
+                \item 长上下文窗口（200K tokens）
+                \item 精准代码理解
+                \item 多文件编辑能力
+                \item 命令行无缝集成
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{使用方式：}
+\begin{verbatim}
+\#安装
+npm install -g @anthropic-ai/claude-code
+
+\#使用
+claude  \#启动交互会话
+\end{verbatim}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{实战示例：}
+\begin{verbatim}
+\#用户：解释这个检测填涂的函数
+[选中代码]
+
+\#Claude：这个函数通过灰度化和阈值判断...
+\#- 先转为灰度图
+\#- 计算像素密度
+\#- 返回是否填涂
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{GitHub Copilot：智能代码补全}
+    \textbf{Copilot工作原理：}
+    \begin{itemize}
+        \item 基于OpenAI Codex模型
+        \item 从GitHub公开代码学习
+        \item 根据上下文自动补全
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{使用场景：}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{最佳场景：}
+            \begin{itemize}
+                \item 编写样板代码
+                \item 生成测试用例
+                \item API调用示例
+                \item 正则表达式
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{使用技巧：}
+            \begin{itemize}
+                \item 写注释描述意图
+                \item 函数命名要清晰
+                \item Tab接受建议
+                \item Esc忽略建议
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{Copilot示例}
+\begin{verbatim}
+\#注释：计算答题卡填涂区域密度
+def calculate_density(image):
+    \#Copilot自动补全以下代码
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return np.sum(gray > 127) / gray.size
+\end{verbatim}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助代码审查}
+    \textbf{用AI进行Code Review：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Prompt模板：}
+\begin{verbatim}
+请审查这段代码的质量：
+
+1. 代码规范问题
+2. 潜在bug
+3. 性能优化建议
+4. 重构建议
+
+[粘贴代码]
+\end{verbatim}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{AI会检查：}
+            \begin{itemize}
+                \item 命名是否规范
+                \item 是否有重复代码
+                \item 错误处理是否完善
+                \item 边界条件是否考虑
+                \item 性能是否可优化
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{实战案例：}
+\begin{verbatim}
+\#原始代码
+def proc(img,p):
+    return cv2.threshold(img,p,255,1)[1]
+
+\#AI建议：
+\#1. 函数名太短，应改为 process_image
+\#2. 参数p应改为 threshold_value
+\#3. 应添加参数验证
+\#4. 应添加文档字符串
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{AI辅助调试实战}
+    \textbf{场景：代码运行报错，看不懂错误信息}
+
+    \vspace{0.2cm}
+
+    \textbf{错误信息：}
+\begin{verbatim}
+cv2.error: OpenCV(4.8.0) :-1: error: (-5:Bad argument)
+in function 'threshold'
+> Overwhelming requirement: (img.depth() == CV_8U ||
+ img.depth() == CV_32F)
+\end{verbatim}
+
+    \vspace{0.2cm}
+
+    \textbf{向AI提问：}
+\begin{verbatim}
+这段OpenCV代码报错，是什么原因？如何修复？
+
+[粘贴错误信息和相关代码]
+\end{verbatim}
+
+    \vspace{0.2cm}
+
+    \textbf{AI诊断：}
+    \begin{itemize}
+        \item \textbf{问题}：图像深度不符合要求
+        \item \textbf{原因}：threshold要求CV\_8U或CV\_32F类型
+        \item \textbf{修复}：添加类型转换 \texttt{img.astype(np.uint8)}
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+% 本模块要点速查（新增）
+%----------------------------------------------------------
+
+\subsection{本模块要点速查}
+
+\begin{frame}{模块02-工具环境：要点速查}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{开发工具选择}
+            \begin{itemize}
+                \item 大型项目：PyCharm
+                \item 多语言/轻量：VS Code
+                \item 数据分析：Jupyter
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{代码质量工具}
+            \begin{itemize}
+                \item 检查：flake8、pylint
+                \item 格式化：black
+                \item 类型检查：mypy
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \begin{block}{AI编程工具}
+        \begin{itemize}
+            \item Cursor：AI原生IDE（\texttt{Cmd+L}对话）
+            \item Claude Code：命令行助手
+            \item Copilot：代码补全
+        \end{itemize}
+    \end{block}
+\end{frame}

@@ -1,0 +1,280 @@
+%===========================================================
+% 01_overview.tex - 手写识别概述
+%===========================================================
+
+\section{手写识别概述}
+
+\begin{frame}{手写识别的挑战}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{印刷文字：}
+        \begin{itemize}
+            \item 字体统一
+            \item 字形稳定
+            \item 间距规范
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{手写文字：}
+        \begin{itemize}
+            \item 每人不同
+            \item 形状变化大
+            \item 间距随意
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \textbf{主要难点：}
+    \begin{enumerate}
+        \item 字形差异大
+        \item 连笔问题
+        \item 倾斜旋转
+        \item 图像质量
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{脱机识别 vs 联机识别}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{3cm}p{5cm}p{5cm}}
+            \toprule
+            \textbf{特性} & \textbf{脱机识别 (Offline HWR)} & \textbf{联机识别 (Online HWR)} \\
+            \midrule
+            输入方式 & 静态图像（扫描/拍照） & 动态笔画序列（触摸屏/数位板） \\
+            可用信息 & 仅图像像素 & 笔画轨迹、速度、压力、时间 \\
+            难度 & 更难（信息损失） & 相对容易 \\
+            应用场景 & 文档数字化、阅卷系统 & 手写输入、签名验证 \\
+            典型方法 & CNN+RNN+CTC & LSTM、Transformer \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{block}{课程重点}
+        本课程重点讲解\textbf{脱机手写识别}，用于智能阅卷系统中的简答题识别。
+    \end{block}
+\end{frame}
+
+\begin{frame}{手写识别在智能阅卷中的重要性}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{传统阅卷痛点：}
+        \begin{itemize}
+            \item 人工阅卷效率低
+            \item 主观评分不一致
+            \item 教师工作负担重
+            \item 成绩统计耗时
+        \end{itemize}
+
+        \vspace{0.5cm}
+
+        \textbf{AI阅卷优势：}
+        \begin{itemize}
+            \item 秒级识别手写答案
+            \item 客观题自动评分
+            \item 简答题辅助批改
+            \item 自动成绩统计
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{手写识别的关键作用}
+            \textbf{1. 答案区域定位}
+            \begin{itemize}
+                \item 检测简答题答题框
+                \item 分割手写文字区域
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{2. 手写文字识别}
+            \begin{itemize}
+                \item 识别学生手写答案
+                \item 转换为可编辑文本
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{3. 语义理解辅助评分}
+            \begin{itemize}
+                \item 提取关键词
+                \item 匹配标准答案
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{手写文字与印刷文字的区别}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{书写风格差异：}
+        \begin{itemize}
+            \item \textbf{印刷文字：}统一字体，字形规范
+            \item \textbf{手写文字：}因人而异，风格多样
+            \item 连笔、省略笔画现象普遍
+        \end{itemize}
+
+        \vspace{0.5cm}
+
+        \textbf{字形变化与连笔问题：}
+        \begin{itemize}
+            \item 同一字的不同写法
+            \item 笔画顺序变化
+            \item 连笔导致字形模糊
+            \item 草书难以辨认
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{笔画粗细与倾斜：}
+        \begin{itemize}
+            \item \textbf{印刷：}笔画宽度一致
+            \item \textbf{手写：}笔尖压力变化导致粗细不均
+            \item 整体或局部倾斜
+            \item 基线不水平
+        \end{itemize}
+
+        \vspace{0.5cm}
+
+        \textbf{字间距与行间距变化：}
+        \begin{itemize}
+            \item 印刷文字间距固定
+            \item 手写间距随意
+            \item 字重叠或分离
+            \item 行间距不均匀
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{手写简答题识别的难点}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{1. 自由书写，无固定格式}
+        \begin{itemize}
+            \item 答案长度不固定
+            \item 书写位置不固定
+            \item 答案组织方式多样
+            \item 编号、序号使用不一致
+        \end{itemize}
+
+        \vspace{0.5cm}
+
+        \textbf{2. 混合中英文与公式}
+        \begin{itemize}
+            \item 中英混杂
+            \item 数学公式、符号
+            \item 特殊字符
+            \item 不同语言的识别要求
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{3. 涂改与补充痕迹}
+        \begin{itemize}
+            \item 划掉的文字
+            \item 修改痕迹
+            \item 补充内容
+            \item 箭头、连线等标记
+        \end{itemize}
+
+        \vspace{0.5cm}
+
+        \textbf{4. 书写质量差异大}
+        \begin{itemize}
+            \item 字迹清晰度不同
+            \item 笔画完整性差异
+            \item 字体大小不统一
+            \item 书写压力不同
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{5. 背景干扰（格线、印刷文字）}
+        \begin{itemize}
+            \item 答题框线
+            \item 试卷印刷文字
+            \item 水印、底纹
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{手写识别技术发展}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{5cm}p{3cm}p{2cm}}
+            \toprule
+            \textbf{阶段} & \textbf{技术} & \textbf{代表模型/方法} & \textbf{准确率} \\
+            \midrule
+            传统方法 (1960s-2000s) & 特征工程 + 统计分类器 & HMM、SVM、KNN & 60-70\% \\
+            CNN时代 (2012-2015) & 卷积神经网络 & LeNet, AlexNet, VGG & 80-85\% \\
+            RNN+Attention (2015-2018) & 循环神经网络+注意力 & LSTM+Attention & 90-92\% \\
+            Transformer (2018-至今) & 自注意力机制 & \textbf{TrOCR, Donut, PARSeq} & \textbf{95\%+} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.5cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{关键里程碑：}
+        \begin{itemize}
+            \item 1998: LeNet-5 手写数字识别
+            \item 2012: AlexNet 开启深度学习时代
+            \item 2015: CTC + LSTM 序列识别
+            \item 2017: Transformer 注意力机制
+            \item 2021: TrOCR 端到端OCR
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{当前最佳：TrOCR（Microsoft）}
+            \begin{itemize}
+                \item 架构：ViT (图像编码器) + GPT-2 (文本解码器)
+                \item 端到端训练，无需字符级标注
+                \item 支持手写和印刷体混合识别
+                \item 在IAM手写数据集上达到SOTA
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{主流手写识别工具对比}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2cm}p{3.5cm}p{3cm}p{3cm}p{2cm}}
+            \toprule
+            \textbf{工具} & \textbf{核心技术} & \textbf{优点} & \textbf{缺点} & \textbf{适用场景} \\
+            \midrule
+            TrOCR & ViT + GPT-2 Transformer & 准确率最高(95\%+)，支持手写印刷混合 & 速度慢，GPU需求高 & 高精度OCR \\
+            \midrule
+            PaddleOCR & DB + CRNN + CTC & 速度快，中文支持好，轻量级 & 手写准确率略低(85-90\%) & 实时OCR、移动端 \\
+            \midrule
+            Tesseract & LSTM + 传统CV & 免费开源，多语言支持 & 中文手写支持差 & 印刷体英文 \\
+            \midrule
+            EasyOCR & CRAFT + Seq2Seq & 支持80+语言，易用 & 中文手写效果一般 & 多语言通用 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.5cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{选择建议：}
+        \begin{itemize}
+            \item \textbf{高精度需求} $\to$ TrOCR
+            \item \textbf{实时应用} $\to$ PaddleOCR
+            \item \textbf{移动端部署} $\to$ PaddleOCR轻量版
+            \item \textbf{多语言支持} $\to$ EasyOCR
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{block}{本课程推荐}
+            \begin{itemize}
+                \item \textbf{学习阶段：} PaddleOCR（易上手）
+                \item \textbf{生产环境：} TrOCR（高精度）
+                \item \textbf{对比实验：} 两者都实现
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}

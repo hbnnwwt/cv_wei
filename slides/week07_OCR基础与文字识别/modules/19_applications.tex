@@ -1,0 +1,193 @@
+%===========================================================
+% modules/19_applications.tex - OCR应用场景
+%===========================================================
+
+\section{OCR应用场景}
+
+\begin{frame}{OCR核心应用场景}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{1. 文档数字化}
+        \begin{itemize}
+            \item 书籍扫描与电子化
+            \item 档案数字化管理
+            \item 历史文献保护
+            \item 图书馆数字资源建设
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{2. 证件识别}
+        \begin{itemize}
+            \item 身份证识别
+            \item 银行卡识别
+            \item 驾驶证/行驶证
+            \item 护照识别
+            \item 名片识别
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{3. 票据处理}
+        \begin{itemize}
+            \item 发票识别与验真
+            \item 收据/小票识别
+            \item 快递单据处理
+            \item 财务报表录入
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{4. 场景文字识别}
+        \begin{itemize}
+            \item 街景文字识别
+            \item 路标/广告牌识别
+            \item 商品包装文字
+            \item 车牌识别
+            \item 工业场景文字
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{5. 手写识别}
+        \begin{itemize}
+            \item 手写笔记数字化
+            \item 表单手写内容
+            \item 签名识别
+            \item 邮件地址识别
+            \item 教育作业批改
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{6. 智能应用}
+        \begin{itemize}
+            \item 拍照翻译
+            \item 视觉搜索引擎
+            \item 辅助阅读（视障）
+            \item 智能阅卷
+            \item 内容审核
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{行业OCR应用案例}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{p{2.5cm}p{4cm}p{5cm}}
+            \toprule
+            \textbf{行业} & \textbf{典型应用} & \textbf{技术特点} \\
+            \midrule
+            \textbf{金融服务} &
+            支票识别、发票验真、卡证识别 &
+            高精度、安全性、合规性 \\
+            \midrule
+            \textbf{医疗健康} &
+            病历数字化、处方识别、报告录入 &
+            手写体识别、医学术语、隐私保护 \\
+            \midrule
+            \textbf{教育培训} &
+            智能阅卷、公式识别、笔记数字化 &
+            手写识别、公式处理、批量处理 \\
+            \midrule
+            \textbf{物流快递} &
+            面单识别、地址提取、分拣自动化 &
+            实时处理、复杂背景、抗干扰 \\
+            \midrule
+            \textbf{零售电商} &
+            商品标签、价格识别、小票处理 &
+            多语言、复杂排版、移动端 \\
+            \midrule
+            \textbf{政府公共} &
+            档案数字化、身份证识别、车牌识别 &
+            大规模、标准化、高可靠 \\
+            \midrule
+            \textbf{交通出行} &
+            车牌识别、路标识别、证件检查 &
+            实时性、户外环境、移动场景 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{OCR技术选型指南}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{按场景选择OCR方案：}
+
+        \vspace{0.3cm}
+
+        \textbf{1. 印刷体文档识别}
+        \begin{itemize}
+            \item 推荐：Tesseract、PaddleOCR
+            \item 特点：成熟稳定、多语言
+            \item 适合：书籍、档案、报告
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{2. 场景文字识别}
+        \begin{itemize}
+            \item 推荐：PaddleOCR、MMOCR
+            \item 特点：检测+识别端到端
+            \item 适合：街景、商品、广告牌
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{3. 手写体识别}
+        \begin{itemize}
+            \item 推荐：PaddleOCR手写模型、TrOCR
+            \item 特点：针对手写优化
+            \item 适合：表单、笔记、作业
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{4. 证件/票据识别}
+        \begin{itemize}
+            \item 推荐：商业OCR API
+            \item 特点：高精度、结构化输出
+            \item 适合：身份证、发票、银行卡
+        \end{itemize}
+
+        \vspace{0.2cm}
+
+        \textbf{5. 实时视频OCR}
+        \begin{itemize}
+            \item 推荐：轻量级模型+优化
+            \item 特点：速度快、资源占用低
+            \item 适合：车牌识别、实时翻译
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \textbf{选型决策树：}
+
+        \vspace{0.2cm}
+
+        \begin{center}
+            \begin{tikzpicture}[
+                node distance=0.3cm,
+                box/.style={rectangle, draw=blue!60, fill=blue!10, rounded corners, minimum width=2.5cm, minimum height=0.4cm, font=\tiny, align=center},
+                arrow/.style={->, thick, font=\tiny}
+            ]
+                \node[box] (start) {开始选型};
+                \node[box, below=0.5cm of start] (q1) {场景\\文字?};
+                \node[box, below left=0.5cm and 0.3cm of q1] (scene) {PaddleOCR\\MMOCR};
+                \node[box, below right=0.5cm and 0.3cm of q1] (q2) {手写体?};
+                \node[box, below left=0.5cm and 0.3cm of q2] (hand) {TrOCR\\手写模型};
+                \node[box, below right=0.5cm and 0.3cm of q2] (q3) {实时性?};
+                \node[box, below left=0.5cm and 0.3cm of q3] (fast) {轻量模型\\PP-OCR};
+                \node[box, below right=0.5cm and 0.3cm of q3] (normal) {Tesseract\\标准模型};
+
+                \draw[arrow] (start) -- (q1);
+                \draw[arrow] (q1) -- node[left, font=\tiny] {是} (scene);
+                \draw[arrow] (q1) -- node[right, font=\tiny] {否} (q2);
+                \draw[arrow] (q2) -- node[left, font=\tiny] {是} (hand);
+                \draw[arrow] (q2) -- node[right, font=\tiny] {否} (q3);
+                \draw[arrow] (q3) -- node[left, font=\tiny] {是} (fast);
+                \draw[arrow] (q3) -- node[right, font=\tiny] {否} (normal);
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+\end{frame}

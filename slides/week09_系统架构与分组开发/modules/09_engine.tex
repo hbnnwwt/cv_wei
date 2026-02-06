@@ -1,0 +1,439 @@
+%===========================================================
+% 09_engine.tex - 模块化识别引擎实战
+%===========================================================
+
+\section{识别引擎架构设计}
+
+\begin{frame}{识别引擎整体架构}
+    \begin{center}
+        \begin{tikzpicture}[scale=0.7, transform shape,
+            box/.style={draw, rectangle, rounded corners, fill=blue!15, minimum width=2.5cm, minimum height=1cm, align=center},
+            smallbox/.style={draw, rectangle, rounded corners, fill=green!15, minimum width=2cm, minimum height=0.7cm}]
+
+            % 引擎核心
+            \node[box, fill=yellow!30, minimum width=4cm] (engine) at (0,0) {识别引擎\\RecognitionEngine};
+
+            % 算法插件
+            \node[smallbox] (choice) at (-4,-2) {选择题\\识别器};
+            \node[smallbox] (judge) at (-1.5,-2) {判断题\\识别器};
+            \node[smallbox] (essay) at (1.5,-2) {简答题\\识别器};
+            \node[smallbox] (new) at (4,-2) {新算法\\插件};
+
+            % 输入输出
+            \node[box, fill=green!20] (input) at (-4,2) {输入图像\\+ 区域信息};
+            \node[box, fill=red!20] (output) at (4,2) {识别结果\\+ 置信度};
+
+            % 连接
+            \draw[->, thick] (input) -- (engine);
+            \draw[->, thick] (engine) -- (output);
+            \draw[<->, thick] (engine) -- (choice);
+            \draw[<->, thick] (engine) -- (judge);
+            \draw[<->, thick] (engine) -- (essay);
+            \draw[<->, thick, dashed] (engine) -- (new);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{核心特性：}
+    \begin{itemize}
+        \item 插件化架构：算法可动态注册
+        \item 策略选择：根据题型自动选择算法
+        \item 结果融合：多算法结果融合提高准确率
+        \item 置信度评估：输出可信度指标
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{引擎接口设计}
+    \begin{lstlisting}
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import List, Dict, Optional
+from enum import Enum
+
+class QuestionType(Enum):
+    CHOICE = "choice"
+    JUDGE = "judge"
+    ESSAY = "essay"
+
+@dataclass
+class RecognitionResult:
+    """识别结果"""
+    text: str
+    confidence: float
+    question_type: QuestionType
+    raw_data: Dict = None
+
+class RecognizerInterface(ABC):
+    """识别器接口"""
+
+    @abstractmethod
+    def recognize(self, image: np.ndarray,
+                  roi: Optional[tuple] = None) -> RecognitionResult:
+        pass
+
+    @abstractmethod
+    def get_supported_types(self) -> List[QuestionType]:
+        pass
+
+    @abstractmethod
+    def get_name(self) -> str:
+        pass
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{识别引擎核心实现}
+    \begin{lstlisting}
+class RecognitionEngine:
+    """模块化识别引擎"""
+
+    def __init__(self):
+        self._recognizers: Dict[QuestionType, List[RecognizerInterface]] = {
+            qt: [] for qt in QuestionType
+        }
+        self._strategy = "best_confidence"
+
+    def register(self, recognizer: RecognizerInterface) -> 'RecognitionEngine':
+        """注册识别器"""
+        for qtype in recognizer.get_supported_types():
+            self._recognizers[qtype].append(recognizer)
+        return self
+
+    def recognize(self, image: np.ndarray,
+                  question_type: QuestionType,
+                  roi: Optional[tuple] = None) -> RecognitionResult:
+        """执行识别"""
+        recognizers = self._recognizers.get(question_type, [])
+
+        if not recognizers:
+            raise ValueError(f"没有支持 {question_type} 的识别器")
+
+        # 收集所有识别器的结果
+        results = [r.recognize(image, roi) for r in recognizers]
+
+        # 根据策略选择最佳结果
+        return self._select_best_result(results)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{选择题识别器实现}
+    \begin{lstlisting}
+class ChoiceRecognizer(RecognizerInterface):
+    """选择题填涂识别器"""
+
+    def __init__(self, threshold: float = 0.5):
+        self.threshold = threshold
+        self.name = "ChoiceRecognizer"
+
+    def get_name(self) -> str:
+        return self.name
+
+    def get_supported_types(self) -> List[QuestionType]:
+        return [QuestionType.CHOICE]
+
+    def recognize(self, image: np.ndarray,
+                  roi: Optional[tuple] = None) -> RecognitionResult:
+        """识别选择题答案"""
+        if roi:
+            x, y, w, h = roi
+            image = image[y:y+h, x:x+w]
+
+        # 分析选项区域
+        options = self._detect_options(image)
+        filled = self._find_filled_options(options)
+
+        answer = ",".join(filled) if filled else "未作答"
+        confidence = self._calculate_confidence(filled, options)
+
+        return RecognitionResult(
+            text=answer,
+            confidence=confidence,
+            question_type=QuestionType.CHOICE
+        )
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{判断题识别器实现}
+    \begin{lstlisting}
+class JudgeRecognizer(RecognizerInterface):
+    """判断题符号识别器"""
+
+    def __init__(self):
+        self.name = "JudgeRecognizer"
+        # 预定义符号模板
+        self.templates = {
+            'T': self._load_template('true.png'),
+            'F': self._load_template('false.png')
+        }
+
+    def recognize(self, image: np.ndarray,
+                  roi: Optional[tuple] = None) -> RecognitionResult:
+        """识别判断题符号"""
+        if roi:
+            x, y, w, h = roi
+            image = image[y:y+h, x:x+w]
+
+        # 形状分析
+        symbol = self._analyze_symbol(image)
+
+        # 匹配模板
+        best_match, score = self._match_template(symbol)
+
+        return RecognitionResult(
+            text=best_match,
+            confidence=score,
+            question_type=QuestionType.JUDGE
+        )
+
+    def _analyze_symbol(self, image: np.ndarray) -> str:
+        # 提取轮廓特征
+        # 判断是√、×、T、F等
+        pass
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{简答题识别器实现}
+    \begin{lstlisting}
+class EssayRecognizer(RecognizerInterface):
+    """简答题OCR识别器"""
+
+    def __init__(self, use_gpu: bool = False):
+        self.name = "EssayRecognizer"
+        self.use_gpu = use_gpu
+        # 初始化OCR引擎（如PaddleOCR）
+        self.ocr = self._init_ocr()
+
+    def _init_ocr(self):
+        from paddleocr import PaddleOCR
+        return PaddleOCR(
+            use_angle_cls=True,
+            lang='ch',
+            use_gpu=self.use_gpu
+        )
+
+    def recognize(self, image: np.ndarray,
+                  roi: Optional[tuple] = None) -> RecognitionResult:
+        """OCR识别手写文字"""
+        if roi:
+            x, y, w, h = roi
+            image = image[y:y+h, x:x+w]
+
+        # 执行OCR
+        result = self.ocr.ocr(image, cls=True)
+
+        # 提取文字和置信度
+        text = self._extract_text(result)
+        confidence = self._average_confidence(result)
+
+        return RecognitionResult(
+            text=text,
+            confidence=confidence,
+            question_type=QuestionType.ESSAY,
+            raw_data={'ocr_result': result}
+        )
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{算法注册与发现机制}
+    \begin{lstlisting}
+class RecognizerRegistry:
+    """识别器注册表"""
+
+    def __init__(self):
+        self._recognizers: Dict[str, Type[RecognizerInterface]] = {}
+
+    def register(self, name: str,
+                 recognizer_class: Type[RecognizerInterface]) -> None:
+        """注册识别器类"""
+        self._recognizers[name] = recognizer_class
+
+    def create(self, name: str, **kwargs) -> RecognizerInterface:
+        """创建识别器实例"""
+        if name not in self._recognizers:
+            raise ValueError(f"未知的识别器: {name}")
+        return self._recognizers[name](**kwargs)
+
+    def list_recognizers(self) -> List[str]:
+        """列出所有可用识别器"""
+        return list(self._recognizers.keys())
+
+# 全局注册表
+registry = RecognizerRegistry()
+
+# 注册内置识别器
+registry.register("choice", ChoiceRecognizer)
+registry.register("judge", JudgeRecognizer)
+registry.register("essay", EssayRecognizer)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{算法选择策略}
+    \begin{lstlisting}
+class SelectionStrategy(ABC):
+    """算法选择策略接口"""
+
+    @abstractmethod
+    def select(self, results: List[RecognitionResult]) -> RecognitionResult:
+        pass
+
+class BestConfidenceStrategy(SelectionStrategy):
+    """选择置信度最高的结果"""
+
+    def select(self, results: List[RecognitionResult]) -> RecognitionResult:
+        return max(results, key=lambda r: r.confidence)
+
+class VotingStrategy(SelectionStrategy):
+    """多数投票策略"""
+
+    def select(self, results: List[RecognitionResult]) -> RecognitionResult:
+        from collections import Counter
+        texts = [r.text for r in results]
+        winner = Counter(texts).most_common(1)[0][0]
+
+        # 取所有相同结果的平均置信度
+        winners = [r for r in results if r.text == winner]
+        avg_conf = sum(r.confidence for r in winners) / len(winners)
+
+        return RecognitionResult(
+            text=winner,
+            confidence=avg_conf,
+            question_type=winners[0].question_type
+        )
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{结果融合与置信度评估}
+    \begin{lstlisting}
+class ResultFusion:
+    """结果融合器"""
+
+    @staticmethod
+    def weighted_fusion(results: List[RecognitionResult],
+                        weights: List[float]) -> RecognitionResult:
+        """加权融合多个结果"""
+        # 加权平均置信度
+        total_weight = sum(weights)
+        weighted_conf = sum(
+            r.confidence * w for r, w in zip(results, weights)
+        ) / total_weight
+
+        # 选择加权后置信度最高的文本
+        best = max(results, key=lambda r: r.confidence)
+
+        return RecognitionResult(
+            text=best.text,
+            confidence=weighted_conf,
+            question_type=best.question_type
+        )
+
+    @staticmethod
+    def calculate_overall_confidence(results: List[RecognitionResult]) -> float:
+        """计算整体置信度"""
+        if not results:
+            return 0.0
+        # 使用几何平均
+        import math
+        product = math.prod(r.confidence for r in results)
+        return product ** (1 / len(results))
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{置信度阈值与降级策略}
+    \begin{lstlisting}
+class ConfidenceBasedFallback:
+    """基于置信度的降级策略"""
+
+    def __init__(self, engine: RecognitionEngine,
+                 threshold: float = 0.8):
+        self.engine = engine
+        self.threshold = threshold
+
+    def recognize_with_fallback(self, image: np.ndarray,
+                                 question_type: QuestionType) -> Dict:
+        """带降级的识别"""
+        result = self.engine.recognize(image, question_type)
+
+        response = {
+            'result': result,
+            'confidence': result.confidence,
+            'needs_review': False,
+            'fallback_used': False
+        }
+
+        if result.confidence < self.threshold:
+            response['needs_review'] = True
+
+            # 尝试备用算法
+            if question_type == QuestionType.ESSAY:
+                # 切换到更精确的模型
+                fallback_result = self._use_precise_model(image)
+                if fallback_result.confidence > result.confidence:
+                    response['result'] = fallback_result
+                    response['fallback_used'] = True
+
+        return response
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{引擎使用完整示例}
+    \begin{lstlisting}
+# 1. 创建引擎
+engine = RecognitionEngine()
+
+# 2. 注册识别器
+engine \
+    .register(ChoiceRecognizer(threshold=0.5)) \
+    .register(JudgeRecognizer()) \
+    .register(EssayRecognizer(use_gpu=True))
+
+# 3. 设置选择策略
+engine.set_strategy("best_confidence")
+
+# 4. 执行识别
+result = engine.recognize(
+    image=exam_image,
+    question_type=QuestionType.CHOICE,
+    roi=(100, 200, 300, 400)  # 指定区域
+)
+
+print(f"识别结果: {result.text}")
+print(f"置信度: {result.confidence:.2%}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{性能监控与优化}
+    \begin{lstlisting}
+class MonitoredEngine(RecognitionEngine):
+    """带性能监控的识别引擎"""
+
+    def __init__(self):
+        super().__init__()
+        self.metrics = {
+            'total_calls': 0,
+            'total_time': 0.0,
+            'by_type': {}
+        }
+
+    def recognize(self, image: np.ndarray,
+                  question_type: QuestionType,
+                  roi: Optional[tuple] = None) -> RecognitionResult:
+        import time
+
+        start = time.time()
+        result = super().recognize(image, question_type, roi)
+        elapsed = time.time() - start
+
+        # 记录指标
+        self.metrics['total_calls'] += 1
+        self.metrics['total_time'] += elapsed
+
+        if question_type not in self.metrics['by_type']:
+            self.metrics['by_type'][question_type] = {
+                'count': 0, 'time': 0.0
+            }
+        self.metrics['by_type'][question_type]['count'] += 1
+        self.metrics['by_type'][question_type]['time'] += elapsed
+
+        return result
+    \end{lstlisting}
+\end{frame}

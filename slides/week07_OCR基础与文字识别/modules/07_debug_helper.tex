@@ -1,0 +1,90 @@
+%===========================================================
+% modules/07_debug_helper.tex - AI调试助手
+%===========================================================
+
+\section{AI调试助手}
+
+\begin{frame}{遇到问题？使用AI调试助手}
+    \textbf{常见错误与AI调试策略：}
+    \begin{itemize}
+        \item \textbf{安装失败}：
+        \begin{itemize}
+            \item 提示AI："paddlepaddle安装报错：[粘贴错误信息]，提供替代方案"
+            \item AI会建议：使用清华镜像源、检查Python版本等
+        \end{itemize}
+
+        \item \textbf{识别为空}：
+        \begin{itemize}
+            \item 提示AI："PaddleOCR返回空结果，检查图像路径[路径]，代码如下：[代码]"
+            \item AI会检查：路径格式、图像是否存在、参数配置
+        \end{itemize}
+
+        \item \textbf{中文乱码}：
+        \begin{itemize}
+            \item 提示AI："PaddleOCR中文识别乱码，代码如下：[代码]"
+            \item AI会建议：确认lang='ch'、检查编码、版本兼容性
+        \end{itemize}
+
+        \item \textbf{置信度太低}：
+        \begin{itemize}
+            \item 提示AI："OCR识别置信度太低（平均0.3），如何优化？"
+            \item AI会建议：图像预处理、参数调优、分辨率提升
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AI辅助调试三部曲}
+    \begin{alertblock}{AI辅助调试三部曲}
+        \begin{enumerate}
+            \item \textbf{粘贴完整错误}：Traceback、警告信息、异常堆栈
+            \item \textbf{说明环境信息}：Python版本、操作系统、依赖包版本
+            \item \textbf{提供可复现代码}：最小化代码片段 + 数据样本
+        \end{enumerate}
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \textbf{Prompt模板：}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# 环境信息
+Python: 3.10.11
+OS: Windows 11
+PaddleOCR: 2.7.0
+
+# 错误信息
+[粘贴完整的Traceback]
+
+# 代码片段
+[粘贴最小可复现代码]
+
+# 数据样本
+[提供测试图像或文字描述]
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{使用AI辅助学习PaddleOCR}
+    \textbf{推荐场景：}
+    \begin{itemize}
+        \item 安装失败时：让AI检查环境兼容性
+        \item 参数配置时：让AI解释各参数含义
+        \item 识别结果解析时：让AI说明数据结构
+        \item 性能优化时：让AI提出改进建议
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{Cursor快捷键：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{快捷键} & \textbf{功能} \\
+            \midrule
+            Ctrl+K & 原地编辑选中代码 \\
+            Ctrl+L & 打开AI对话侧边栏 \\
+            Ctrl+I & AI生成代码 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}

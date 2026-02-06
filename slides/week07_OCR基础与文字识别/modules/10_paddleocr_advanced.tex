@@ -1,0 +1,213 @@
+%===========================================================
+% modules/10_paddleocr_advanced.tex - PaddleOCR高级实战
+%===========================================================
+
+\section{PaddleOCR高级实战}
+
+\begin{frame}{PaddleOCR架构解析}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{PP-OCR三大模块：}
+        \begin{enumerate}
+            \item \textbf{文本检测（DBNet）}
+            \begin{itemize}
+                \item 可微二值化网络
+                \item 轻量级骨干网络
+                \item 实时文字定位
+            \end{itemize}
+            \item \textbf{方向分类（MobileNet）}
+            \begin{itemize}
+                \item 0/90/180/270度分类
+                \item 轻量级分类器
+                \item 提高识别准确率
+            \end{itemize}
+            \item \textbf{文本识别（SVTR）}
+            \begin{itemize}
+                \item 视觉Transformer
+                \item 视觉-语言预训练
+                \item 中英文高精度识别
+            \end{itemize}
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \textbf{数据处理流程：}
+        \begin{center}
+            \begin{tikzpicture}[
+                node distance=0.4cm,
+                box/.style={rectangle, draw=blue!60, fill=blue!10, rounded corners, minimum width=3cm, minimum height=0.5cm, font=\scriptsize},
+                arrow/.style={->, thick}
+            ]
+                \node[box] (img) {输入图像};
+                \node[box, below=of img] (det) {文本检测 (DBNet)};
+                \node[box, below=of det] (crop) {文字区域裁剪};
+                \node[box, below=of crop] (cls) {方向分类 (MobileNet)};
+                \node[box, below=of cls] (rec) {文本识别 (SVTR)};
+                \node[box, below=of rec] (out) {输出结果};
+
+                \draw[arrow] (img) -- (det);
+                \draw[arrow] (det) -- (crop);
+                \draw[arrow] (crop) -- (cls);
+                \draw[arrow] (cls) -- (rec);
+                \draw[arrow] (rec) -- (out);
+            \end{tikzpicture}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{PaddleOCR模型配置与优化（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+from paddleocr import PaddleOCR
+
+# TODO: 使用AI助手配置高性能OCR
+# 提示词："配置PaddleOCR高性能模式，需要GPU支持、
+# 多线程处理、大模型版本，用于生产环境"
+
+ocr = PaddleOCR(
+    # ===== 基础配置 =====
+    # TODO: 语言设置（支持多语言组合）
+    lang=____,  # 如 'ch', 'en', 'ch_en', 'japan', 'korean'
+
+    # TODO: 模型版本（提示词："PaddleOCR模型版本选择"）
+    det_model_dir=____,  # 检测模型路径
+    rec_model_dir=____,  # 识别模型路径
+    cls_model_dir=____,  # 方向分类模型路径
+
+    # ===== 性能优化配置 =====
+    # TODO: GPU配置（提示词："PaddleOCR GPU加速配置参数"）
+    use_gpu=____,
+    gpu_mem=____,  # GPU显存限制
+
+    # TODO: 多线程配置
+    use_tensorrt=____,  # TensorRT加速
+    use_fp16=____,      # 半精度推理
+    enable_mkldnn=____, # MKL-DNN加速
+    cpu_threads=____,   # CPU线程数
+
+    # ===== 检测模型参数 =====
+    # TODO: 检测参数调优（提示词："DBNet检测参数调优"）
+    det_db_thresh=____,      # 二值化阈值
+    det_db_box_thresh=____,  # 框过滤阈值
+    det_db_unclip_ratio=____, # 文本框扩展系数
+    max_text_length=____,    # 最大文本长度
+    det_db_score_mode=____,  # 得分计算模式
+
+    # ===== 识别模型参数 =====
+    # TODO: 识别参数调优
+    rec_batch_num=____,      # 识别batch大小
+    max_text_length=____,    # 最大文本长度
+    rec_score_thres=____,    # 识别置信度阈值
+
+    # ===== 方向分类参数 =====
+    use_angle_cls=____,      # 启用方向分类
+    cls_batch_num=____,    # 分类batch大小
+    cls_thresh=____,        # 分类置信度阈值
+
+    # ===== 输出控制 =====
+    drop_score=____,       # 过滤低置信度结果
+    show_log=____,         # 显示日志
+    use_pdserving=____,    # 使用PaddleServing
+    use_visual_backbone=____, # 可视化骨干网络
+)
+    \end{lstlisting}
+
+    \begin{alertblock}{AI参数调优助手}
+        不知道参数怎么设？\textbf{问AI：}
+        "PaddleOCR在生产环境中GPU推理，det_db_thresh设为多少合适？"
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{自定义训练：PaddleOCR模型微调（70\%脚手架）}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+# TODO: 使用AI助手完成PaddleOCR自定义训练
+# 提示词："PaddleOCR自定义训练完整流程，包括数据准备、
+# 配置文件修改、训练启动、模型评估"
+
+# ===== 步骤1: 数据准备 =====
+# TODO: 准备训练数据（提示词："PaddleOCR训练数据格式要求"）
+# 文本检测数据格式：
+# img_001.jpg\t[[x1,y1],[x2,y2],[x3,y3],[x4,y4], "文字内容"]
+
+# TODO: 划分训练集和验证集
+import os
+import shutil
+import random
+
+def prepare_dataset(src_dir, dst_dir, train_ratio=0.8):
+    """准备PaddleOCR训练数据集"""
+    # TODO: 使用AI助手补全代码
+    # 提示词："Python划分训练集验证集，复制图像和标注文件"
+
+    images = [f for f in os.listdir(src_dir) if f.endswith(('.jpg', '.png'))]
+    random.shuffle(images)
+
+    # TODO: 按比例划分
+    split_idx = int(len(images) * ____)
+    train_images = images[____]
+    val_images = images[____]
+
+    # TODO: 复制文件到目标目录
+    for img in train_images:
+        shutil.copy(os.path.join(src_dir, img), ____)
+        # TODO: 复制对应的标注文件
+        ____
+
+    return len(train_images), len(val_images)
+
+# ===== 步骤2: 配置文件修改 =====
+# TODO: 修改PaddleOCR配置文件（提示词："PaddleOCR配置文件各参数含义"）
+config_content = '''
+# 检测模型配置
+global:
+  debug: false
+  use_gpu: ____  # TODO: 是否使用GPU
+  epoch_num: ____  # TODO: 训练轮数
+  log_smooth_window: 20
+  print_batch_step: 10
+  save_model_dir: ./output/det_db/
+  save_epoch_step: 100
+  eval_batch_step: [0, 2000]
+  cal_metric_during_train: false
+  pretrained_model: null
+  checkpoints: null
+  save_inference_dir: null
+  use_visualdl: false
+  infer_img: doc/imgs_en/img_10.jpg
+
+# TODO: 更多配置参数...
+'''
+
+# ===== 步骤3: 启动训练 =====
+# TODO: 使用PaddleOCR训练脚本
+# 命令行：python tools/train.py -c configs/det/det_db_mv3.yml
+
+def start_training(config_path, use_gpu=True, num_epochs=100):
+    """启动PaddleOCR训练"""
+    import subprocess
+
+    cmd = [
+        'python', 'tools/train.py',
+        '-c', config_path,
+        # TODO: 添加更多参数
+    ]
+
+    if use_gpu:
+        cmd.append('--use_gpu')
+
+    # TODO: 启动训练进程
+    process = subprocess.____(____)
+
+    return process
+
+# ===== 步骤4: 模型评估 =====
+# TODO: 评估训练好的模型
+# 命令行：python tools/eval.py -c configs/det/det_db_mv3.yml -o Global.checkpoints=./output/det_db/best_accuracy
+
+# TODO: 导出推理模型
+# 命令行：python tools/export_model.py -c configs/det/det_db_mv3.yml -o Global.pretrained_model=./output/det_db/best_accuracy Global.save_inference_dir=./inference/det_db
+    \end{lstlisting}
+
+    \begin{alertblock}{AI辅助训练提示}
+        训练遇到NaN loss？\textbf{问AI：}
+        "PaddleOCR训练时loss变成NaN，可能是什么原因，如何调试？"
+    \end{alertblock}
+\end{frame}

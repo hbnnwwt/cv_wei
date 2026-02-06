@@ -40,10 +40,82 @@
 	\end{exampleblock}
 \end{frame}
 
+% -----------------------------------------------------------------------------
+% 1.5 三个理解层级（新增）
+% -----------------------------------------------------------------------------
+
+\begin{frame}{三个理解层级：RTF框架}
+	\begin{columns}
+		\column{0.33\textwidth}
+		\begin{block}{基础概念}
+			\textbf{目标：}理解RTF是什么
+
+			\vspace{0.2cm}
+
+			\textbf{核心问题：}
+			\begin{itemize}
+				\item R、T、F分别代表什么？
+				\item 为什么需要结构化Prompt？
+				\item 每个部分的作用是什么？
+			\end{itemize}
+
+			\vspace{0.2cm}
+
+			\textbf{适合：}初学者
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{exampleblock}{可视化演示}
+			\textbf{目标：}看到RTF的效果
+
+			\vspace{0.2cm}
+
+			\textbf{对比实验：}
+			\begin{itemize}
+				\item 对比基础Prompt vs RTF优化Prompt
+				\item 观察AI输出的差异
+				\item 分析哪个效果更好
+			\end{itemize}
+
+			\vspace{0.2cm}
+
+			\textbf{实践：}修改Prompt结构
+
+			\vspace{0.2cm}
+
+			\textbf{适合：}有一定基础的学习者
+		\end{exampleblock}
+
+		\column{0.33\textwidth}
+		\begin{alertblock}{扩展应用}
+			\textbf{目标：}设计自己的RTF Prompt
+
+			\vspace{0.2cm}
+
+			\textbf{创新任务：}
+			\begin{itemize}
+				\item 针对实际问题设计Prompt
+				\item 优化Prompt结构提高效率
+				\item 分享最佳实践
+			\end{itemize}
+
+			\vspace{0.2cm}
+
+			\textbf{适合：}进阶学习者
+		\end{alertblock}
+	\end{columns}
+
+	\vspace{0.5cm}
+
+	\begin{center}
+		\textit{提示：根据自身水平选择合适的理解层级，也可以从基础开始逐步进阶}
+	\end{center}
+\end{frame}
+
 \begin{frame}{RTF 框架实战对比}
 	\begin{columns}
 		\column{0.5\textwidth}
-		\begin{alertblock}{❌ 不好的 Prompt}
+		\begin{alertblock}{[\times] 不好的 Prompt}
 			帮我写个代码处理图像。
 		\end{alertblock}
 
@@ -57,7 +129,7 @@
 		\end{itemize}
 
 		\column{0.5\textwidth}
-		\begin{exampleblock}{✅ 好的 Prompt (RTF)}
+		\begin{exampleblock}{[\checkmark] 好的 Prompt (RTF)}
 			\textbf{Role：}你是一位有10年经验的计算机视觉工程师，精通OpenCV。
 
 			\vspace{0.2cm}
@@ -89,7 +161,7 @@
 
 	\begin{columns}
 		\column{0.5\textwidth}
-		\begin{alertblock}{❌ 直接给答案}
+		\begin{alertblock}{[\times] 直接给答案}
 			\textbf{Prompt：} 用 OpenCV 实现透视变换矫正倾斜的试卷。
 
 			\vspace{0.2cm}
@@ -98,12 +170,188 @@
 			\begin{itemize}
 				\item AI 直接扔出代码
 				\item 学生不理解原理
+			\end{itemize}
+		\end{alertblock}
+
+		\column{0.5\textwidth}
+		\begin{exampleblock}{[\checkmark] 思维链引导}
+			\textbf{Prompt：} 请一步一步教我如何用OpenCV实现透视变换：
+			\begin{enumerate}
+				\item 首先解释什么是透视变换
+				\item 然后说明需要哪些输入参数
+				\item 接着给出实现步骤
+				\item 最后提供完整代码
+			\end{enumerate}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{不同类型Prompt对比：代码生成}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{功能描述：}
+		\begin{itemize}
+			\item 清晰说明要实现什么功能
+			\item 描述输入和输出
+			\item 指定技术栈
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\textbf{代码要求：}
+		\begin{itemize}
+			\item 代码风格规范
+			\item 错误处理机制
+			\item 性能要求
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\begin{exampleblock}{代码生成Prompt示例}
+			\textbf{角色：}你是一位Python开发者。
+
+			\vspace{0.2cm}
+
+			\textbf{任务：}请帮我写一个读取CSV文件的Python函数。
+
+			\vspace{0.2cm}
+
+			\textbf{输入/输出：}
+			\begin{itemize}
+				\item 输入：CSV文件路径
+				\item 输出：pandas DataFrame
+			\end{itemize}
+
+			\vspace{0.2cm}
+
+			\textbf{要求：}
+			\begin{itemize}
+				\item 使用pandas库
+				\item 处理文件不存在的情况
+				\item 返回DataFrame对象
+			\end{itemize}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{不同类型Prompt对比：代码解释与调试}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{代码解释Prompt：}
+		\begin{itemize}
+			\item 粘贴代码
+			\item 逐行解释要求
+			\item 关键参数说明
+			\item 可能的错误用法
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\textbf{调试求助Prompt：}
+		\begin{itemize}
+			\item 粘贴代码
+			\item 错误信息
+			\item 预期行为
+			\item 上下文说明
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\begin{exampleblock}{代码解释Prompt示例}
+			请解释以下代码的作用：
+
+			\begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+blur = cv2.GaussianBlur(gray, (5, 5), 0)
+edges = cv2.Canny(blur, 50, 150)
+			\end{lstlisting}
+
+			\vspace{0.2cm}
+
+			要求：
+			\begin{itemize}
+				\item 逐行解释每行代码的作用
+				\item 说明关键参数的含义
+				\item 解释为什么要按这个顺序处理
+			\end{itemize}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Prompt优化技巧：少样本提示（Few-Shot）}
+	\begin{block}{什么是少样本提示？}
+		提供1-3个示例，让AI通过模仿学习来完成任务。
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{alertblock}{[\times] 零样本（Zero-Shot）}
+			\textbf{Prompt：}
+			请将以下中文翻译成英文。
+
+			\vspace{0.2cm}
+
+			输入：计算机视觉
+		\end{alertblock}
+
+		\vspace{0.3cm}
+
+		\textbf{问题：}
+		\begin{itemize}
+			\item AI可能输出多种翻译
+			\item 风格不一致
+			\item 质量不稳定
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\begin{exampleblock}{[\checkmark] 少样本（Few-Shot）}
+			\textbf{Prompt：}
+			请将以下中文翻译成英文。参考示例：
+
+			\vspace{0.2cm}
+
+			示例1：
+			\begin{itemize}
+				\item 输入：人工智能
+				\item 输出：Artificial Intelligence
+			\end{itemize}
+
+			\vspace{0.2cm}
+
+			示例2：
+			\begin{itemize}
+				\item 输入：深度学习
+				\item 输出：Deep Learning
+			\end{itemize}
+
+			\vspace{0.2cm}
+
+			现在请翻译：
+			\begin{itemize}
+				\item 输入：计算机视觉
+			\end{itemize}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Prompt优化技巧：思维链（Chain-of-Thought）}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{alertblock}{[\times] 直接提问}
+			\textbf{Prompt：}
+			请帮我实现试卷透视变换矫正。
+
+			\vspace{0.2cm}
+
+			\textbf{问题：}
+			\begin{itemize}
+				\item 可能缺少关键步骤
 				\item 换个场景就不会了
 			\end{itemize}
 		\end{alertblock}
 
 		\column{0.5\textwidth}
-		\begin{exampleblock}{✅ 思维链引导}
+		\begin{exampleblock}{[\checkmark] 思维链引导}
 			\textbf{Prompt：}
 
 			请帮我实现试卷透视变换矫正。请按以下步骤思考：

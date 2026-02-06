@@ -1,0 +1,43 @@
+%===========================================================
+% 02_architecture.tex - 系统架构设计
+%===========================================================
+
+\section{系统架构设计}
+
+\begin{frame}{系统架构}
+    \begin{center}
+        \begin{tikzpicture}[node distance=1.2cm]
+            \node[draw, rectangle, fill=blue!10] (input) {输入：试卷图像};
+            \node[draw, rectangle, fill=yellow!10, below of=input] (pre) {预处理模块};
+            \node[draw, rectangle, fill=green!10, below of=pre] (layout) {版面分析模块};
+            \node[draw, rectangle, fill=red!10, below of=layout] (rec) {识别模块};
+            \node[draw, rectangle, fill=purple!10, below of=rec] (grade) {评分模块};
+            \node[draw, rectangle, fill=orange!10, below of=grade] (output) {输出：评分报告};
+
+            \draw[->, thick] (input) -- (pre);
+            \draw[->, thick] (pre) -- (layout);
+            \draw[->, thick] (layout) -- (rec);
+            \draw[->, thick] (rec) -- (grade);
+            \draw[->, thick] (grade) -- (output);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{模块接口设计}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{3cm}lp{4cm}}
+            \toprule
+            \textbf{模块} \& \textbf{输入} \& \textbf{输出} \& \textbf{接口} \\
+            \midrule
+            预处理 \& 原始图像 \& 预处理图像 \& preprocess(img) \\
+            版面分析 \& 预处理图像 \& 区域坐标 \& analyze(img) \\
+            选择题 \& 选项区域 \& 答案(A/B/C/D) \& recognize\_choice(roi) \\
+            判断题 \& 符号区域 \& 答案(T/F) \& recognize\_judge(roi) \\
+            简答题 \& 答题区域 \& 文字内容 \& recognize\_essay(roi) \\
+            评分 \& 所有答案 \& 分数报告 \& grade(answers) \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}

@@ -1,0 +1,633 @@
+%===========================================================
+% 模块00：背景知识铺垫 (10-12页)
+%===========================================================
+
+\section{背景知识}
+
+%----------------------------------------------------------
+% 前置知识检查（新增）
+%----------------------------------------------------------
+
+\begin{frame}{前置知识自检}
+    \textbf{学习本课程前，请确认已掌握以下知识：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Python基础}
+            \begin{itemize}
+                \item 变量、数据类型、运算符
+                \item 条件判断（if/elif/else）
+                \item 循环结构（for/while）
+                \item 函数定义与调用
+                \item 类与对象基础
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{文件操作}
+            \begin{itemize}
+                \item 读取/写入文本文件
+                \item 路径处理（os.path）
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{版本控制基础}
+            \begin{itemize}
+                \item Git基本概念（仓库、提交）
+                \item 基本命令（add/commit/push）
+                \item 分支概念（可选）
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{数学基础}
+            \begin{itemize}
+                \item 矩阵/数组基本概念
+                \item 百分比计算
+                \item 集合论基础（可选）
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{如需补充学习}
+        \begin{itemize}
+            \item Python入门：\href{https://www.liaoxuefeng.com/wiki/1016959663602400}{廖雪峰Python教程}
+            \item Git入门：\href{https://git-scm.com/book/zh/v2}{Pro Git中文版}
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{本课程学习路径}
+    \textbf{三条学习路径，适合不同基础的你：}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.6cm,
+            path/.style={draw, fill=blue!10, minimum width=2.2cm, minimum height=0.7cm, align=center, font=\small},
+            arrow/.style={-Stealth, thick}
+        ]
+            % 三条路径
+            \node[path, fill=green!20] (observe) {观察者路径\\基础60分};
+            \node[path, fill=yellow!20, right=0.8cm of observe] (use) {使用者路径\\进阶+20分};
+            \node[path, fill=red!20, right=0.8cm of use] (create) {创造者路径\\挑战+20分};
+
+            % 适用人群标签
+            \node[below=0.2cm of observe, font=\fontsize{8}{9.6}\selectfont] {适合：编程基础较弱};
+            \node[below=0.2cm of use, font=\fontsize{8}{9.6}\selectfont] {适合：有编程基础};
+            \node[below=0.2cm of create, font=\fontsize{8}{9.6}\selectfont] {适合：编程能力较强};
+
+            % 学习建议框
+            \node[below=1.8cm of observe, draw, fill=blue!5, minimum width=10cm, minimum height=1.2cm, align=left, font=\small] {
+                \textbf{学习建议：}
+                \begin{itemize}
+                    \item \textbf{观察者}：重点学习模块1-2，直接运行代码示例
+                    \item \textbf{使用者}：完成全部模块，重点实践模块3-4
+                    \item \textbf{创造者}：深入学习全部内容，完成模块4挑战任务
+                \end{itemize}
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{本周预习资源}
+%----------------------------------------------------------
+
+\begin{frame}{本周预习资源}
+    \begin{block}{课前5分钟视频（必须观看）}
+        \begin{itemize}
+            \item \textbf{视频1：} 软件工程基础（模块化与接口设计）
+            \begin{itemize}
+                \item 什么是模块化？为什么要模块化？
+                \item 接口设计的基本原则
+            \end{itemize}
+            \item \textbf{视频2：} 团队协作基础（Git工作流与代码规范）
+            \begin{itemize}
+                \item Git基本概念：仓库、分支、提交
+                \item 代码规范的重要性（PEP 8简介）
+            \end{itemize}
+        \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \textbf{预习目标：}
+    \begin{itemize}
+        \item 理解模块化设计的好处（高内聚低耦合）
+        \item 掌握Git基本工作流（add/commit/push/pull）
+        \item 了解代码规范的重要性（PEP 8）
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{预习检查：}
+    \begin{itemize}
+        \item[$\square$] 能说出模块化的三个好处
+        \item[$\square$] 能完成一次Git提交
+        \item[$\square$] 能识别代码中的常见规范问题
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{软件开发流程}
+%----------------------------------------------------------
+
+\begin{frame}{软件开发生命周期（SDLC）}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{经典阶段：}
+            \begin{enumerate}
+                \item \textbf{需求分析}：明确系统功能与性能要求
+                \item \textbf{系统设计}：架构设计与模块划分
+                \item \textbf{编码实现}：将设计转化为代码
+                \item \textbf{测试验证}：确保质量符合预期
+                \item \textbf{部署运维}：交付并持续维护
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{tikzpicture}[
+                node distance=0.8cm,
+                box/.style={draw, fill=blue!20, minimum width=3cm, minimum height=0.6cm, align=center, font=\small}
+            ]
+                \node[box] (req) {需求分析};
+                \node[box, below=of req] (des) {系统设计};
+                \node[box, below=of des] (cod) {编码实现};
+                \node[box, below=of cod] (tes) {测试验证};
+                \node[box, below=of tes] (dep) {部署运维};
+
+                \draw[-Stealth, thick] (req) -- (des);
+                \draw[-Stealth, thick] (des) -- (cod);
+                \draw[-Stealth, thick] (cod) -- (tes);
+                \draw[-Stealth, thick] (tes) -- (dep);
+
+                \draw[-Stealth, thick, dashed, color=red] (dep.east) to[bend right=60] (req.east);
+                \node[right=0.2cm of dep, font=\tiny, color=red] {迭代};
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{开发模型对比}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{瀑布模型}
+            \begin{itemize}
+                \item 阶段清晰，顺序执行
+                \item 文档驱动，易于管理
+                \item 变更成本高
+                \item 适合需求明确的项目
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{适用场景：}
+            \begin{itemize}
+                \item 政府、金融项目
+                \item 安全关键系统
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{敏捷开发}
+            \begin{itemize}
+                \item 迭代增量，快速交付
+                \item 拥抱变化，持续反馈
+                \item 轻量文档，重视协作
+                \item 适合需求易变项目
+            \end{itemize}
+
+            \vspace{0.3cm}
+
+            \textbf{适用场景：}
+            \begin{itemize}
+                \item 互联网产品
+                \item 创新实验项目
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{敏捷开发核心实践}
+    \textbf{Scrum框架：}
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.3cm,
+            box/.style={draw, fill=green!20, minimum width=2.5cm, minimum height=0.7cm, align=center, font=\footnotesize}
+        ]
+            \node[box] (backlog) {产品\\待办列表};
+            \node[box, right=of backlog] (sprint) {Sprint\\待办列表};
+            \node[box, right=of sprint] (work) {Sprint\\执行};
+            \node[box, right=of work] (review) {评审与\\回顾};
+
+            \draw[-Stealth, thick] (backlog) -- (sprint);
+            \draw[-Stealth, thick] (sprint) -- (work);
+            \draw[-Stealth, thick] (work) -- (review);
+            \draw[-Stealth, thick, dashed] (review.south) to[bend right=45] (backlog.south);
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{关键概念：}
+    \begin{itemize}
+        \item \textbf{Sprint}：2-4周的迭代周期
+        \item \textbf{每日站会}：15分钟同步进展
+        \item \textbf{迭代评审}：演示成果，收集反馈
+        \item \textbf{回顾会议}：持续改进流程
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{持续集成与持续部署（CI/CD）}
+    \textbf{核心理念：自动化一切可以自动化的}
+
+    \vspace{0.3cm}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.5cm,
+            box/.style={draw, fill=green!20, minimum width=2cm, minimum height=0.8cm, align=center, font=\small},
+            arrow/.style={-Stealth, thick}
+        ]
+            \node[box] (code) {代码提交};
+            \node[box, right=of code] (build) {自动构建};
+            \node[box, right=of build] (test) {自动测试};
+            \node[box, right=of test] (deploy) {自动部署};
+
+            \draw[arrow] (code) -- (build);
+            \draw[arrow] (build) -- (test);
+            \draw[arrow] (test) -- (deploy);
+
+            \node[below=0.3cm of build, font=\tiny] {编译、打包};
+            \node[below=0.3cm of test, font=\tiny] {单元/集成测试};
+            \node[below=0.3cm of deploy, font=\tiny] {发布上线};
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \textbf{关键实践：}
+    \begin{itemize}
+        \item \textbf{版本控制}：Git管理代码，分支策略规范
+        \item \textbf{自动化构建}：Jenkins、GitHub Actions、GitLab CI
+        \item \textbf{自动化测试}：每次提交触发测试套件
+        \item \textbf{环境一致性}：Docker容器化部署
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{版本控制最佳实践}
+    \textbf{Git分支策略：}
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Git Flow模型：}
+            \begin{itemize}
+                \item \texttt{main/master}：生产环境
+                \item \texttt{develop}：开发集成分支
+                \item \texttt{feature/*}：功能开发分支
+                \item \texttt{release/*}：发布准备分支
+                \item \texttt{hotfix/*}：紧急修复分支
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Commit Message规范：}
+            \begin{itemize}
+                \item \texttt{feat:} 新功能
+                \item \texttt{fix:} 修复bug
+                \item \texttt{docs:} 文档更新
+                \item \texttt{refactor:} 重构
+                \item \texttt{test:} 测试相关
+                \item \texttt{chore:} 构建/工具
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{exampleblock}{示例：规范的Commit}
+        \texttt{feat(answer-sheet): 添加答题卡区域检测算法}\\
+        \texttt{- 实现基于轮廓的区域分割}\\
+        \texttt{- 支持A4、B5多种纸张尺寸}
+    \end{exampleblock}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{代码质量管理}
+%----------------------------------------------------------
+
+\begin{frame}{代码规范与风格}
+    \textbf{为什么需要代码规范？}
+
+    \begin{itemize}
+        \item \textbf{可读性}：代码被阅读的次数远多于编写
+        \item \textbf{可维护性}：团队协作用统一"语言"
+        \item \textbf{减少错误}：规范规避常见陷阱
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{Python代码规范（PEP 8）：}
+    \begin{itemize}
+        \item 缩进：4个空格（禁用Tab）
+        \item 行长度：每行不超过79字符
+        \item 命名：函数/变量用小写下划线，类用大驼峰
+        \item 空行：类和函数间空两行，方法间空一行
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{命名规范示例：}
+    \begin{itemize}
+        \item \texttt{class AnswerSheetDetector:} (类名大驼峰)
+        \item \texttt{def detect\_regions(image):} (函数名小写+下划线)
+        \item \texttt{MAX\_SCORE = 100} (常量大写)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{代码审查（Code Review）}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{审查内容：}
+            \begin{itemize}
+                \item 代码正确性
+                \item 逻辑清晰度
+                \item 性能影响
+                \item 安全漏洞
+                \item 测试覆盖
+                \item 文档完整性
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{审查原则：}
+            \begin{itemize}
+                \item 对事不对人
+                \item 小步快跑（PR要小）
+                \item 及时响应（24小时内）
+                \item 记录决策（为什么修改）
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{代码审查清单示例}
+        \begin{itemize}
+            \item[$\square$] 是否处理了边界情况？
+            \item[$\square$] 是否有适当的错误处理？
+            \item[$\square$] 命名是否清晰表达意图？
+            \item[$\square$] 是否有重复代码可以提取？
+            \item[$\square$] 是否添加了必要的测试？
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{技术债务管理}
+    \textbf{什么是技术债务？}
+
+    \begin{quote}
+        "为了快速交付而采取的非最优技术方案，未来需要额外成本来偿还。" —— Ward Cunningham
+    \end{quote}
+
+    \vspace{0.3cm}
+
+    \textbf{技术债务类型：}
+    \begin{itemize}
+        \item \textbf{有意债务}：战略性地选择快速方案，计划偿还
+        \item \textbf{无意债务}：由于缺乏经验或知识而引入
+        \item \textbf{过期债务}：原本合理的方案随时间变得过时
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{管理策略：}
+    \begin{itemize}
+        \item 债务可视化：记录和追踪技术债务
+        \item 定期偿还：每个Sprint预留20\%时间重构
+        \item 防止累积：代码审查时识别新增债务
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{重构与优化}
+    \textbf{重构定义：}
+    \begin{quote}
+        "在不改变代码外部行为的前提下，改善其内部结构。" —— Martin Fowler
+    \end{quote}
+
+    \vspace{0.3cm}
+
+    \textbf{重构时机：}
+    \begin{itemize}
+        \item \textbf{规则一}：添加功能时
+        \item \textbf{规则二}：修复bug时
+        \item \textbf{规则三}：代码审查时
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{常见重构技术：}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \begin{itemize}
+                \item 提取函数（Extract Method）
+                \item 内联函数（Inline Method）
+                \item 提取类（Extract Class）
+                \item 搬移函数（Move Method）
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{itemize}
+                \item 重命名（Rename）
+                \item 引入参数对象
+                \item 替换魔法数字
+                \item 简化条件表达式
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------
+\subsection{调试与排错}
+%----------------------------------------------------------
+
+\begin{frame}{调试的基本概念}
+    \textbf{调试（Debugging）}：识别、定位和修复软件缺陷的过程
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{常见错误类型：}
+            \begin{itemize}
+                \item \textbf{语法错误}：编译/解析失败
+                \item \textbf{运行时错误}：异常、崩溃
+                \item \textbf{逻辑错误}：结果不正确
+                \item \textbf{性能错误}：运行过慢
+                \item \textbf{并发错误}：时序相关、难复现
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{调试的本质：}
+            \begin{itemize}
+                \item 建立假设
+                \item 收集证据
+                \item 验证假设
+                \item 修正理解
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{调试策略与方法}
+    \textbf{系统化调试方法：}
+
+    \vspace{0.3cm}
+
+    \begin{enumerate}
+        \item \textbf{复现问题}
+            \begin{itemize}
+                \item 找到稳定复现问题的步骤
+                \item 最小化复现案例（Minimal Reproduction）
+            \end{itemize}
+
+        \item \textbf{定位根因}
+            \begin{itemize}
+                \item 二分法缩小范围
+                \item 使用调试器或日志追踪
+            \end{itemize}
+
+        \item \textbf{验证假设}
+            \begin{itemize}
+                \item 临时修改测试假设
+                \item 添加断言验证状态
+            \end{itemize}
+
+        \item \textbf{修复并验证}
+            \begin{itemize}
+                \item 修复问题
+                \item 确保修复不引入新问题
+            \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{日志与监控}
+    \textbf{日志记录的重要性：}
+
+    \begin{itemize}
+        \item 生产环境调试的唯一手段
+        \item 系统行为的历史记录
+        \item 问题诊断的关键证据
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{日志级别：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lll}
+            \toprule
+            \textbf{级别} & \textbf{用途} & \textbf{示例} \\
+            \midrule
+            DEBUG & 详细调试信息 & 变量值、执行路径 \\
+            INFO & 正常操作记录 & 服务启动、配置加载 \\
+            WARNING & 警告，可能有问题 & 资源即将耗尽 \\
+            ERROR & 错误，功能受影响 & 文件读取失败 \\
+            CRITICAL & 严重错误，系统崩溃 & 数据库连接断开 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.2cm}
+
+    \begin{block}{日志最佳实践}
+        \begin{itemize}
+            \item 使用结构化格式（JSON）
+            \item 包含关键上下文信息（时间、用户、请求ID）
+            \item 避免敏感信息（密码、Token）
+            \item 设置合理的日志轮转策略
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{性能监控与分析}
+    \textbf{关键性能指标（KPI）：}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{响应时间}
+            \begin{itemize}
+                \item 平均响应时间
+                \item P95/P99延迟
+                \item 超时率
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            \textbf{吞吐量}
+            \begin{itemize}
+                \item QPS/TPS
+                \item 并发用户数
+                \item 峰值处理能力
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{资源使用}
+            \begin{itemize}
+                \item CPU使用率
+                \item 内存占用
+                \item 磁盘IO
+                \item 网络流量
+            \end{itemize}
+
+            \vspace{0.2cm}
+
+            \textbf{错误率}
+            \begin{itemize}
+                \item 异常比例
+                \item 失败请求率
+                \item 服务可用性
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.3cm}
+
+    \textbf{监控工具链：}
+    \begin{itemize}
+        \item Prometheus + Grafana：指标采集与可视化
+        \item ELK Stack：日志分析与搜索
+        \item Jaeger/Zipkin：分布式追踪
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------
+% 本模块要点速查（新增）
+%----------------------------------------------------------
+
+\subsection{本模块要点速查}
+
+\begin{frame}{模块00-背景知识：要点速查}
+    \begin{block}{核心概念}
+        \begin{itemize}
+            \item \textbf{SDLC}：软件开发生命周期（需求→设计→编码→测试→部署）
+            \item \textbf{敏捷开发}：迭代增量，快速反馈（2-4周Sprint）
+            \item \textbf{CI/CD}：持续集成与持续部署（自动化构建、测试、发布）
+            \item \textbf{Code Review}：代码审查，对事不对人，小步快跑
+            \item \textbf{重构}：不改变外部行为，改善内部结构
+        \end{itemize}
+    \end{block}
+
+    \begin{alertblock}{关键公式}
+        \begin{itemize}
+            \item \textbf{高内聚} = 模块内元素紧密相关
+            \item \textbf{低耦合} = 模块间依赖最小
+        \end{itemize}
+    \end{alertblock}
+
+    \begin{exampleblock}{下一步学习}
+        进入核心理论模块，学习模块化设计和面向对象编程
+    \end{exampleblock}
+\end{frame}

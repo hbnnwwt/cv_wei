@@ -1,0 +1,157 @@
+%===========================================================
+% 00_logistics.tex - 教学组织与准备
+%===========================================================
+\section{教学组织}
+
+\begin{frame}{预备知识回顾}
+    \textbf{上周内容：选择题填涂检测}
+    \begin{itemize}
+        \item OMR技术：基于像素密度判断填涂状态
+        \item 形态学操作：腐蚀、膨胀、开闭运算
+        \item 连通域分析：findContours与contourArea
+        \item 填涂检测：阈值判断 + 位置定位
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{本周不同之处：}
+    \begin{itemize}
+        \item 选择题：\textbf{密度}判断（填涂 vs 空白）
+        \item 判断题：\textbf{形状}判断（对号 vs 错号 vs 圆圈）
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{学习目标}
+    \begin{block}{知识目标}
+        \begin{itemize}
+            \item 理解判断题识别与选择题识别的区别
+            \item 掌握轮廓特征的提取与计算方法
+            \item 理解模板匹配的基本原理
+            \item 了解机器学习在符号识别中的应用
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{能力目标}
+        \begin{itemize}
+            \item 能够使用OpenCV提取符号的形状特征
+            \item 能够实现基于特征的符号分类器
+            \item 能够实现模板匹配算法
+            \item 能够构建完整的判断题识别流程
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+%===========================================================
+% 根据审查报告新增的内容
+%===========================================================
+
+\begin{frame}{预备知识（课前5分钟视频）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{相似度度量方法：}
+        \begin{itemize}
+            \item 欧氏距离（Euclidean Distance）
+            \item 余弦相似度（Cosine Similarity）
+            \item 归一化相关系数
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{轮廓特征提取基础：}
+        \begin{itemize}
+            \item 轮廓查找的基本概念
+            \item 轮廓层级结构
+            \item 基础轮廓特征（面积、周长、长宽比）
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{观看要求}
+    请在课前观看预备知识视频，为本周学习做好准备
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{分组策略与角色分工}
+    \textbf{分组原则：}
+    \begin{itemize}
+        \item 每4人为一组
+        \item 确保不同专业背景混合
+        \item 建议包含：理工科、文科、无编程基础、有编程基础
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{角色分工：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{角色} & \textbf{职责} & \textbf{适合} \\
+            \midrule
+            组长 & 统筹协调、进度管理 & 组织能力强的 \\
+            算法实现者 & 实现轮廓特征、模板匹配 & 有编程基础的 \\
+            特征调优者 & 调整圆度阈值、凸性阈值 & 细心负责的 \\
+            测试者 & 收集测试用例、报告问题 & 细心负责的 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{本周协作任务}
+        用轮廓特征或模板匹配实现判断题识别，区分对号和错号
+    \end{block}
+\end{frame}
+
+\begin{frame}{并行学习路径}
+    \textbf{观察者路径：}
+    \begin{itemize}
+        \item 理解判断题识别原理
+        \item 看老师演示轮廓特征提取、模板匹配
+        \item 完成基础任务：运行示例代码
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{使用者路径：}
+    \begin{itemize}
+        \item 使用示例代码处理自己的判断题图像
+        \item 调整圆度阈值、凸性阈值
+        \item 完成核心任务：识别对号和错号
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{创造者路径：}
+    \begin{itemize}
+        \item 设计自己的符号分类器
+        \item 处理不同手写风格的符号
+        \item 完成挑战任务：实现自适应符号识别
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{多屏协同设计}
+    \textbf{双屏协作：}
+    \begin{itemize}
+        \item \textbf{主屏}: 显示PPT理论和讲解
+        \item \textbf{侧屏}: 实时演示代码运行效果
+        \item \textbf{移动设备}: 互动答题、查看代码
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{Live Coding演示流程：}
+    \begin{enumerate}
+        \item 教师展示问题需求
+        \item 用AI生成代码框架
+        \item 师生共同完善关键代码
+        \item 实时运行验证效果
+    \end{enumerate}
+
+    \vspace{0.3cm}
+
+    \begin{exampleblock}{互动方式}
+        使用手机扫码参与实时投票，反馈理解情况
+    \end{exampleblock}
+\end{frame}

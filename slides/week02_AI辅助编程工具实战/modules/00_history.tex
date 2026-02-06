@@ -1,0 +1,126 @@
+%=============================================================================
+% 模块零：AI编程工具发展史与背景知识 (约 8-12 页)
+% 根据 week2_reconstruct.md 新增
+%=============================================================================
+
+\section{AI编程工具发展史}
+
+% -----------------------------------------------------------------------------
+% 1. AI编程工具发展史 (3-4页)
+% -----------------------------------------------------------------------------
+
+\begin{frame}{AI编程工具发展史：从传统IDE到AI助手}
+	\begin{center}
+		\begin{tikzpicture}[scale=0.9]
+			% 时间轴
+			\draw[->, thick] (0,0) -- (12,0);
+
+			% 时间节点
+			\node[below] at (1,-0.3) {\small 2018};
+			\node[below] at (4,-0.3) {\small 2020};
+			\node[below] at (7,-0.3) {\small 2022};
+			\node[below] at (10,-0.3) {\small 2024-26};
+
+			% 事件
+			\node[draw, fill=blue!20, align=center] at (1,1.5) {\small TabNine\\\small 代码补全};
+			\node[draw, fill=green!20, align=center] at (4,1.5) {\small GPT-3发布\\\small 代码生成};
+			\node[draw, fill=orange!20, align=center] at (7,1.5) {\small ChatGPT\\\small Copilot爆发};
+			\node[draw, fill=red!20, align=center] at (10,1.5) {\small Claude/Cursor\\\small 原生AI IDE};
+		\end{tikzpicture}
+	\end{center}
+
+	\begin{block}{里程碑事件}
+		\begin{itemize}
+			\item \textbf{2018}：TabNine首次将深度学习用于代码补全
+			\item \textbf{2020}：GPT-3展示强大的代码生成能力
+			\item \textbf{2022}：ChatGPT和GitHub Copilot引爆AI编程浪潮
+			\item \textbf{2024-26}：Claude、Cursor等原生AI IDE重新定义编程体验
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{行业影响：编程效率提升10倍+}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{GitHub Copilot 统计数据（2024）：}
+		\begin{itemize}
+			\item 全球开发者超过 \textbf{1300万}
+			\item 代码接受率约 \textbf{30-40\%}
+			\item 编码速度提升 \textbf{55\%}
+			\item 开发者满意度 \textbf{75\%+}
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\textbf{Cursor 用户反馈：}
+		\begin{itemize}
+			\item 代码重构效率提升 \textbf{10倍}
+			\item 新功能开发周期缩短 \textbf{50\%}
+			\item 代码质量显著改善
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{对开发者的影响：}
+		\begin{enumerate}
+			\item \textbf{从"记忆"到"理解"}
+			\begin{itemize}
+				\item 不再需要记忆大量API
+				\item 更需要理解原理和设计
+			\end{itemize}
+
+			\item \textbf{从"编写"到"审查"}
+			\begin{itemize}
+				\item AI生成初稿
+				\item 人审查、修改、优化
+			\end{itemize}
+
+			\item \textbf{从"实现"到"设计"}
+			\begin{itemize}
+				\item 更多时间用于架构设计
+				\item 更少时间用于编码细节
+			\end{itemize}
+		\end{enumerate}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{AI编程辅助的优势}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{1. 快速生成代码框架}
+			\begin{itemize}
+				\item 根据描述生成完整函数
+				\item 自动生成类结构
+				\item 提供多种实现方案
+			\end{itemize}
+		\end{block}
+
+		\vspace{0.3cm}
+
+		\begin{block}{2. 解释错误原因}
+			\begin{itemize}
+				\item 分析报错信息
+				\item 定位问题根源
+				\item 提供修复建议
+			\end{itemize}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{block}{3. 提供优化建议}
+			\begin{itemize}
+				\item 性能优化方案
+				\item 代码重构建议
+				\item 最佳实践推荐
+			\end{itemize}
+		\end{block}
+
+		\vspace{0.3cm}
+
+		\begin{block}{4. 降低学习门槛}
+			\begin{itemize}
+				\item 即时答疑解惑
+				\item 提供学习路径
+				\item 降低技术门槛
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
