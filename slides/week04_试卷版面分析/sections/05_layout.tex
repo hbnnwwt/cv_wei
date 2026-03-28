@@ -90,16 +90,16 @@ h_proj = horizontal_projection(binary)
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def vertical_projection(binary):
     """
-    垂直投影：统计每列的白色像素数
+    Vertical projection: count white pixels per column
     """
     binary = binary // 255
     proj = np.sum(binary, axis=0)
     return proj
 
-# 使用
+# usage
 v_proj = vertical_projection(binary)
 
-# 可视化
+# visualize
 import matplotlib.pyplot as plt
 plt.figure(figsize=(10, 4))
 plt.plot(v_proj)
@@ -144,10 +144,10 @@ plt.show()
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def find_divider_lines(proj, threshold=10, min_length=5):
     """
-    找到分隔线（波谷）
-    proj: 投影数组
-    threshold: 波谷阈值
-    min_length: 最小连续长度（过滤噪声）
+    Find divider lines (valleys)
+    proj: projection array
+    threshold: valley threshold
+    min_length: min consecutive length (noise filter)
     """
     dividers = []
     current_start = None
@@ -165,7 +165,7 @@ def find_divider_lines(proj, threshold=10, min_length=5):
 
     return dividers
 
-# 使用
+# usage
 dividers = find_divider_lines(h_proj, threshold=10)
     \end{lstlisting}
 \end{frame}
@@ -174,16 +174,16 @@ dividers = find_divider_lines(h_proj, threshold=10)
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def layout_analysis(binary):
     """
-    版面分析：找到题目分隔线
+    Layout analysis: find question dividers
     """
-    # 水平投影
+    # horizontal projection
     h_proj = np.sum(binary // 255, axis=1)
 
-    # 找分隔线
-    threshold = np.mean(h_proj) * 0.1  # 自适应阈值
+    # find divider lines
+    threshold = np.mean(h_proj) * 0.1  # adaptive threshold
     dividers = find_divider_lines(h_proj, threshold)
 
-    # 计算题目区域
+    # compute question regions
     regions = []
     prev_end = 0
     for start, end in dividers:
@@ -191,15 +191,15 @@ def layout_analysis(binary):
             regions.append((prev_end, start))
         prev_end = end
 
-    # 最后一个区域
+    # last region
     if prev_end < binary.shape[0]:
         regions.append((prev_end, binary.shape[0]))
 
     return regions
 
-# 使用
+# usage
 regions = layout_analysis(binary)
-print(f"检测到 {len(regions)} 个区域")
+print(f"Found {len(regions)} regions")
     \end{lstlisting}
 \end{frame}
 
@@ -227,21 +227,21 @@ print(f"检测到 {len(regions)} 个区域")
 
 \begin{frame}[fragile]{连通域检测}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# 连通域检测
+# connected components
 num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
-    binary,      # 输入（二值图，0=背景，>0=前景）
-    connectivity=8  # 8连通
+    binary,      # input (binary, 0=bg, >0=fg)
+    connectivity=8  # 8-connectivity
 )
 
-# stats 格式：[x, y, width, height, area]
-# centroids 格式：[cx, cy]
+# stats: [x, y, width, height, area]
+# centroids: [cx, cy]
 
-# 遍历所有连通域（跳过背景 label=0）
+# iterate all components (skip bg label=0)
 for i in range(1, num_labels):
     x, y, w, h, area = stats[i]
     cx, cy = centroids[i]
 
-    # 筛选：面积在一定范围内
+    # filter: area within range
     if 100 < area < 10000:
         cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
     \end{lstlisting}

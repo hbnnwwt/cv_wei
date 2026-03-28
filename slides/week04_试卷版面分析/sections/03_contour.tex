@@ -89,9 +89,9 @@
     \textbf{函数原型：}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 contours, hierarchy = cv2.findContours(
-    image,              # 输入（二值图，最好是白底黑字）
-    mode,               # 轮廓检索模式
-    method              # 轮廓逼近方法
+    image,              # input (binary image, white bg preferred)
+    mode,               # contour retrieval mode
+    method              # contour approximation method
 )
     \end{lstlisting}
 
@@ -128,11 +128,11 @@ contours, hierarchy = cv2.findContours(
     \end{table}
 
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# 常用配置
+# common configuration
 contours, hierarchy = cv2.findContours(
     binary,
-    cv2.RETR_EXTERNAL,      # 只要外层轮廓
-    cv2.CHAIN_APPROX_SIMPLE # 压缩存储，节省内存
+    cv2.RETR_EXTERNAL,      # outer contours only
+    cv2.CHAIN_APPROX_SIMPLE # compressed storage
 )
     \end{lstlisting}
 
@@ -203,16 +203,16 @@ contours, hierarchy = cv2.findContours(
 \begin{frame}[fragile]{绘制轮廓}
     \textbf{drawContours 函数：}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# 绘制所有轮廓
+# draw all contours
 output = cv2.drawContours(
-    image.copy(),    # 目标图像（会修改原图）
-    contours,        # 轮廓列表
-    -1,              # -1=绘制所有，0=绘制第一个
-    (0, 255, 0),     # 颜色 BGR
-    2                # 线宽
+    image.copy(),    # target image (modifies original)
+    contours,        # contour list
+    -1,              # -1=all contours, 0=first contour
+    (0, 255, 0),     # color (BGR)
+    2                # line width
 )
 
-# 只绘制特定轮廓
+# draw specific contour
 output = cv2.drawContours(
     image.copy(), contours, 0, (0, 0, 255), 3
 )
@@ -222,7 +222,7 @@ output = cv2.drawContours(
 
     \textbf{填充轮廓：}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# 线宽设为 -1 表示填充
+# thickness=-1 means fill
 output = cv2.drawContours(
     image.copy(), contours, -1, (0, 255, 0), -1
 )
@@ -234,26 +234,26 @@ output = cv2.drawContours(
 import cv2
 import numpy as np
 
-# 读取图像
+# read image
 img = cv2.imread('exam.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# 预处理
+# preprocessing
 blur = cv2.GaussianBlur(gray, (5, 5), 0)
 edges = cv2.Canny(blur, 50, 150)
 
-# 查找轮廓
+# find contours
 contours, hierarchy = cv2.findContours(
     edges,
     cv2.RETR_EXTERNAL,
     cv2.CHAIN_APPROX_SIMPLE
 )
 
-# 绘制轮廓
+# draw contours
 output = img.copy()
 cv2.drawContours(output, contours, -1, (0, 255, 0), 2)
 
-print(f"检测到 {len(contours)} 个轮廓")
+print(f"Found {len(contours)} contours")
 cv2.imshow('Contours', output)
 cv2.waitKey(0)
     \end{lstlisting}

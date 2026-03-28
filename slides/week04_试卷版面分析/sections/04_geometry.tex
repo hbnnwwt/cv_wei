@@ -27,19 +27,19 @@
 
 \begin{frame}[fragile]{面积与周长}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# 计算面积
+# compute area
 area = cv2.contourArea(contour)
 
-# 计算周长
-perimeter = cv2.arcLength(contour, True)  # True=封闭
+# compute perimeter
+perimeter = cv2.arcLength(contour, True)  # True=closed
 
-# 面积比（用于筛选）
+# area ratio (for filtering)
 image_area = img.shape[0] * img.shape[1]
 area_ratio = area / image_area
 
-# 筛选：保留面积占图像 10%-80% 的轮廓
+# filter: keep contours 10%-80% of image
 if 0.1 < area_ratio < 0.8:
-    # 保留该轮廓
+    # keep this contour
     pass
     \end{lstlisting}
 
@@ -53,7 +53,7 @@ if 0.1 < area_ratio < 0.8:
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 x, y, w, h = cv2.boundingRect(contour)
 
-# 绘制矩形
+# draw rectangle
 cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
     \end{lstlisting}
 
@@ -65,7 +65,7 @@ rect = cv2.minAreaRect(contour)
 box = cv2.boxPoints(rect)
 box = np.int0(box)
 
-# 绘制旋转矩形
+# draw rotated rectangle
 cv2.drawContours(img, [box], 0, (0, 0, 255), 2)
     \end{lstlisting}
 \end{frame}
@@ -104,17 +104,17 @@ cv2.drawContours(img, [box], 0, (0, 0, 255), 2)
 
 \begin{frame}[fragile]{多边形逼近代码示例}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# 计算周长
+# compute perimeter
 peri = cv2.arcLength(contour, True)
 
-# 多边形逼近
+# polygon approximation
 approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
 
-# 获取顶点数
+# get vertex count
 num_vertices = len(approx)
-print(f"顶点数: {num_vertices}")
+print(f"vertices: {num_vertices}")
 
-# 绘制逼近结果
+# draw approximation result
 cv2.drawContours(img, [approx], 0, (0, 255, 0), 2)
     \end{lstlisting}
 \end{frame}
@@ -135,10 +135,10 @@ cv2.drawContours(img, [approx], 0, (0, 255, 0), 2)
     \end{itemize}
 
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# 计算凸包
+# compute convex hull
 hull = cv2.convexHull(contour)
 
-# 计算凸缺陷
+# compute convexity defects
 hull_idx = cv2.convexHull(contour, returnPoints=False)
 defects = cv2.convexityDefects(contour, hull_idx)
     \end{lstlisting}
@@ -148,26 +148,26 @@ defects = cv2.convexityDefects(contour, hull_idx)
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def find_paper_contour(contours, image_area):
     """
-    从轮廓中找到试卷
+    Find paper contour from list
     """
     for contour in contours:
         area = cv2.contourArea(contour)
 
-        # 面积筛选：应该是图像的一定比例
+        # area filter: should be a fraction of image
         if area > image_area * 0.5:
-            # 计算周长
+            # compute perimeter
             peri = cv2.arcLength(contour, True)
 
-            # 多边形逼近
+            # polygon approximation
             approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
 
-            # 如果是四边形
+            # if quadrilateral
             if len(approx) == 4:
                 return approx
 
     return None
 
-# 使用
+# usage
 image_area = gray.shape[0] * gray.shape[1]
 paper_contour = find_paper_contour(contours, image_area)
     \end{lstlisting}
@@ -181,15 +181,15 @@ paper_contour = find_paper_contour(contours, image_area)
     \end{itemize}
 
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# 计算 Hu 矩
+# compute Hu moments
 moments = cv2.moments(contour)
 hu_moments = cv2.HuMoments(moments)
 
-# 形状匹配
+# shape matching
 match = cv2.matchShapes(
     contour1,
     contour2,
-    cv2.CONTOURS_MATCH_I1,  # 匹配方法
+    cv2.CONTOURS_MATCH_I1,  # matching method
     0.0
 )
     \end{lstlisting}

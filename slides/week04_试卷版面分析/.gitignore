@@ -1,0 +1,37 @@
+# LaTeX 编译产物
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.vrb
+*.fls
+*.fdb_latexmk
+
+# PDF (由 git 管理, 但清理中间文件)
+*.pdf
+
+# minted 缓存
+*.minted-*
+*.data.minted
+*-minted*
+
+# Python 字节码
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 本地配置文件
+.local*
