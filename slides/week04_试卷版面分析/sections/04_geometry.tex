@@ -94,31 +94,24 @@ cv2.drawContours(img, [box], 0, (0, 0, 255), 2)
     \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{AI辅助编程：多边形逼近}
+\begin{frame}{AI辅助编程：多边形逼近}
     \begin{block}{AI辅助提示}
-        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助你实现多边形逼近。
+        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助实现多边形逼近。
 
-        \textbf{Prompt示例：}
-        \texttt{请用Python和OpenCV实现多边形逼近，解释approxPolyDP的参数含义。}
+        \textbf{Prompt示例：} 请用Python和OpenCV实现多边形逼近，解释approxPolyDP的参数含义。
     \end{block}
+\end{frame}
 
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 使用AI助手完成以下代码
-# Prompt: 请用Python和OpenCV实现多边形逼近，精度为0.02*周长
+\begin{frame}[fragile]{多边形逼近代码示例}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 # 计算周长
 peri = cv2.arcLength(contour, True)
 
 # 多边形逼近
-approx = cv2.approxPolyDP(
-    contour,      # 输入轮廓
-    0.02 * peri,  # 精度参数
-    True          # 轮廓是否封闭
-)
+approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
 
 # 获取顶点数
 num_vertices = len(approx)
-
 print(f"顶点数: {num_vertices}")
 
 # 绘制逼近结果
@@ -152,7 +145,7 @@ defects = cv2.convexityDefects(contour, hull_idx)
 \end{frame}
 
 \begin{frame}[fragile]{找到试卷轮廓}
-    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def find_paper_contour(contours, image_area):
     """
     从轮廓中找到试卷

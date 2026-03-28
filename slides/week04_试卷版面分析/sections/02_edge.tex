@@ -211,17 +211,15 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{AI辅助编程：Canny边缘检测}
+\begin{frame}{AI辅助编程：Canny边缘检测}
     \begin{block}{AI辅助提示}
-        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助你实现Canny边缘检测。
+        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助实现Canny边缘检测。
 
-        \textbf{Prompt示例：}
-        \texttt{请用Python和OpenCV实现Canny边缘检测，并解释每个参数的含义。}
+        \textbf{Prompt示例：} 请用Python和OpenCV实现Canny边缘检测，并解释每个参数的含义。
     \end{block}
+\end{frame}
 
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 使用AI助手完成以下代码
-# Prompt: 请用Python和OpenCV实现Canny边缘检测
+\begin{frame}[fragile]{Canny边缘检测代码示例}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 import cv2
 import numpy as np
@@ -231,11 +229,7 @@ gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 blur = cv2.GaussianBlur(gray, (5, 5), 0)
 
 # Canny 边缘检测
-edges = cv2.Canny(
-    blur,           # 输入图像
-    50,             # 低阈值 threshold1
-    150             # 高阈值 threshold2
-)
+edges = cv2.Canny(blur, 50, 150)
 
 # 可视化
 cv2.imshow('Edges', edges)

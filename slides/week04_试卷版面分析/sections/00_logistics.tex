@@ -176,31 +176,45 @@
 % 页面6：课堂互动环节设计
 %===========================================================
 \begin{frame}{课堂互动环节设计}
-    \textbf{互动1：实时投票（问卷星）}
-    \begin{itemize}
-        \item \textbf{时机}：边缘检测基础讲解后
-        \item \textbf{问题}：边缘是图像中像素值发生什么变化的位置？
-        \item \textbf{选项}：A. 剧烈变化  B. 缓慢变化  C. 无变化
-        \item \textbf{目的}：检查学生对边缘概念的理解
-    \end{itemize}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{互动1：实时投票（问卷星）}
+        \begin{itemize}
+            \item \textbf{时机}：边缘检测基础讲解后
+            \item \textbf{问题}：边缘是图像中像素值发生什么变化的位置？
+            \item \textbf{选项}：A. 剧烈变化  B. 缓慢变化  C. 无变化
+            \item \textbf{目的}：检查学生对边缘概念的理解
+        \end{itemize}
 
-    \vspace{0.3cm}
+        \column{0.5\textwidth}
+        \textbf{互动2：代码拼图（小组竞赛）}
+        \begin{itemize}
+            \item \textbf{时机}：Canny边缘检测代码讲解后
+            \item \textbf{内容}：将Canny边缘检测代码打乱成5块
+            \item \textbf{任务}：小组竞赛复原代码，正确运行
+            \item \textbf{目的}：巩固代码逻辑，培养团队协作
+        \end{itemize}
+    \end{columns}
 
-    \textbf{互动2：代码拼图（小组竞赛）}
-    \begin{itemize}
-        \item \textbf{时机}：Canny边缘检测代码讲解后
-        \item \textbf{内容}：将Canny边缘检测代码打乱顺序
-        \item \textbf{任务}：小组竞赛复原代码
-        \item \textbf{目的}：巩固代码逻辑，培养团队协作
-    \end{itemize}
+    \vspace{0.4cm}
 
-    \vspace{0.3cm}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{互动3：错误找茬（集体debug）}
+        \begin{itemize}
+            \item \textbf{时机}：轮廓检测代码讲解后
+            \item \textbf{内容}：展示有bug的轮廓检测代码
+            \item \textbf{问题}：findContours 输入彩色图而非灰度图
+            \item \textbf{目的}：培养调试能力，预防常见错误
+        \end{itemize}
 
-    \textbf{互动3：错误找茬（集体debug）}
-    \begin{itemize}
-        \item \textbf{时机}：轮廓检测代码讲解后
-        \item \textbf{内容}：展示有bug的轮廓检测代码
-        \item \textbf{问题}：findContours输入图像格式错误
-        \item \textbf{目的}：培养调试能力，预防常见错误
-    \end{itemize}
+        \column{0.5\textwidth}
+        \textbf{互动4：参数调试挑战（限时5分钟）}
+        \begin{itemize}
+            \item \textbf{时机}：Canny 参数调优页面讲解后
+            \item \textbf{任务}：调整低/高阈值，让边缘检测"刚好"
+            \item \textbf{评判}：检测到的边缘既不多也不少
+            \item \textbf{目的}：培养参数敏感度和工程直觉
+        \end{itemize}
+    \end{columns}
 \end{frame}

@@ -20,7 +20,9 @@
     breaklines=true,
     frame=single,
     showstringspaces=false,
-    backgroundcolor=\color{gray!10}
+    backgroundcolor=\color{gray!10},
+    columns=flexible,
+    tabsize=4
 }
 
 % 颜色与图形
@@ -35,6 +37,10 @@
 % 超链接
 \usepackage{hyperref}
 
+% tcolorbox for colored boxes
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
 %===========================================================
 % 主题设置
 %===========================================================
@@ -43,10 +49,15 @@
 \usefonttheme{professionalfonts}
 
 %===========================================================
+% 页面边距设置（预留页脚空间）
+%===========================================================
+\setbeamersize{text margin left=0.5cm, text margin right=0.5cm}
+
+%===========================================================
 % 课程信息
 %===========================================================
-\title[图像预处理与增强]{第3周：图像预处理与增强}
-\subtitle{试卷拍照模糊怎么办？}
+\title[试卷版面分析]{第4周：试卷版面分析}
+\subtitle{怎么知道选择题、简答题在哪里？}
 \author{北京石油化工学院\textbackslash 人工智能研究院\textbackslash 王文通}
 \institute{通选课}
 \date{2025-2026 学年}
@@ -54,4 +65,4 @@
 %===========================================================
 % 自定义命令
 %===========================================================
-% 预留自定义命令位置
+\newcommand{\highlight}[1]{\textcolor{red}{\textbf{#1}}}

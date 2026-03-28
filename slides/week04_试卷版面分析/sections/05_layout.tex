@@ -64,33 +64,24 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{AI辅助编程：投影法（建议侧屏演示）}
+\begin{frame}{AI辅助编程：投影法（建议侧屏演示）}
     \begin{block}{AI辅助提示}
-        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助你实现投影法。
+        你可以使用Cursor、ChatGPT、Claude等AI工具来帮助实现投影法。
 
-        \textbf{Prompt示例：}
-        \texttt{请用Python和NumPy实现水平投影和垂直投影，用于分析文档版面结构。}
+        \textbf{Prompt示例：} 请用Python和NumPy实现水平投影和垂直投影，用于分析文档版面结构。
     \end{block}
+\end{frame}
 
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 使用AI助手完成以下代码
-# Prompt: 请用Python和NumPy实现水平投影
+\begin{frame}[fragile]{水平投影代码示例}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def horizontal_projection(binary):
-    """
-    水平投影：统计每行的白色像素数
-    binary: 二值图像（0=黑, 255=白）
-    """
-    # 将图像归一化到 0-1
     binary = binary // 255
-
-    # 沿水平方向求和（每行的白色像素数）
     proj = np.sum(binary, axis=1)
-
     return proj
 
-# 使用
-binary = cv2.adaptiveThreshold(gray, 255, ...)
+binary = cv2.adaptiveThreshold(gray, 255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv2.THRESH_BINARY_INV, 11, 2)
 h_proj = horizontal_projection(binary)
     \end{lstlisting}
 \end{frame}
@@ -180,7 +171,7 @@ dividers = find_divider_lines(h_proj, threshold=10)
 \end{frame}
 
 \begin{frame}[fragile]{投影法实战}
-    \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def layout_analysis(binary):
     """
     版面分析：找到题目分隔线

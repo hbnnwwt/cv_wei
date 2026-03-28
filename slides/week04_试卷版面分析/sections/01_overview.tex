@@ -5,20 +5,28 @@
 \section{版面分析概述}
 
 \begin{frame}{什么是版面分析？}
-    \begin{block}{定义}
-        从文档图像中识别和定位不同区域（标题、正文、表格、图片等）
-    \end{block}
+    \begin{columns}
+        \column{0.55\textwidth}
+        \begin{block}{定义}
+            从文档图像中识别和定位不同区域（标题、正文、表格、图片等）
+        \end{block}
 
-    \vspace{0.3cm}
+        \vspace{0.3cm}
 
-    \textbf{在阅卷系统中的作用：}
-    \begin{enumerate}
-        \item 找到试卷边界（定位试卷）
-        \item 定位选择题区域（OMR识别）
-        \item 定位判断题区域（符号匹配）
-        \item 定位简答题区域（手写识别）
-        \item 定位填空题区域（内容提取）
-    \end{enumerate}
+        \textbf{在阅卷系统中的作用：}
+        \begin{enumerate}
+            \item 找到试卷边界（定位试卷）
+            \item 定位选择题区域（OMR识别）
+            \item 定位判断题区域（符号匹配）
+            \item 定位简答题区域（手写识别）
+            \item 定位填空题区域（内容提取）
+        \end{enumerate}
+
+        \column{0.4\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{figures/答题卡.jpg}
+        \end{center}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{为什么需要版面分析？}
@@ -51,17 +59,18 @@
 
 \begin{frame}{版面分析完整流程}
     \begin{center}
-        \begin{tikzpicture}[node distance=1.5cm, auto,
-            block/.style={draw, rectangle, rounded corners, fill=blue!10, minimum height=0.8cm, minimum width=2cm},
-            arrow/.style={->, thick}]
+        \begin{tikzpicture}[node distance=1.2cm and 1.8cm, auto,
+            block/.style={draw, rectangle, rounded corners=4pt, fill=blue!10,
+                minimum height=1cm, minimum width=2.2cm, font=\small, align=center},
+            arrow/.style={->, thick, >=stealth}]
 
-            \node[block] (input) {输入图像};
-            \node[block, right of=input, node distance=2.2cm, fill=yellow!10] (pre) {预处理};
-            \node[block, right of=pre, node distance=2.2cm, fill=green!10] (edge) {边缘检测};
-            \node[block, right of=edge, node distance=2.2cm, fill=red!10] (contour) {轮廓检测};
-            \node[block, below of=contour, node distance=1.5cm, fill=purple!10] (filter) {轮廓筛选};
-            \node[block, left of=filter, node distance=2.2cm, fill=orange!10] (layout) {版面分析};
-            \node[block, left of=layout, node distance=2.2cm, fill=cyan!10] (output) {区域输出};
+            \node[block, fill=gray!15] (input) {输入图像\\{\itshape 试卷照片}};
+            \node[block, right of=input, fill=yellow!15] (pre) {预处理\\{\itshape 灰度+降噪}};
+            \node[block, right of=pre, fill=green!15] (edge) {边缘检测\\{\itshape Canny}};
+            \node[block, right of=edge, fill=red!15] (contour) {轮廓检测\\{\itshape findContours}};
+            \node[block, below of=contour, fill=purple!15] (filter) {轮廓筛选\\{\itshape 面积+形状}};
+            \node[block, left of=filter, fill=orange!15] (layout) {版面分析\\{\itshape 投影法}};
+            \node[block, left of=layout, fill=cyan!15] (output) {区域输出\\{\itshape 题目定位}};
 
             \draw[arrow] (input) -- (pre);
             \draw[arrow] (pre) -- (edge);
