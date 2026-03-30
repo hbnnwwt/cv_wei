@@ -54,6 +54,47 @@
     \end{alertblock}
 \end{frame}
 
+\begin{frame}{课堂互动：错误找茬}
+    \begin{block}{题目（集体讨论，3分钟）}
+        以下代码运行时出错，请找出错误原因并修正。
+    \end{block}
+
+    \vspace{0.2cm}
+
+    \begin{columns}
+        \column{0.55\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+
+img = cv2.imread('exam.jpg')
+edges = cv2.Canny(img, 50, 150)
+contours, _ = cv2.findContours(
+    edges, cv2.RETR_EXTERNAL,
+    cv2.CHAIN_APPROX_SIMPLE)
+        \end{lstlisting}
+
+        \column{0.45\textwidth}
+        \begin{alertblock}{Bug 所在行}
+            \texttt{edges = cv2.Canny(img, 50, 150)}
+        \end{alertblock}
+
+        \vspace{0.2cm}
+
+        \begin{block}{错误原因}
+            \texttt{img} 是彩色图，BGR 三通道 \\
+            \texttt{Canny} 需要灰度图输入！
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{block}{修正方法}
+            \texttt{gray = cv2.cvtColor(img,} \\
+            \texttt{~~~~~~~~~ cv2.COLOR\_BGR2GRAY)} \\
+            \texttt{edges = cv2.Canny(gray, 50, 150)}
+        \end{block}
+    \end{columns}
+\end{frame}
+
 \begin{frame}{三个理解层级：轮廓检测}
     \begin{columns}
         \column{0.33\textwidth}

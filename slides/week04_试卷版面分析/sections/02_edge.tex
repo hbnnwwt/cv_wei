@@ -36,6 +36,37 @@
     \end{columns}
 \end{frame}
 
+\begin{frame}{随堂小测：边缘检测基础}
+    \begin{alertblock}{思考题（问卷星投票，2分钟）}
+        边缘是图像中像素值发生\textbf{什么变化}的位置？
+    \end{alertblock}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{A}
+            剧烈变化
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{B}
+            缓慢变化
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{C}
+            无变化
+        \end{block}
+    \end{columns}
+
+    \vspace{0.4cm}
+
+    \begin{block}{检查点}
+        正确答案：\textbf{A}（阶跃边缘处梯度幅值最大）
+    \end{block}
+\end{frame}
+
 \begin{frame}{梯度与边缘}
     \textbf{梯度原理：}
     $$\nabla f = \begin{bmatrix} \frac{\partial f}{\partial x} \\ \frac{\partial f}{\partial y} \end{bmatrix}$$
@@ -102,6 +133,40 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
         \item 非极大值抑制
         \item 双阈值检测和边缘连接
     \end{enumerate}
+\end{frame}
+
+\begin{frame}{课堂互动：代码拼图挑战}
+    \begin{block}{规则（小组竞赛，5分钟）}
+        将 Canny 边缘检测代码打乱成5块，小组协作复原完整代码并成功运行。
+    \end{block}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{打乱的代码块：}
+        \begin{enumerate}
+            \item \texttt{blur = cv2.GaussianBlur(...)}
+            \item \texttt{edges = cv2.Canny(blur, 50, 150)}
+            \item \texttt{gray = cv2.cvtColor(img, ...)}
+            \item \texttt{cv2.waitKey(0)}
+            \item \texttt{cv2.imshow('Edges', edges)}
+        \end{enumerate}
+
+        \column{0.5\textwidth}
+        \textbf{正确顺序提示：}
+        \begin{itemize}
+            \item 先读图 $\rightarrow$ 转灰度
+            \item 再降噪 $\rightarrow$ Canny
+            \item 最后显示结果
+        \end{itemize}
+
+        \vspace{0.3cm}
+
+        \begin{alertblock}{评判标准}
+            代码能正确运行 + 运行结果有边缘图像
+        \end{alertblock}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Canny 算法详解（1/4）}
@@ -208,6 +273,43 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
             \item 处理不同光照的试卷
             \item 优化边缘检测效果
         \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{课堂互动：参数调试挑战}
+    \begin{columns}
+        \column{0.55\textwidth}
+        \textbf{任务（限时5分钟）}
+        \begin{enumerate}
+            \item 打开示例图像
+            \item 调整 Canny 低阈值和高阈值
+            \item 目标：边缘检测"刚刚好"
+        \end{enumerate}
+
+        \vspace{0.3cm}
+
+        \textbf{评判标准（举手抢答）：}
+        \begin{itemize}
+            \item 试卷边界清晰可见
+            \item 无明显噪声杂点
+            \item 主要内容结构完整
+        \end{itemize}
+
+        \column{0.45\textwidth}
+        \begin{block}{调参口诀}
+            \centering
+            \Large
+            低阈值$\uparrow$ $\rightarrow$ 减少噪声 \\
+            高阈值$\uparrow$ $\rightarrow$ 只留强边缘 \\
+            高/低 $\approx$ 2$\sim$3 倍
+        \end{block}
+
+        \vspace{0.2cm}
+
+        \begin{alertblock}{提示}
+            推荐起始值：\\
+            (50, 150) $\rightarrow$ 微调观察
+        \end{alertblock}
     \end{columns}
 \end{frame}
 
