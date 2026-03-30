@@ -147,35 +147,46 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \end{enumerate}
 \end{frame}
 
-\begin{frame}{课堂互动：代码拼图挑战（第1步）}
+\begin{frame}{课堂互动：代码拼图挑战（第1步——动手拼）}
     \begin{block}{任务（小组竞赛，5分钟）}
-        将 Canny 边缘检测代码打乱成5块，小组协作复原完整代码。
+        将 Canny 边缘检测的 6 行代码打乱，小组协作复原正确顺序。
     \end{block}
 
     \pause
     \vspace{0.3cm}
 
     \begin{columns}
-        \column{0.5\textwidth}
-        \textbf{打乱的代码块（顺序已打乱）：}
+        \column{0.6\textwidth}
+        \textbf{打乱的代码块（无序号，自己判断顺序）：}
         \begin{enumerate}
-            \item \texttt{blur = cv2.GaussianBlur(...)}
+            \item \texttt{blur = cv2.GaussianBlur(gray, (5, 5), 0)}
             \item \texttt{edges = cv2.Canny(blur, 50, 150)}
-            \item \texttt{gray = cv2.cvtColor(img, ...)}
-            \item \texttt{cv2.waitKey(0)}
+            \item \texttt{gray = cv2.cvtColor(img, cv2.COLOR\_BGR2GRAY)}
             \item \texttt{cv2.imshow('Edges', edges)}
+            \item \texttt{cv2.waitKey(0)}
+            \item \texttt{img = cv2.imread('exam.jpg')}
         \end{enumerate}
 
-        \column{0.5\textwidth}
-        \textbf{思考提示（按空格逐步查看）：}
+        \column{0.4\textwidth}
+        \textbf{思考提示（按空格逐步揭示）：}
         \pause
 
         \begin{uncoverenv}
-            \begin{itemize}
-                \item \texttt{cv2.imread} 在哪里？\pause
-                \item 转灰度要放在哪里？\pause
-                \item 显示要在哪里？\pause
-            \end{itemize}
+            \begin{block}{提示1}
+                整段代码缺少什么第一步？
+            \end{block}\pause
+
+            \begin{block}{提示2}
+                哪两行用了同一个变量？
+            \end{block}\pause
+
+            \begin{block}{提示3}
+                Gray 变量是哪里来的？
+            \end{block}\pause
+
+            \begin{block}{提示4}
+                imshow 和 waitKey 谁在前？
+            \end{block}
         \end{uncoverenv}
     \end{columns}
 
@@ -183,18 +194,19 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \vspace{0.2cm}
 
     \begin{alertblock}{评判标准}
-        代码能正确运行，且每步操作有意义
+        代码能正确运行，且依赖关系正确
     \end{alertblock}
 \end{frame}
 
-\begin{frame}[fragile]{课堂互动：代码拼图挑战（第2步——答案）}
-    \begin{block}{正确顺序}
+\begin{frame}[fragile]{课堂互动：代码拼图挑战（第2步——揭晓答案）}
+    \begin{block}{正确顺序（按行号排列）}
         \begin{enumerate}
-            \item \texttt{gray = cv2.cvtColor(img, cv2.COLOR\_BGR2GRAY)}
-            \item \texttt{blur = cv2.GaussianBlur(gray, (5, 5), 0)}
-            \item \texttt{edges = cv2.Canny(blur, 50, 150)}
-            \item \texttt{cv2.imshow('Edges', edges)}
-            \item \texttt{cv2.waitKey(0)}
+            \item \texttt{img = cv2.imread('exam.jpg')} \hfill $\leftarrow$ \texttt{读图} \\
+            \item \texttt{gray = cv2.cvtColor(img, cv2.COLOR\_BGR2GRAY)} \hfill $\leftarrow$ \texttt{转灰度} \\
+            \item \texttt{blur = cv2.GaussianBlur(gray, (5, 5), 0)} \hfill $\leftarrow$ \texttt{降噪} \\
+            \item \texttt{edges = cv2.Canny(blur, 50, 150)} \hfill $\leftarrow$ \texttt{边缘检测} \\
+            \item \texttt{cv2.imshow('Edges', edges)} \hfill $\leftarrow$ \texttt{显示} \\
+            \item \texttt{cv2.waitKey(0)} \hfill $\leftarrow$ \texttt{等待}
         \end{enumerate}
     \end{block}
 
@@ -202,13 +214,21 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \vspace{0.3cm}
 
     \begin{uncoverenv}
-        \textbf{为什么是这个顺序？}
-        \begin{itemize}
-            \item 图像是彩色图 $\xrightarrow{}$ 先转灰度图
-            \item 灰度图有噪声 $\xrightarrow{}$ 高斯模糊降噪
-            \item 干净图才做边缘检测 $\xrightarrow{}$ Canny
-            \item 边缘结果要人眼看 $\xrightarrow{}$ imshow + waitKey
-        \end{itemize}
+        \begin{block}{为什么是这个顺序？}
+            \begin{itemize}
+                \item \texttt{imread} $\xrightarrow{}$ 提供原始数据（一切的基础）
+                \item \texttt{cvtColor} $\xrightarrow{}$ 彩色图转灰度（Canny 需求）
+                \item \texttt{GaussianBlur} $\xrightarrow{}$ 降噪（减少误检）
+                \item \texttt{Canny} $\xrightarrow{}$ 边缘检测（核心算法）
+                \item \texttt{imshow} + \texttt{waitKey} $\xrightarrow{}$ 可视化结果
+            \end{itemize}
+        \end{block}
+
+        \pause
+
+        \begin{alertblock}{关键经验}
+            每一步的输出，是下一步的输入——检查变量的来源和去向！
+        \end{alertblock}
     \end{uncoverenv}
 \end{frame}
 
