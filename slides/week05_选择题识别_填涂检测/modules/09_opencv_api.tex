@@ -72,8 +72,11 @@
     \textbf{核心函数：}
 
     \begin{block}{cv2.matchTemplate()}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请解释OpenCV的matchTemplate函数如何工作，以及不同匹配方法的区别"
+    \end{block}
+
     \begin{lstlisting}
-# TODO: 可使用AI助手完成以下代码
 result = cv2.matchTemplate(
     image,      # 搜索图像
     template,   # 模板图像
@@ -108,8 +111,11 @@ result = cv2.matchTemplate(
     \textbf{透视变换：}
 
     \begin{block}{获取透视变换矩阵}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请解释透视变换的原理，并用OpenCV实现答题卡倾斜校正"
+    \end{block}
+
     \begin{lstlisting}
-# TODO: 可使用AI助手完成以下代码
 M = cv2.getPerspectiveTransform(
     src,  # 源图像四个点
     dst   # 目标图像四个点
@@ -119,7 +125,6 @@ M = cv2.getPerspectiveTransform(
 
     \begin{block}{执行透视变换}
     \begin{lstlisting}
-# TODO: 可使用AI助手完成以下代码
 warped = cv2.warpPerspective(
     image,    # 输入图像
     M,        # 变换矩阵
@@ -137,6 +142,10 @@ warped = cv2.warpPerspective(
     \end{block}
 
     \begin{block}{任务：使用API完成答题卡定位}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请指导我使用OpenCV的API完成答题卡定位，包括二值化、轮廓查找、气泡筛选"
+    \end{block}
+
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 import cv2
 import numpy as np
@@ -144,17 +153,17 @@ import numpy as np
 # 读取答题卡
 card = cv2.imread("answer_card.png", cv2.IMREAD_GRAYSCALE)
 
-# TODO: 二值化
+# 二值化
 _, binary = cv2.threshold(card, 127, 255, cv2.THRESH_BINARY_INV)
 
-# TODO: 查找轮廓（定位选项气泡）
+# 查找轮廓（定位选项气泡）
 contours, hierarchy = cv2.findContours(
     binary,
     cv2.RETR_EXTERNAL,
     cv2.CHAIN_APPROX_SIMPLE
 )
 
-# TODO: 筛选气泡状轮廓
+# 筛选气泡状轮廓
 bubbles = []
 for cnt in contours:
     x, y, w, h = cv2.boundingRect(cnt)

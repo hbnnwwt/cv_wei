@@ -1,0 +1,503 @@
+%=============================================================================
+% 模块二：工具链深度拆解——从对话框到 IDE (约 12 页)
+%=============================================================================
+
+\section{AI编程工具全景}
+
+% -----------------------------------------------------------------------------
+% 0. 工具演进路线图
+% -----------------------------------------------------------------------------
+
+\begin{frame}{AI编程工具演进路线}
+	\begin{center}
+		\begin{tikzpicture}
+			\node[draw, fill=blue!20, minimum width=2.5cm] (web) at (0,0) {\shortstack{\textbf{网页版}\\易上手}};
+			\node[draw, fill=green!20, minimum width=2.5cm] (ide) at (4,0) {\shortstack{\textbf{IDE集成}\\高效开发}};
+			\node[draw, fill=orange!20, minimum width=2.5cm] (cli) at (8,0) {\shortstack{\textbf{CLI工具}\\专业强大}};
+
+			\draw[->, thick] (web) -- (ide) node[midway, above] {集成度};
+			\draw[->, thick] (ide) -- (cli) node[midway, above] {专业度};
+		\end{tikzpicture}
+	\end{center}
+
+	\vspace{0.5cm}
+
+	\begin{columns}
+		\column{0.33\textwidth}
+		\begin{block}{\textbf{网页版工具}}
+			\begin{itemize}
+				\item \textbf{代表：}通义千问
+				\item 无需安装
+				\item 对话式交互
+				\item 适合学习理解
+			\end{itemize}
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{\textbf{IDE集成工具}}
+			\begin{itemize}
+				\item \textbf{代表：}Cursor
+				\item 无缝编码体验
+				\item 实时辅助
+				\item 适合日常开发
+			\end{itemize}
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{\textbf{CLI工具}}
+			\begin{itemize}
+				\item \textbf{代表：}Claude Code
+				\item 命令行原生
+				\item 项目级理解
+				\item 适合高级用户
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 1. 网页版工具：通义千问（Qwen）
+% -----------------------------------------------------------------------------
+
+\begin{frame}{网页版工具：通义千问（Qwen）}
+	\begin{center}
+		\Huge \textbf{通义千问 = 国内领先的AI助手}
+
+		\vspace{0.5cm}
+
+		\normalsize
+		\textcolor{blue}{\url{https://qianwen.com}}
+	\end{center}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{核心优势：}
+		\begin{itemize}
+			\item \textbf{国内访问稳定}：无需翻墙，速度快
+			\item \textbf{中文理解优秀}：专为中文优化
+			\item \textbf{代码能力强}：Qwen-Coder模型
+			\item \textbf{完全免费}：基础功能免费使用
+			\item \textbf{多功能集成}：支持文档、图片、代码
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{适合场景：}
+		\begin{itemize}
+			\item 快速提问和学习
+			\item 代码逻辑理解
+			\item 中文文档生成
+			\item 算法思路讨论
+			\item API查询和示例
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\begin{alertblock}{访问方式}
+			浏览器打开 \texttt{qianwen.com}，注册登录即可使用
+		\end{alertblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{通义千问实战演示}
+	\tiny
+	\textbf{场景：快速理解API用法}
+	\begin{enumerate}
+		\item 打开 \texttt{qianwen.com}
+		\item 输入问题
+		\item AI给出解释和示例
+	\end{enumerate}
+
+	\vspace{0.2cm}
+
+	\begin{exampleblock}{技巧}
+		明确描述问题、请求代码示例
+	\end{exampleblock}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 2. IDE集成工具：Cursor
+% -----------------------------------------------------------------------------
+
+\begin{frame}{IDE集成工具：Cursor（重中之重）}
+	\tiny
+	\begin{center}
+		\Huge \textbf{Cursor = VS Code + AI}
+		\textcolor{blue}{\url{https://cursor.sh}}
+	\end{center}
+
+	\vspace{0.2cm}
+
+	\textbf{核心优势：}AI原生设计、VS Code兼容、上下文理解
+
+	\textbf{适合场景：}日常开发、代码重构、Bug修复
+\end{frame}
+
+\begin{frame}{Cursor安装与配置}
+	\scriptsize
+	\begin{alertblock}{安装方式}
+		下载 \texttt{cursor.sh}，安装后即可使用
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}{Cursor核心快捷键}
+	\begin{center}
+		\begin{tikzpicture}
+			\node[draw, fill=red!20, minimum width=3cm, minimum height=1.2cm] (ctrlk) at (0,0) {\shortstack{\textbf{Ctrl+K}\\原地编辑}};
+			\node[draw, fill=green!20, minimum width=3cm, minimum height=1.2cm] (ctrll) at (4,0) {\shortstack{\textbf{Ctrl+L}\\上下文对话}};
+			\node[draw, fill=blue!20, minimum width=3cm, minimum height=1.2cm] (ctrli) at (8,0) {\shortstack{\textbf{Ctrl+I}\\智能提示}};
+		\end{tikzpicture}
+	\end{center}
+
+	\vspace{0.5cm}
+
+	\begin{columns}
+		\column{0.33\textwidth}
+		\textbf{Ctrl+K：原地编辑}
+		\begin{itemize}
+			\item 选中代码
+			\item 按Ctrl+K
+			\item 输入修改指令
+			\item AI原地修改
+		\end{itemize}
+
+		\column{0.33\textwidth}
+		\textbf{Ctrl+L：上下文对话}
+		\begin{itemize}
+			\item 按Ctrl+L
+			\item 打开聊天面板
+			\item 多轮对话
+			\item 引用文件上下文
+		\end{itemize}
+
+		\column{0.33\textwidth}
+		\textbf{@引用功能}
+		\begin{itemize}
+			\item \texttt{@Files}：引用文件
+			\item \texttt{@Code}：引用代码
+			\item \texttt{@Docs}：引用文档
+			\item \texttt{@Web}：搜索网络
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Cursor实战演示}
+	\tiny
+	\vspace{-0.5cm}
+	\textbf{原地编辑：}选中代码 $\to$ Ctrl+K $\to$ 输入指令 $\to$ AI修改
+
+	\textbf{技巧：}用Ctrl+L多轮对话、@Files引用文件
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 3. CLI工具：Claude Code
+% -----------------------------------------------------------------------------
+
+\begin{frame}{CLI工具：Claude Code}
+	\tiny
+	\begin{center}
+		\Huge \textbf{Claude Code}
+		\textcolor{blue}{\url{https://claude.ai/code}}
+	\end{center}
+
+	\vspace{0.2cm}
+
+	\tiny
+	\textbf{优势：}命令行原生、项目级理解、多文件操作
+
+	\textbf{场景：}大型项目重构、自动化脚本
+
+	\textbf{安装：}\texttt{npm install -g @anthropic-ai/claude-code}
+\end{frame}
+\end{frame}
+
+\begin{frame}{Claude Code核心命令}
+	\tiny
+	\begin{tabular}{ll}
+		\toprule
+		\textbf{命令} & \textbf{功能} \\
+		\midrule
+		\texttt{claude} & 启动交互式对话 \\
+		\texttt{claude "问题"} & 单次提问 \\
+		\texttt{claude --file xxx} & 指定文件上下文 \\
+		\texttt{claude --edit} & 编辑模式 \\
+		\bottomrule
+	\end{tabular}
+
+	\vspace{0.2cm}
+
+	\tiny
+	\textbf{使用流程：}进入目录 $\to$ 运行claude $\to$ 描述需求 $\to$ 确认修改
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 4. 大模型选择：MiniMax等
+% -----------------------------------------------------------------------------
+
+\begin{frame}{大模型选择：国产模型MiniMax}
+	\scriptsize
+	\begin{center}
+		\Huge \textbf{MiniMax = 国产高性能大模型}
+
+		\vspace{0.5cm}
+
+		\normalsize
+		\textcolor{blue}{\url{https://www.minimaxi.com}}
+	\end{center}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{核心优势：}
+		\begin{itemize}
+			\item \textbf{国产自研}：完全自主可控
+			\item \textbf{多模态能力}：支持文本、图像、语音
+			\item \textbf{长上下文}：支持超长文本处理
+			\item \textbf{性价比高}：价格实惠
+			\item \textbf{API友好}：完善的开发者接口
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{适合场景：}
+		\begin{itemize}
+			\item 企业级应用开发
+			\item 多模态任务
+			\item 长文档处理
+			\item API集成开发
+			\item 隐私敏感场景
+		\end{itemize}
+
+		\vspace{0.3cm}
+
+		\begin{block}{使用方式}
+			\begin{itemize}
+				\item 网页版：直接对话
+				\item API：集成到应用中
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 5. 工具对比与选择建议
+% -----------------------------------------------------------------------------
+
+\begin{frame}{三种工具对比}
+	\begin{table}
+		\centering
+		\scriptsize
+		\begin{tabular}{p{2cm}p{2.5cm}p{2.5cm}p{2.5cm}}
+			\toprule
+			\textbf{维度} & \textbf{网页版} & \textbf{Cursor} & \textbf{CLI} \\
+			\midrule
+			界面 & 浏览器 & VS Code & 命令行 \\
+			曲线 & 极低 & 低 & 中 \\
+			集成 & 无 & 深度 & 命令行 \\
+			上下文 & 单次 & 当前文件 & 整个项目 \\
+			实时性 & 需切换 & 实时辅助 & 命令触发 \\
+			适合 & 所有用户 & 开发者 & 高级用户 \\
+			最佳场景 & 学习/咨询 & 日常开发 & 项目重构 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+\end{frame}
+
+\begin{frame}{工具选择建议}
+	\begin{block}{根据场景选择}
+		\begin{itemize}
+			\item \textbf{初学者}：从网页版（通义千问）开始
+			\item \textbf{日常开发}：使用Cursor，享受实时AI辅助
+			\item \textbf{大型项目}：结合CLI工具（Claude Code）
+		\end{itemize}
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\begin{block}{学习路径建议}
+		\begin{enumerate}
+			\item 第1周：使用网页版工具熟悉AI对话
+			\item 第2周：学习Cursor的基本操作
+			\item 第3周后：尝试CLI工具进行项目级操作
+		\end{enumerate}
+	\end{block}
+\end{frame}
+
+\begin{frame}{如何选择合适的工具？}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{\textbf{场景1：学习新API}}
+			\begin{itemize}
+				\item \textbf{推荐：}通义千问
+				\item 快速提问，获得解释
+				\item 中文理解优秀
+				\item 无需安装，即开即用
+			\end{itemize}
+		\end{block}
+
+		\vspace{0.3cm}
+
+		\begin{block}{\textbf{场景2：日常编码}}
+			\begin{itemize}
+				\item \textbf{推荐：}Cursor
+				\item 实时AI辅助
+				\item 原地编辑代码
+				\item 无缝集成开发流程
+			\end{itemize}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{block}{\textbf{场景3：项目重构}}
+			\begin{itemize}
+				\item \textbf{推荐：}Claude Code
+				\item 项目级理解
+				\item 多文件操作
+				\item 自动化批量处理
+			\end{itemize}
+		\end{block}
+
+		\vspace{0.3cm}
+
+		\begin{alertblock}{\textbf{最佳实践}}
+			\textbf{组合使用：}
+			\begin{enumerate}
+				\item 学习阶段 $\rightarrow$ 通义千问
+				\item 开发阶段 $\rightarrow$ Cursor
+				\item 重构优化 $\rightarrow$ Claude Code
+			\end{enumerate}
+		\end{alertblock}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 6. 本地部署与隐私保护
+% -----------------------------------------------------------------------------
+
+\begin{frame}{本地部署与隐私保护}
+	\begin{alertblock}{真实场景}
+		企业/学校要求：代码不能上传到外部服务器！
+	\end{alertblock}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{解决方案：本地部署}
+
+		\vspace{0.3cm}
+
+		\textbf{1. Ollama（推荐）}
+		\begin{itemize}
+			\item 一行命令部署本地模型
+			\item 支持 DeepSeek、Qwen 等
+			\item 完全离线运行
+		\end{itemize}
+
+		\vspace{0.2cm}
+
+		\textbf{2. LM Studio}
+		\begin{itemize}
+			\item 图形界面，易于使用
+			\item 支持多种模型格式
+			\item 内置聊天界面
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{本地模型推荐}
+
+		\vspace{0.3cm}
+
+		\begin{table}
+			\centering
+			\small
+			\begin{tabular}{lc}
+				\toprule
+				\textbf{模型} & \textbf{特点} \\
+				\midrule
+				DeepSeek-Coder & 编程专用 \\
+				Qwen2.5-Coder & 国产优秀 \\
+				CodeLlama & Meta开源 \\
+				StarCoder2 & 多语言支持 \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+
+		\vspace{0.3cm}
+
+		\begin{exampleblock}{Cursor支持本地模型}
+			Cursor可以配置使用Ollama本地模型
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 7. 模型性能对比
+% -----------------------------------------------------------------------------
+
+\begin{frame}{不同模型编程能力对比}
+	\textbf{测试任务：} 用 Python 和 OpenCV 实现答题卡边界检测
+
+	\vspace{0.3cm}
+
+	\begin{table}
+		\centering
+		\small
+		\begin{tabular}{p{2.5cm}p{2.5cm}p{2.5cm}p{2.5cm}p{2.5cm}}
+			\toprule
+			\textbf{模型} & \textbf{代码质量} & \textbf{中文理解} & \textbf{运行成功率} & \textbf{访问便利性} \\
+			\midrule
+			Claude 3.5     & \textcolor{green}{\textbf{极好}} & \textcolor{green}{\textbf{很好}} & 95\% & 需翻墙 \\
+			GPT-4o         & \textcolor{green}{\textbf{极好}} & \textcolor{green}{\textbf{很好}} & 93\% & 需翻墙 \\
+			通义千问2.5    & \textcolor{green}{\textbf{很好}} & \textcolor{green}{\textbf{极好}} & 90\% & \textcolor{green}{\textbf{国内直连}} \\
+			DeepSeek-Coder & \textcolor{green}{\textbf{很好}} & \textcolor{green}{\textbf{极好}} & 88\% & \textcolor{green}{\textbf{国内直连}} \\
+			GPT-3.5        & 一般 & 一般 & 75\% & 需翻墙 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{国际模型优势：}
+		\begin{itemize}
+			\item 代码逻辑最严谨
+			\item 边界情况处理完善
+			\item 参数解释最详细
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{国产模型优势：}
+		\begin{itemize}
+			\item 中文理解更自然
+			\item 国内访问更稳定
+			\item 价格更实惠/免费
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 过渡到下一模块
+% -----------------------------------------------------------------------------
+
+\begin{frame}{从工具到方法}
+	\begin{center}
+		\Large
+		掌握了 Cursor、Claude Code 等工具后...\\[0.5cm]
+		\Huge \textbf{如何让AI听懂你的需求？}\\[0.8cm]
+		\Large
+		需要学习：\textcolor{blue}{\textbf{Prompt 工程}}
+
+		\vspace{0.8cm}
+
+		\begin{tikzpicture}
+			\node[draw, fill=blue!20, minimum width=2.5cm, minimum height=1.2cm] (tool) at (0,0) {\textbf{工具}};
+			\node[draw, fill=red!20, minimum width=2.5cm, minimum height=1.2cm] (method) at (5,0) {\textbf{方法}};
+			\node[draw, fill=green!20, minimum width=2.5cm, minimum height=1.2cm] (practice) at (10,0) {\textbf{实践}};
+
+			\draw[->, ultra thick] (tool) -- (method) node[midway, above] {\small Prompt工程};
+			\draw[->, ultra thick] (method) -- (practice) node[midway, above] {\small CV实战};
+		\end{tikzpicture}
+	\end{center}
+\end{frame}

@@ -161,8 +161,8 @@ plt.savefig("morphology_comparison.png")
         \node[decision, below=of problem] (noise) {有噪点？};
         \node[decision, below left=of noise] (hole) {有孔洞？};
         \node[decision, below right=of noise] (light) {光照不均？};
-        \node[action, below=of hole] (open) {开运算};
-        \node[action, below=of hole] (close) {闭运算};
+        \node[action, below left=of hole] (open) {开运算};
+        \node[action, below right=of hole] (close) {闭运算};
         \node[action, right=of close] (tophat) {顶帽变换};
 
         \draw[->] (problem) -- (noise);

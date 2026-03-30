@@ -1,0 +1,77 @@
+%=============================================================================
+% Week 2 - AI辅助编程工具实战 - 宏包配置与全局样式
+%=============================================================================
+
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{
+	shapes.geometric,
+	arrows,
+	positioning,
+	calc,
+	babel
+}
+\usepackage{amsmath}
+\usepackage{hyperref}
+% \usepackage{enumitem}  % 与 beamer 冲突，已移除
+\usepackage{multicol}
+\usepackage{fontawesome5}
+
+% --- 全局字号设置：整体缩小一号 ---
+\AtBeginDocument{\fontsize{10}{12}\selectfont}
+
+% --- 统一配色方案 ---
+\definecolor{highlight-red}{RGB}{220, 53, 69}     % 警告/错误/问题
+\definecolor{highlight-yellow}{RGB}{255, 193, 7}  % 过程/待优化
+\definecolor{highlight-green}{RGB}{40, 167, 69}   % 正确/推荐/优秀
+\definecolor{highlight-blue}{RGB}{0, 123, 255}    % 链接/重点
+
+% --- 主题风格 ---
+\usetheme{Madrid}
+\usecolortheme{whale}
+\usefonttheme{professionalfonts}
+
+% --- 页脚logo ---
+\logo{\includegraphics[height=0.8cm]{../xiaohui.png}}
+
+% --- 页码显示 ---
+\setbeamertemplate{footline}{
+	\hfill
+	\insertframenumber{} / \inserttotalframenumber
+	\hspace{1em}
+	\vspace{1em}
+}
+
+% --- 代码高亮设置 ---
+\lstset{
+	language=Python,
+	basicstyle=\ttfamily\footnotesize,  % 调整字号，便于投影
+	keywordstyle=\color{blue}\bfseries,
+	commentstyle=\color{highlight-green}\itshape,
+	stringstyle=\color{highlight-yellow},
+	breaklines=true,
+	frame=single,
+	showstringspaces=false,
+	backgroundcolor=\color{gray!5},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	xleftmargin=2em,
+	tabsize=4
+}
+
+% --- 自定义命令 ---
+\newcommand{\highlight}[1]{\textcolor{highlight-red}{\textbf{#1}}}
+\newcommand{\prompt}[1]{\textcolor{highlight-blue}{\texttt{#1}}}
+\newcommand{\aioutput}[1]{\textcolor{highlight-green}{\texttt{#1}}}
+\newcommand{\good}[1]{\textcolor{highlight-green}{\textbf{#1}}}
+\newcommand{\bad}[1]{\textcolor{highlight-red}{\textbf{#1}}}
+\newcommand{\process}[1]{\textcolor{highlight-yellow}{\textbf{#1}}}
+
+% --- Beamer 兼容性修复 ---
+\makeatletter
+\def\verbatim@font{\normalfont\ttfamily}
+\makeatother

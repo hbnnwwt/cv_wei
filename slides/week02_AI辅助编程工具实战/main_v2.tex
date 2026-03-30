@@ -1,0 +1,478 @@
+%=============================================================================
+% 主控文件：第2周 AI辅助编程工具实战 (v2版本)
+% 根据 main_v2.aux 重建
+%=============================================================================
+
+\documentclass[aspectratio=169, 10pt]{beamer}
+
+% 1. 导入宏包与样式
+\input{preamble.tex}
+
+% 2. 学校信息（与week01保持一致）
+\title[AI辅助编程工具实战]{第2周：AI辅助编程工具实战}
+\subtitle{怎么让AI帮我写代码？}
+\author{北京石油化工学院\textbackslash 人工智能研究院\textbackslash 王文通}
+\institute{通选课}
+\date{2025-2026 学年}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% 标题页与目录
+% -----------------------------------------------------------------------------
+\begin{frame}
+	\titlepage
+\end{frame}
+
+%=============================================================================
+% 第1节：课程概览 (页码1-5)
+%=============================================================================
+\section*{课程概览}
+\begin{frame}{课程概览}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{本周内容：}
+		\begin{enumerate}
+			\item AI编程工具发展史
+			\item LLM时代的编程新范式
+			\item AI编程工具全景
+			\item Prompt工程精讲
+			\item CV领域深度实战
+			\item 调试与重构
+			\item 案例分析与互动
+			\item 总结与作业
+		\end{enumerate}
+
+		\column{0.5\textwidth}
+		\textbf{核心技能：}
+		\begin{itemize}
+			\item 结构化Prompt设计（RTF）
+			\item 思维链（Chain-of-Thought）
+			\item 少样本提示（Few-shot）
+			\item 多轮迭代优化
+			\item 代码审查与验证
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{教学安排}
+	\begin{block}{3课时时间分配}
+		\begin{table}
+			\centering
+			\small
+			\begin{tabular}{cll}
+				\toprule
+				\textbf{时间} & \textbf{环节} & \textbf{内容} \\
+				\midrule
+				09:00-09:20 & 理论讲解 & AI编程范式与工具发展史 \\
+				09:20-09:40 & 现场演示 & Cursor IDE实战演示 \\
+				09:40-10:20 & 实践环节 & Prompt工程练习（小组协作） \\
+				10:20-10:30 & \textbf{课间休息} & 休息10分钟 \\
+				10:30-11:00 & 小组讨论 & 案例分析与代码优化 \\
+				11:00-11:15 & 难点突破 & 调试与重构技巧 \\
+				11:15-11:30 & 成果分享 & 小组展示与总结 \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+	\end{block}
+\end{frame}
+
+\begin{frame}{三种参与模式}
+	\begin{columns}
+		\column{0.33\textwidth}
+		\begin{block}{观察者模式}
+			\textbf{适合：}编程基础较弱的同学
+			\begin{itemize}
+				\item 理解AI编程概念
+				\item 观看教师演示
+				\item 理解Prompt设计原理
+			\end{itemize}
+			\textbf{目标：}能用自然语言描述需求
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{使用者模式}
+			\textbf{适合：}有一定编程基础的同学
+			\begin{itemize}
+				\item 使用AI工具生成代码
+				\item 运行并测试代码
+				\item 调整参数优化结果
+			\end{itemize}
+			\textbf{目标：}能独立完成基础任务
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{创造者模式}
+			\textbf{适合：}编程基础较好的同学
+			\begin{itemize}
+				\item 设计高质量的Prompt
+				\item 修改和优化AI生成的代码
+				\item 探索创新解决方案
+			\end{itemize}
+			\textbf{目标：}能设计和优化系统
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{小组协作安排}
+	\begin{block}{分组原则}
+		\begin{itemize}
+			\item 每\textbf{4人}一组，不同专业背景混合
+			\item 确保每组至少有一名有编程基础的同学
+			\item 鼓励强弱搭配，互相帮助
+		\end{itemize}
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{角色分工：}
+		\begin{enumerate}
+			\item \textbf{组长}：协调进度，分配任务
+			\item \textbf{技术负责人}：把关代码质量，审核AI生成的代码
+			\item \textbf{开发者A}：负责Prompt设计
+			\item \textbf{开发者B}：负责代码测试与优化
+		\end{enumerate}
+
+		\column{0.5\textwidth}
+		\textbf{协作建议：}
+		\begin{itemize}
+			\item 观察者模式同学可担任组长
+			\item 使用者模式同学担任开发者
+			\item 创造者模式同学担任技术负责人
+			\item 鼓励角色轮换，体验不同角色
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{本周作业}
+	\begin{block}{作业目标}
+		用AI辅助实现 \textbf{答题卡边界检测}，提交完整的AI对话记录、代码和测试报告
+	\end{block}
+
+	\vspace{0.5cm}
+
+	\begin{columns}
+		\column{0.33\textwidth}
+		\begin{block}{基础版}
+			\begin{itemize}
+				\item 使用Canny边缘检测
+				\item 找到最大轮廓
+				\item 绘制边界框
+			\end{itemize}
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{进阶版}
+			\begin{itemize}
+				\item 抗透视变换
+				\item 四边形校正
+				\item 自适应阈值
+			\end{itemize}
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{挑战版}
+			\begin{itemize}
+				\item 多答题卡处理
+				\item 角度校正
+				\item 实时处理
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+%=============================================================================
+% 第2节：AI编程工具发展史 (页码6-9)
+%=============================================================================
+\section{AI编程工具发展史}
+\input{modules/00_history.tex}
+
+%=============================================================================
+% 第3节：LLM时代的编程新范式 (页码10-14)
+%=============================================================================
+\section{LLM时代的编程新范式}
+\input{modules/01_paradigm.tex}
+
+%=============================================================================
+% 第4节：AI编程工具全景 (页码15-16)
+%=============================================================================
+\section{AI编程工具全景}
+\subsection{主流工具对比}
+\input{modules/02_tools.tex}
+
+%=============================================================================
+% 第5节：Prompt工程精讲 (页码17-26)
+%=============================================================================
+\section{Prompt工程精讲}
+\input{modules/03_prompt.tex}
+
+%=============================================================================
+% 第6节：互动环节 - Prompt设计Quiz (页码27-29)
+%=============================================================================
+\section{互动环节（一）}
+\subsection{Prompt设计Quiz}
+\begin{frame}[fragile]{Prompt设计Quiz}
+	\begin{block}{问题1：模糊 vs 清晰}
+		\textbf{请设计一个Prompt，让AI帮你写一个函数来判断图片是否为黑白图}
+	\end{block}
+
+	\vspace{0.5cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{错误示例}
+			\small
+			\begin{verbatim}
+写一个判断黑白图的函数
+			\end{verbatim}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{block}{正确示例}
+			\small
+			\begin{verbatim}
+用Python写一个函数，判断
+输入图片是否为黑白图（灰度图）
+使用PIL库，返回True/False
+			\end{verbatim}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Prompt设计Quiz}
+	\begin{block}{问题2：角色设定}
+		\textbf{请设计一个Prompt，让AI以CV专家的身份解释Canny边缘检测}
+	\end{block}
+
+	\vspace{0.5cm}
+
+	\begin{exampleblock}{优秀示例}
+		\small
+		\begin{verbatim}
+你是一位计算机视觉专家，专攻图像处理。
+请用通俗易懂的语言解释Canny边缘检测
+算法的原理，包括：
+1. 算法的5个步骤
+2. 每个步骤的作用
+3. 关键参数的含义
+要求：举例说明，适合初学者理解
+		\end{verbatim}
+	\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Prompt设计Quiz}
+	\begin{block}{问题3：格式指定}
+		\textbf{请设计一个Prompt，让AI返回结构化的OpenCV函数对比表}
+	\end{block}
+
+	\vspace{0.5cm}
+
+	\begin{exampleblock}{优秀示例}
+		\small
+		\begin{verbatim}
+比较以下图像二值化方法：
+Otsu、Adaptive Gaussian、Adaptive Mean
+
+请用Markdown表格返回，包含：
+| 方法 | 适用场景 | 优缺点 | 关键参数 |
+请简洁明了，每个方法不超过20字
+		\end{verbatim}
+	\end{exampleblock}
+\end{frame}
+
+%=============================================================================
+% 第7节：CV领域深度实战 (页码30-34)
+%=============================================================================
+\section{CV领域深度实战}
+\input{modules/04_cv_practice.tex}
+
+%=============================================================================
+% 第8节：互动环节 - 代码找错挑战 (页码35-38)
+%=============================================================================
+\section{互动环节（二）}
+\subsection{代码找错挑战}
+\begin{frame}[fragile]{代码找错挑战}
+	\begin{block}{题目：下面的OpenCV代码有什么问题？}
+		\lstset{language=Python}
+		\begin{lstlisting}
+import cv2
+import numpy as np
+
+img = cv2.imread('test.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+edges = cv2.Canny(gray, 50, 150)
+
+contours, hierarchy = cv2.findContours(
+    edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# 找最大轮廓
+max_contour = max(contours, key=cv2.contourArea)
+
+# 绘制轮廓
+cv2.drawContours(img, [max_contour], -1, (0,255,0), 2)
+cv2.imshow('Result', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+		\end{lstlisting}
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{代码找错挑战 - 答案}
+	\begin{block}{问题分析}
+		\begin{enumerate}
+			\item \textbf{图像读取失败未检查}：如果文件不存在，img为None，后续会报错
+			\item \textbf{资源未正确释放}：缺少异常时的资源清理
+			\item \textbf{阈值固定}：Canny阈值50, 150是经验值，不适用于所有图像
+			\item \textbf{轮廓为空未检查}：如果没找到轮廓，max()会报错
+			\item \textbf{预处理缺失}：未进行降噪处理
+		\end{enumerate}
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{代码找错挑战 - 改进版}
+	\lstset{language=Python}
+	\begin{lstlisting}
+import cv2
+import numpy as np
+
+# 1. 检查图像是否加载成功
+img = cv2.imread('test.jpg')
+if img is None:
+    print("Error: Cannot load image")
+    exit(1)
+
+# 2. 预处理：降噪
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+blur = cv2.GaussianBlur(gray, (5,5), 0)
+
+# 3. 自适应阈值
+edges = cv2.Canny(blur, 50, 150)
+
+# 4. 找轮廓（检查是否找到）
+contours, _ = cv2.findContours(
+    edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+if contours:  # 5. 检查轮廓是否为空
+    max_contour = max(contours, key=cv2.contourArea)
+    cv2.drawContours(img, [max_contour], -1, (0,255,0), 2)
+
+cv2.imshow('Result', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{代码找错挑战 - 思考题}
+	\begin{block}{进一步优化方向}
+		\begin{itemize}
+			\item \textbf{使用上下文管理器}：自动管理资源
+			\item \textbf{添加参数化}：让函数可配置
+			\item \textbf{错误日志}：记录详细错误信息
+			\item \textbf{单元测试}：验证边界条件
+			\item \textbf{文档注释}：说明函数用途和参数
+		\end{itemize}
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\begin{alertblock}{AI辅助改进Prompt示例}
+		\small
+		\begin{verbatim}
+请帮我改进以下OpenCV代码，要求：
+1. 添加错误处理和异常捕获
+2. 添加详细的文档注释
+3. 将重复代码封装成函数
+4. 添加类型注解
+5. 添加单元测试
+		\end{verbatim}
+	\end{alertblock}
+\end{frame}
+
+%=============================================================================
+% 第9节：调试与重构 (页码39-42)
+%=============================================================================
+\section{调试与重构}
+\input{modules/05_debug.tex}
+
+%=============================================================================
+% 第10节：案例分析与互动 (页码43-48)
+%=============================================================================
+\section{案例分析与互动}
+\input{modules/07_case_studies.tex}
+
+%=============================================================================
+% 第11节：总结与作业 (页码49-55)
+%=============================================================================
+\section{总结与作业}
+\subsection{知识点总结}
+\input{modules/06_summary.tex}
+
+%=============================================================================
+% 第12节：延伸学习 (页码56-58)
+%=============================================================================
+\section{延伸学习}
+\subsection{推荐资源}
+\begin{frame}{推荐资源}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{Prompt工程}
+			\begin{itemize}
+				\item \textbf{Prompt Engineering Guide}
+				\item \textbf{LangChain文档}
+				\item \textbf{Hugging Face Transformers}
+			\end{itemize}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{block}{AI编程工具}
+			\begin{itemize}
+				\item \textbf{Cursor官方文档}
+				\item \textbf{GitHub Copilot技巧}
+				\item \textbf{VS Code AI扩展}
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{延伸学习}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{计算机视觉}
+			\begin{itemize}
+				\item \textbf{OpenCV官方教程}
+				\item \textbf{Computer Vision: Algorithms and Applications}
+				\item \textbf{学习OpenCV4}
+			\end{itemize}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{block}{实践项目}
+			\begin{itemize}
+				\item \textbf{Kaggle图像竞赛}
+				\item \textbf{GitHub CV项目}
+				\item \textbf{OpenCV实践项目集}
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{下节预告}
+	\begin{block}{第3周：图像预处理与增强}
+		\begin{itemize}
+			\item 图像几何变换（缩放、旋转、仿射）
+			\item 图像滤波与去噪
+			\item 直方图均衡化
+			\item 形态学操作
+		\end{itemize}
+	\end{block}
+
+	\vspace{0.5cm}
+
+	\begin{center}
+		\textbf{祝大家学习愉快！}
+	\end{center}
+\end{frame}
+
+\end{document}

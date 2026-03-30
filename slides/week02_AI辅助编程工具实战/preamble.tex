@@ -26,8 +26,8 @@
 \usecolortheme{whale}
 \usefonttheme{professionalfonts}
 
-% --- 页脚logo ---
-\logo{\includegraphics[height=0.8cm]{../xiaohui.png}}
+% --- 页面边距设置 ---
+\setbeamersize{text margin left=0.5cm, text margin right=0.5cm}
 
 % --- 代码高亮设置 ---
 \lstset{
@@ -42,7 +42,10 @@
 	backgroundcolor=\color{gray!5},
 	numbers=left,
 	numberstyle=\tiny\color{gray},
-	xleftmargin=2em
+	xleftmargin=2em,
+	escapeinside={(*@}{@*)},
+	extendedchars=false,
+	 literate={*}{*}1,
 }
 
 % --- 自定义命令 ---

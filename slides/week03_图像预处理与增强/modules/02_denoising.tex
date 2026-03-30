@@ -1,0 +1,535 @@
+%=============================================================================
+% 模块二：图像去噪
+%=============================================================================
+
+\section{图像去噪}
+
+%------------------------------------------------------------------
+% Frame 1: 噪声类型与特征
+%------------------------------------------------------------------
+\begin{frame}{噪声类型与特征}
+	\begin{table}
+		\centering
+		\small
+		\begin{tabular}{llp{4.5cm}l}
+			\toprule
+			\textbf{噪声类型} & \textbf{数学模型} & \textbf{特征} & \textbf{典型场景} \\
+			\midrule
+			高斯噪声 & 正态分布 $N(\mu,\sigma^2)$ & 每个像素随机偏移，整体发"雾" & 弱光拍照、传感器热噪声 \\
+			椒盐噪声 & 随机黑白点 & 孤立的纯黑/纯白像素 & 传输错误、AD转换故障 \\
+			泊松噪声 & 泊松分布 $P(\lambda)$ & 亮区噪声大、暗区噪声小 & X光、显微成像 \\
+			周期噪声 & 正弦叠加 & 规则条纹或网格伪影 & 电气干扰、摩尔纹 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{高斯噪声数学描述}
+			像素值服从正态分布：
+			$$p(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
+			\begin{itemize}
+				\item $\mu$：均值（通常为0）
+				\item $\sigma$：标准差，控制噪声强度
+			\end{itemize}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{block}{椒盐噪声数学描述}
+			像素以概率 $p$ 被替换：
+			$$f(x,y) = \begin{cases} 0 & \text{概率 } p/2 \\ 255 & \text{概率 } p/2 \\ \text{原值} & \text{概率 } 1-p \end{cases}$$
+			\begin{itemize}
+				\item $p$：噪声密度
+				\item 黑白点各占一半
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 2: 试卷扫描常见噪声
+%------------------------------------------------------------------
+\begin{frame}{试卷扫描常见噪声}
+	\begin{alertblock}{真实场景：手机拍试卷的四大噪声来源}
+		\begin{enumerate}
+			\item \highlight{手机ISO噪声} —— 光线不足时自动提高ISO，图像颗粒感严重
+			\item \highlight{JPEG压缩伪影} —— 手机默认保存JPEG，边缘出现方块状伪影
+			\item \highlight{灰尘颗粒} —— 纸面或镜头上的灰尘，表现为椒盐状斑点
+			\item \highlight{纸张纹理} —— 纸张本身的纤维纹理叠加在文字上
+		\end{enumerate}
+	\end{alertblock}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{为什么选滤波？}
+			\begin{itemize}
+				\item 去噪是预处理流水线的\highlight{第一步}
+				\item 不去噪，后续二值化、OCR都受影响
+				\item 核心矛盾：去噪 vs 保留边缘
+			\end{itemize}
+		\end{block}
+
+		\column{0.5\textwidth}
+		\begin{tcolorbox}[colback=red!5!white,colframe=red!70!black,title=\textbf{结论}]
+			试卷预处理首选 \highlight{中值滤波}！
+			\begin{itemize}
+				\item 椒盐噪声（灰尘）$\to$ 中值滤波最有效
+				\item ISO噪声 $\to$ 高斯滤波辅助
+				\item 组合使用效果更佳
+			\end{itemize}
+		\end{tcolorbox}
+	\end{columns}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 3: 空间域滤波原理
+%------------------------------------------------------------------
+\begin{frame}{空间域滤波原理}
+	\textbf{核心思想：} 用一个小的矩阵（\highlight{滤波核/卷积核}）在图像上滑动，对邻域像素加权求和，得到新的像素值。
+
+	\vspace{0.2cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{卷积操作步骤}
+			\begin{enumerate}
+				\item 将滤波核中心对准当前像素
+				\item 核与覆盖区域逐元素相乘
+				\item 所有乘积求和，作为新像素值
+				\item 滑动到下一个像素，重复上述操作
+			\end{enumerate}
+		\end{block}
+
+		\vspace{0.2cm}
+		\textbf{数学表达：}
+		$$g(x,y) = \sum_{s=-a}^{a}\sum_{t=-b}^{b} w(s,t) \cdot f(x+s, y+t)$$
+
+		\column{0.5\textwidth}
+		\textbf{两种常见3$\times$3滤波核：}
+
+		\vspace{0.2cm}
+		\textbf{均值核（Box Filter）：}
+		$$\frac{1}{9}\begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{bmatrix}$$
+
+		\vspace{0.2cm}
+		\textbf{高斯核（$\sigma=1$）：}
+		$$\frac{1}{16}\begin{bmatrix} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \end{bmatrix}$$
+
+		\vspace{0.2cm}
+		\small 高斯核\highlight{中心权重大、边缘权重小}，更接近自然模糊
+	\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{边界处理策略}
+	滤波核滑到图像边缘时，核的一部分会"悬空"——需要处理边界像素。
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.33\textwidth}
+		\begin{block}{零填充（Zero-padding）}
+			边界外的像素值设为0
+			\begin{itemize}
+				\item 实现简单
+				\item 边缘出现\highlight{黑色边框}
+				\item 不推荐
+			\end{itemize}
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{复制边界（Replicate）}
+			用最近的边界像素值填充
+			\begin{itemize}
+				\item OpenCV默认
+				\item 边缘过渡自然
+				\item 推荐
+			\end{itemize}
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{镜像填充（Reflect）}
+			以边界为对称轴镜像翻转
+			\begin{itemize}
+				\item 数学上最优雅
+				\item 保持连续性
+				\item \highlight{推荐}
+			\end{itemize}
+		\end{block}
+	\end{columns}
+
+	\vspace{0.3cm}
+
+	\begin{lstlisting}[basicstyle=\ttfamily\small]
+# OpenCV边界处理参数
+cv2.GaussianBlur(img, (5,5), 0,
+    borderType=cv2.BORDER_REFLECT)  # 镜像填充
+	\end{lstlisting}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 4: OpenCV卷积实现
+%------------------------------------------------------------------
+\begin{frame}[fragile]{OpenCV卷积实现}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{自定义卷积核：}
+		\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+img = cv2.imread('exam.jpg')
+
+# 自定义锐化核
+kernel = np.array([
+    [ 0, -1,  0],
+    [-1,  5, -1],
+    [ 0, -1,  0]
+], dtype=np.float32)
+
+# 应用自定义核
+sharpened = cv2.filter2D(img, -1, kernel)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\begin{block}{锐化核解释}
+			中心5，四周-1，总和=1\\
+			含义：强化自身，削弱邻居 $\to$ 边缘增强
+		\end{block}
+
+		\column{0.5\textwidth}
+		\textbf{常用滤波函数速查：}
+		\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+# 1. 均值滤波（最简单）
+blur = cv2.blur(img, (5, 5))
+
+# 2. 高斯滤波（最常用）
+gauss = cv2.GaussianBlur(
+    img, (5, 5), 0)
+
+# 3. 中值滤波（去椒盐噪声）
+median = cv2.medianBlur(img, 5)
+
+# 4. 双边滤波（保边缘去噪）
+bilat = cv2.bilateralFilter(
+    img, 9, 75, 75)
+		\end{lstlisting}
+
+		\vspace{0.2cm}
+		\begin{alertblock}{注意}
+			核大小必须是\highlight{正奇数}（3, 5, 7...）\\
+			偶数或负数会报错！
+		\end{alertblock}
+	\end{columns}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 5: 高斯滤波详解
+%------------------------------------------------------------------
+\begin{frame}[fragile]{高斯滤波详解}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{二维高斯函数：}
+		$$G(x,y) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2+y^2}{2\sigma^2}}$$
+
+		\begin{itemize}
+			\item $\sigma$ 越大，模糊范围越广
+			\item 核大小决定"看多远"
+			\item $\sigma=0$ 时OpenCV自动计算：$\sigma = 0.3 \times ((ksize-1)\times0.5 - 1) + 0.8$
+		\end{itemize}
+
+		\vspace{0.2cm}
+		\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+# sigmaX 控制水平方向模糊程度
+# sigmaY 默认等于 sigmaX
+result = cv2.GaussianBlur(
+    img,
+    (5, 5),   # 核大小
+    0         # sigmaX, 0=自动计算
+)
+		\end{lstlisting}
+
+		\column{0.5\textwidth}
+		\textbf{核大小对效果的影响：}
+
+		\vspace{0.2cm}
+		\begin{table}
+			\centering
+			\small
+			\begin{tabular}{ccc}
+				\toprule
+				\textbf{核大小} & \textbf{模糊程度} & \textbf{适合场景} \\
+				\midrule
+				3$\times$3 & 轻微 & 轻度噪声 \\
+				5$\times$5 & 中等 & 试卷一般噪声 \\
+				7$\times$7 & 较强 & 重度噪声 \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+
+		\vspace{0.2cm}
+		\begin{tcolorbox}[colback=yellow!5!white,colframe=yellow!70!black,title=\textbf{经验法则}]
+			\small
+			\begin{itemize}
+				\item 核太大 $\to$ 文字也被模糊掉
+				\item 核太小 $\to$ 噪声去不干净
+				\item 试卷场景推荐 \code{(5,5)}
+			\end{itemize}
+		\end{tcolorbox}
+	\end{columns}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 6: 中值滤波详解
+%------------------------------------------------------------------
+\begin{frame}[fragile]{中值滤波详解}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{原理：}
+		\begin{enumerate}
+			\item 取当前像素周围 $k \times k$ 邻域的所有像素值
+			\item 将这些值\highlight{从小到大排序}
+			\item 取\highlight{中间值}作为新像素值
+		\end{enumerate}
+
+		\vspace{0.2cm}
+		\textbf{示例（3$\times$3邻域）：}
+		$$\begin{bmatrix} 10 & 15 & 12 \\ 200 & 11 & 14 \\ 13 & 16 & 11 \end{bmatrix}$$
+		排序后：$[10, 11, 11, 12, \mathbf{13}, 14, 15, 16, 200]$\\
+		中值 = \highlight{13}（200被自动剔除）
+
+		\vspace{0.2cm}
+		\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+# 中值滤波
+result = cv2.medianBlur(img, 5)
+		\end{lstlisting}
+
+		\column{0.5\textwidth}
+		\textbf{为什么适合椒盐噪声？}
+		\begin{itemize}
+			\item 椒盐噪声是\highlight{极端值}（0或255）
+			\item 排序后极端值被推到两端
+			\item 中值不受极端值影响
+			\item 均值滤波会被极端值拉偏！
+		\end{itemize}
+
+		\vspace{0.3cm}
+		\textbf{中值 vs 高斯对比：}
+		\begin{table}
+			\centering
+			\small
+			\begin{tabular}{lcc}
+				\toprule
+				& \textbf{高斯滤波} & \textbf{中值滤波} \\
+				\midrule
+				原理 & 加权平均 & 取中值 \\
+				去椒盐 & 差 & \highlight{优} \\
+				去高斯噪声 & \highlight{优} & 一般 \\
+				保边缘 & 一般 & \highlight{好} \\
+				速度 & 快 & 较慢 \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+
+		\vspace{0.2cm}
+		\begin{block}{核大小选择}
+			\begin{itemize}
+				\item 核越大去噪越强，但细节损失越多
+				\item 试卷场景推荐 \code{ksize=3} 或 \code{5}
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 7: 滤波方法对比总结
+%------------------------------------------------------------------
+\begin{frame}{滤波方法对比总结}
+	\begin{table}
+		\centering
+		\small
+		\begin{tabular}{lcccp{4cm}}
+			\toprule
+			\textbf{方法} & \textbf{速度} & \textbf{去噪效果} & \textbf{保边缘} & \textbf{适用场景} \\
+			\midrule
+			均值滤波 & 快 & 一般 & 差 & 快速预览 \\
+			高斯滤波 & 快 & 好 & 一般 & 高斯噪声、轻度去噪 \\
+			中值滤波 & 中 & \highlight{优}（椒盐） & \highlight{好} & 椒盐噪声、灰尘颗粒 \\
+			双边滤波 & 慢 & 好 & \highlight{优} & 需要保边缘的场景 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{tcolorbox}[colback=blue!5!white,colframe=blue!50!black,title=\textbf{阅卷系统推荐流程}]
+			\small
+			\begin{enumerate}
+				\item \textbf{高斯滤波}：去除ISO噪声
+				\item \textbf{中值滤波}：去除椒盐/灰尘
+				\item \textbf{双边滤波}（进阶）：需要精细保边缘时
+			\end{enumerate}
+		\end{tcolorbox}
+
+		\column{0.5\textwidth}
+		\begin{alertblock}{选择原则}
+			\begin{itemize}
+				\item 噪声类型未知 $\to$ 先用高斯
+				\item 明确有椒盐噪声 $\to$ 用中值
+				\item 边缘很关键 $\to$ 用双边
+				\item 算力有限 $\to$ 用高斯（最快）
+			\end{itemize}
+		\end{alertblock}
+
+		\vspace{0.2cm}
+		\begin{block}{一句话总结}
+			\highlight{先看噪声类型，再选滤波方法}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 8: 代码实战 (1/2) - 去噪函数实现
+%------------------------------------------------------------------
+\begin{frame}[fragile]{代码实战（1/2）：去噪函数实现}
+	\begin{alertblock}{GUI演示程序：\code{gui\_01\_denoising.py}}
+		运行 \code{python gui\_launcher.py} 选择“去噪演示”，可交互调节核大小和滤波类型
+	\end{alertblock}
+
+	\begin{lstlisting}[title={实现 compare\_denoising() 函数}]
+import cv2
+import numpy as np
+
+def compare_denoising(image_path):
+    """对比不同去噪方法的效果"""
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # TODO 1: 使用高斯滤波去噪
+    # 提示：cv2.GaussianBlur(图像, (核大小), sigmaX)
+    gauss = cv2.GaussianBlur(______, (_____, _____), ____)
+
+    # TODO 2: 使用中值滤波去噪
+    # 提示：cv2.medianBlur(图像, 核大小)
+    median = cv2.medianBlur(______, _____)
+
+    # TODO 3: 使用双边滤波去噪
+    # 提示：cv2.bilateralFilter(图像, d, sigmaColor, sigmaSpace)
+    bilateral = cv2.bilateralFilter(______, ___, ___, ___)
+
+    return gray, gauss, median, bilateral
+	\end{lstlisting}
+
+	\vspace{0.2cm}
+	\begin{tcolorbox}[colback=blue!5!white,colframe=blue!50!black,title=\textbf{AI辅助提示}]
+		\small
+		提问示例："OpenCV中GaussianBlur和medianBlur的区别是什么？各适合什么噪声？"
+	\end{tcolorbox}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 9: 代码实战 (2/2) - 效果对比
+%------------------------------------------------------------------
+\begin{frame}[fragile]{代码实战（2/2）：效果对比展示}
+	\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import matplotlib.pyplot as plt
+
+# 调用上一页的函数
+gray, gauss, median, bilateral = compare_denoising('exam.jpg')
+
+# TODO 1: 创建 2x2 子图布局
+# 提示：plt.subplots(行数, 列数, figsize=(宽, 高))
+fig, axes = plt.subplots(_____, _____, figsize=(12, 10))
+
+# TODO 2: 显示四张图
+# 提示：axes[行, 列].imshow(图像, cmap='gray')
+axes[0, 0].imshow(______, cmap='gray')
+axes[0, 0].set_title('Original')
+axes[_____, _____].imshow(gauss, cmap=______)
+axes[1, 0].set_title('Gaussian')
+axes[1, 1].imshow(______, cmap='gray')
+axes[1, 1].set_title('Median')
+axes[0, 1].imshow(______, cmap='gray')
+axes[0, 1].set_title('Bilateral')
+
+# TODO 3: 去掉坐标轴
+# 提示：使用 ax.axis('off')
+for ax in axes.flat:
+    ax.___________
+
+plt.tight_layout()
+plt.show()
+	\end{lstlisting}
+
+	\vspace{0.2cm}
+	\begin{tcolorbox}[colback=green!5!white,colframe=green!50!black,title=\textbf{预期结果}]
+		\small
+		成功运行后，应看到四个子图：
+		\begin{itemize}
+			\item \textbf{原图}：有明显噪声颗粒
+			\item \textbf{高斯去噪}：整体平滑，文字边缘略微模糊
+			\item \textbf{中值去噪}：黑白噪点消失，文字边缘保持清晰
+			\item \textbf{双边去噪}：噪声减少，边缘保持最好（处理最慢）
+		\end{itemize}
+		\textbf{调试提示：}打印每张图处理耗时，用 \code{time.time()} 记录时间
+	\end{tcolorbox}
+\end{frame}
+
+%------------------------------------------------------------------
+% Frame 10: 代码找茬
+%------------------------------------------------------------------
+\begin{frame}[fragile]{代码找茬：这张代码有几个Bug？}
+	\textbf{任务：} 以下代码有 \highlight{3个错误}，找出并修正！
+
+	\vspace{0.2cm}
+
+	\begin{lstlisting}[basicstyle=\ttfamily\tiny,title={\textbf{有Bug的去噪代码} -- 请找出3个错误}]
+import cv2
+
+def denoise_exam(path):
+    """试卷去噪函数"""
+    img = cv2.imread(path)
+
+    # Bug 1: 缺少什么关键步骤？
+    # 去噪前应该先做什么？
+
+    # Bug 2: 核大小参数有问题
+    gauss = cv2.GaussianBlur(img, (4, 4), 0)
+
+    # Bug 3: 滤波方法选错了
+    # 试卷上有灰尘（椒盐噪声），该用什么滤波？
+    clean = cv2.GaussianBlur(gauss, (5, 5), 0)
+
+    return clean
+
+result = denoise_exam('exam.jpg')
+cv2.imwrite('clean.jpg', result)
+	\end{lstlisting}
+
+	\vspace{0.2cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{alertblock}{找Bug提示}
+			\begin{enumerate}
+				\item 去噪前忘记转换颜色空间
+				\item 核大小参数是什么类型？允许偶数吗？
+				\item 椒盐噪声应该用什么滤波方法？
+			\end{enumerate}
+		\end{alertblock}
+
+		\column{0.5\textwidth}
+		\begin{block}{讨论（2分钟）}
+			\begin{itemize}
+				\item 和同桌讨论，写出修正后的代码
+				\item 思考：为什么不转灰度也会出问题？
+				\item 思考：高斯滤波能去掉椒盐噪声吗？
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}

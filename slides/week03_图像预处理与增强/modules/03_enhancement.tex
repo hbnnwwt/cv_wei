@@ -1,0 +1,367 @@
+%===========================================================
+% 03_enhancement.tex - 图像增强
+%===========================================================
+
+\section{图像增强}
+
+%-----------------------------------------------------------
+% Frame 1: 为什么要增强
+%-----------------------------------------------------------
+\begin{frame}{为什么要增强图像？}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{低质量图像问题：}
+        \begin{itemize}
+            \item \highlight{对比度低}（灰蒙蒙一片）
+            \item 亮部过曝或暗部欠曝
+            \item 细节不清晰
+            \item 试卷拍照偏暗/偏亮
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \begin{alertblock}{增强目标}
+            \begin{itemize}
+                \item 提升对比度
+                \item 恢复细节
+                \item 改善视觉效果
+                \item \highlight{方便后续处理（OCR、边缘检测）}
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \begin{block}{重要概念}
+        \textbf{图像增强 $\neq$ 去噪} \\
+        去噪是"清理垃圾"，增强是"优化显示"
+    \end{block}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 2: 图像直方图
+%-----------------------------------------------------------
+\begin{frame}[fragile]{图像直方图}
+    \textbf{定义：} 直方图表示图像中各像素值级别的分布情况
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 读取灰度图
+img = cv2.imread('exam.jpg', 0)
+
+# 计算直方图
+hist = cv2.calcHist(
+    [img],          # 图像
+    [0],            # 通道
+    None,           # 掩码
+    [256],          # 像素值范围
+    [0, 256]        # 范围
+)
+
+# 绘制直方图
+plt.figure(figsize=(8, 4))
+plt.plot(hist, color='black', linewidth=1.5)
+plt.xlabel('像素值 (0-255)')
+plt.ylabel('像素数量')
+plt.title('图像直方图')
+plt.xlim([0, 256])
+plt.grid(True, alpha=0.3)
+plt.show()
+        \end{lstlisting}
+
+        \column{0.5\textwidth}
+        \begin{block}{直方图解读}
+            \begin{itemize}
+                \item \highlight{左偏}：图像偏暗
+                \item \highlight{右偏}：图像偏亮
+                \item \highlight{集中}：对比度低（灰蒙蒙）
+                \item \highlight{分散}：对比度高
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.3cm}
+        \begin{alertblock}{GUI演示程序：\code{gui\_02\_enhancement.py}}
+			运行 \code{python gui\_launcher.py} 选择“增强演示”，可交互调节CLAHE参数和Gamma值
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 3: 直方图均衡化
+%-----------------------------------------------------------
+\begin{frame}[fragile]{直方图均衡化}
+    \textbf{原理：} 重新分布像素值，使直方图更均匀，增强对比度
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{算法步骤}
+            \begin{enumerate}
+                \item 统计各像素值出现次数
+                \item 计算累计分布函数 (CDF)
+                \item 建立映射：$s = T(r) = (L-1) \cdot CDF(r)$
+                \item 应用映射到所有像素
+            \end{enumerate}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 读取灰度图
+gray = cv2.imread('exam.jpg', 0)
+
+# 全局直方图均衡化
+equalized = cv2.equalizeHist(gray)
+
+# 显示对比效果
+fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+
+axes[0,0].imshow(gray, cmap='gray')
+axes[0,0].set_title('原图')
+axes[0,0].axis('off')
+
+axes[0,1].plot(cv2.calcHist([gray], [0], None, [256], [0, 256]))
+axes[0,1].set_title('原图直方图')
+
+axes[1,0].imshow(equalized, cmap='gray')
+axes[1,0].set_title('均衡化后')
+axes[1,0].axis('off')
+
+axes[1,1].plot(cv2.calcHist([equalized], [0], None, [256], [0, 256]))
+axes[1,1].set_title('均衡化直方图')
+
+plt.tight_layout()
+plt.show()
+        \end{lstlisting}
+    \end{columns}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 4: CLAHE
+%-----------------------------------------------------------
+\begin{frame}[fragile]{CLAHE (对比度受限自适应直方图均衡化)}
+    \textbf{问题：} 全局均衡化会导致噪声放大
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{CLAHE 特点}
+            \begin{itemize}
+                \item \highlight{局部处理}：将图像分成小块
+                \item 对每个小块独立均衡化
+                \item \highlight{限制对比度}：防止噪声放大
+                \item 双线性插值：消除块效应
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+# 读取灰度图
+gray = cv2.imread('exam.jpg', 0)
+
+# 创建 CLAHE 对象
+clahe = cv2.createCLAHE(
+    clipLimit=2.0,    # 对比度限制阈值
+    tileGridSize=(8, 8)  # 分块大小
+)
+
+# 应用 CLAHE
+enhanced = clahe.apply(gray)
+
+# 对比
+cv2.imshow('Original', gray)
+cv2.imshow('CLAHE', enhanced)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+        \end{lstlisting}
+    \end{columns}
+
+    \vspace{0.3cm}
+    \begin{alertblock}{参数说明}
+        \code{clipLimit}: 对比度限制，值越大对比度越高 \\
+        \code{tileGridSize}: 分块大小，越小局部效果越明显
+    \end{alertblock}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 5: Gamma 校正
+%-----------------------------------------------------------
+\begin{frame}[fragile]{Gamma 校正}
+    \textbf{公式：} $I_{out} = 255 \cdot (I_{in} / 255)^{\gamma}$
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{效果解读}
+            \begin{itemize}
+                \item $\gamma < 1$：提亮暗部（校正偏暗图像）
+                \item $\gamma = 1$：无变化
+                \item $\gamma > 1$：压暗亮部（校正过曝图像）
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+def gamma_correction(img, gamma):
+    """Gamma 校正"""
+    # 归一化到 [0, 1]
+    normalized = img / 255.0
+    # 应用 Gamma 变换
+    corrected = np.power(normalized, gamma)
+    # 恢复到 [0, 255]
+    return np.uint8(corrected * 255)
+
+# 读取图像
+gray = cv2.imread('exam.jpg', 0)
+
+# 不同 Gamma 值
+gammas = [0.5, 1.0, 2.0]
+results = [gamma_correction(gray, g) for g in gammas]
+
+# 显示效果
+fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+for i, (g, res) in enumerate(zip(gammas, results)):
+    axes[i].imshow(res, cmap='gray')
+    axes[i].set_title(f'$\gamma$ = {g}')
+    axes[i].axis('off')
+plt.show()
+        \end{lstlisting}
+    \end{columns}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 6: 图像锐化
+%-----------------------------------------------------------
+\begin{frame}[fragile]{图像锐化}
+    \textbf{目的：} 增强边缘，恢复细节
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{方法一：拉普拉斯算子}
+            \begin{itemize}
+                \item 二阶导数
+                \item 突出灰度突变区域
+                \item \code{cv2.Laplacian()}
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{方法二：Unsharp Masking}
+            \begin{enumerate}
+                \item 模糊原图
+                \item 计算模糊图与原图之差
+                \item 将差值加回原图
+            \end{enumerate}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+gray = cv2.imread('exam.jpg', 0)
+
+# 方法1: 拉普拉斯锐化
+laplace = cv2.Laplacian(gray, cv2.CV_64F)
+sharp1 = cv2.convertScaleAbs(laplace)
+
+# 方法2: Unsharp Masking (更常用)
+blur = cv2.GaussianBlur(gray, (5, 5), 0)
+mask = cv2.subtract(gray, blur)
+sharp2 = cv2.add(gray, mask)
+
+# OpenCV 内置方法
+kernel = np.array([[-1, -1, -1],
+                   [-1,  9, -1],
+                   [-1, -1, -1]])
+sharp3 = cv2.filter2D(gray, -1, kernel)
+
+cv2.imshow('Sharpened', sharp3)
+cv2.waitKey(0)
+        \end{lstlisting}
+    \end{columns}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 7: 增强方法对比
+%-----------------------------------------------------------
+\begin{frame}{增强方法对比表}
+    \begin{table}
+        \centering
+        \begin{tabular}{p{2.5cm}p{3cm}p{3cm}p{2cm}}
+            \toprule
+            \textbf{方法} & \textbf{原理} & \textbf{适用场景} & \textbf{注意} \\
+            \midrule
+            \code{equalizeHist} & 全局均衡化 & 整体偏暗/偏亮 & 噪声放大 \\
+            \code{CLAHE} & 局部自适应 & 光照不均 & 参数调优 \\
+            Gamma校正 & 幂律变换 & 偏暗/偏亮图像 & 选择合适$\gamma$ \\
+            锐化 & 边缘增强 & 细节模糊 & 适度使用 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{alertblock}{实战建议}
+        \begin{itemize}
+            \item 试卷图像：先用 \code{CLAHE} 增强对比度
+            \item 偏暗图像：尝试 $\gamma = 0.6\sim0.8$
+            \item 模糊图像：适当锐化
+            \item \highlight{组合使用}效果更好
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 8: 代码实战 - CLAHE + Gamma 完整流程
+%-----------------------------------------------------------
+\begin{frame}[fragile]{代码实战：CLAHE + Gamma 完整流程}
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+def enhance_image(image_path, gamma=0.7, clip_limit=2.0):
+    """
+    图像增强完整流程
+    TODO: 实现以下步骤
+    """
+    # Step 1: 读取图像
+    gray = cv2.imread(image_path, 0)
+
+    # Step 2: CLAHE 增强对比度
+    clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=(8, 8))
+    enhanced = clahe.apply(gray)
+
+    # Step 3: Gamma 校正
+    normalized = enhanced / 255.0
+    corrected = np.power(normalized, gamma)
+    final = np.uint8(corrected * 255)
+
+    return final
+
+# 测试
+if __name__ == '__main__':
+    result = enhance_image('exam.jpg')
+
+    # 显示对比
+    original = cv2.imread('exam.jpg', 0)
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    axes[0].imshow(original, cmap='gray')
+    axes[0].set_title('原图')
+    axes[1].imshow(result, cmap='gray')
+    axes[1].set_title('增强后')
+    plt.show()
+    \end{lstlisting}
+
+    \begin{alertblock}{挑战任务}
+        实现一个函数，自动判断图像需要哪种增强方式
+    \end{alertblock}
+\end{frame}

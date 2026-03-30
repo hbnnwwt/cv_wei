@@ -1,0 +1,130 @@
+%===========================================================
+% 06_real_cases.tex - 实战案例
+%===========================================================
+
+\section{实战案例}
+
+%-----------------------------------------------------------
+% Frame 1: 试卷预处理完整流程
+%-----------------------------------------------------------
+\begin{frame}[fragile]{试卷预处理完整流程}
+    \begin{columns}[t]
+        \column{0.35\textwidth}
+        \centering
+        \textbf{处理流水线}
+        \vspace{0.2cm}
+
+        \begin{tikzpicture}[
+            box/.style={draw, rounded corners=3pt, minimum width=2cm,
+                        minimum height=0.55cm, align=center,
+                        font=\scriptsize\bfseries, fill=#1},
+            arr/.style={->, thick, >=stealth}
+        ]
+            \node[box=blue!15]    (input)   at (0, 0)      {输入图像};
+            \node[box=yellow!20]  (gray)    at (0, -0.9)   {转灰度};
+            \node[box=yellow!20]  (denoise) at (0, -1.8)   {去噪};
+            \node[box=green!20]   (clahe)   at (0, -2.7)   {CLAHE};
+            \node[box=green!20]   (gamma)   at (0, -3.6)   {Gamma校正};
+            \node[box=red!15]    (warp)    at (0, -4.5)   {透视矫正};
+            \node[box=orange!20] (bin)     at (0, -5.4)   {二值化};
+            \node[box=purple!15] (out)     at (0, -6.3)   {输出};
+
+            \draw[arr] (input)   -- (gray);
+            \draw[arr] (gray)    -- (denoise);
+            \draw[arr] (denoise) -- (clahe);
+            \draw[arr] (clahe)   -- (gamma);
+            \draw[arr] (gamma)   -- (warp);
+            \draw[arr] (warp)    -- (bin);
+            \draw[arr] (bin)     -- (out);
+        \end{tikzpicture}
+
+        \column{0.65\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+def preprocess_exam(image_path):
+    """试卷预处理完整流程"""
+    img = cv2.imread(image_path)
+    if img is None:
+        raise ValueError(f"无法读取: {image_path}")
+
+    # Step 1: 转灰度
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Step 2: 去噪
+    denoised = cv2.fastNlMeansDenoising(
+        gray, None, 10, 7, 21)
+
+    # Step 3: CLAHE 对比度增强
+    clahe = cv2.createCLAHE(
+        clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(denoised)
+
+    # Step 4: Gamma 校正
+    gamma = 0.7
+    norm = enhanced / 255.0
+    corrected = np.uint8(
+        np.power(norm, gamma) * 255)
+
+    # Step 5: 透视矫正（需提供角点）
+    # M = cv2.getPerspectiveTransform(pts1, pts2)
+    # warped = cv2.warpPerspective(corrected, M, (w, h))
+
+    # Step 6: 自适应二值化
+    binary = cv2.adaptiveThreshold(
+        corrected, 255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY, 11, 2)
+
+    return binary
+
+result = preprocess_exam('exam.jpg')
+cv2.imwrite('preprocessed.jpg', result)
+        \end{lstlisting}
+    \end{columns}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 2: 行业应用案例
+%-----------------------------------------------------------
+\begin{frame}{行业应用案例}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{医疗影像}
+            \begin{itemize}
+                \item X 光片增强
+                \item CT/MRI 对比度调整
+                \item 病灶区域增强
+                \item 常用方法：CLAHE、Gamma
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{工业检测}
+            \begin{itemize}
+                \item PCB 缺陷检测
+                \item 产品质量检查
+                \item 表面划痕检测
+                \item 常用方法：锐化、边缘检测
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{文档扫描}
+            \begin{itemize}
+                \item 手机扫描 App
+                \item 书籍数字化
+                \item 名片识别
+                \item 常用方法：透视变换、二值化
+            \end{itemize}
+        \end{block}
+
+        \begin{alertblock}{发展趋势}
+            \begin{itemize}
+                \item AI 驱动的智能预处理
+                \item 端到端优化
+                \item 自适应参数
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}

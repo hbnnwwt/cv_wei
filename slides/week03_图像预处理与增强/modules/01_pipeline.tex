@@ -1,0 +1,224 @@
+%=============================================================================
+% 模块一：图像处理流水线概述
+%=============================================================================
+
+\section{图像处理流水线概述}
+
+%-----------------------------------------------------------------------------
+% Frame 1: 学习路径
+%-----------------------------------------------------------------------------
+\begin{frame}{选择适合你的学习路径}
+    根据你的基础和兴趣，选择适合的本周学习路径：
+
+    \begin{columns}[t]
+        \column{0.32\textwidth}
+        \begin{block}{观察者路径}
+            \textbf{适合}: 无编程基础
+            \vspace{0.2cm}
+            \begin{itemize}
+                \small
+                \item 理解去噪、增强的原理
+                \item 观看代码效果演示
+                \item 完成基础观察任务
+            \end{itemize}
+            \vspace{0.2cm}
+            \centering
+            \textit{"理解原理最重要"}
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{使用者路径}
+            \textbf{适合}: 有编程基础
+            \vspace{0.2cm}
+            \begin{itemize}
+                \small
+                \item 运行去噪/增强代码
+                \item 调整滤波参数观察效果
+                \item 完成核心实践任务
+            \end{itemize}
+            \vspace{0.2cm}
+            \centering
+            \textit{"动手实践出真知"}
+        \end{block}
+
+        \column{0.32\textwidth}
+        \begin{block}{创造者路径}
+            \textbf{适合}: 编程基础较好
+            \vspace{0.2cm}
+            \begin{itemize}
+                \small
+                \item 修改滤波算法参数组合
+                \item 创新预处理流程设计
+                \item 完成挑战优化任务
+            \end{itemize}
+            \vspace{0.2cm}
+            \centering
+            \textit{"探索与创新"}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.4cm}
+    \begin{center}
+        \textbf{你可以随时在不同路径间切换！}\\
+        \small 本周核心目标：理解图像预处理的\highlight{完整流程}
+    \end{center}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Frame 2: 试卷拍照的五大问题
+%-----------------------------------------------------------------------------
+\begin{frame}{试卷拍照的五大问题}
+    \textbf{手机拍试卷，看似简单，实则问题多多：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[t]
+        \column{0.48\textwidth}
+        \begin{enumerate}
+            \item[\textbf{1.}] \highlight{模糊} —— 运动模糊或失焦\\
+                {\small 手抖、距离太近导致画面不清晰}
+            \vspace{0.2cm}
+            \item[\textbf{2.}] \highlight{光照不均} —— 一侧亮一侧暗\\
+                {\small 台灯、窗户等光源造成局部过曝或欠曝}
+            \vspace{0.2cm}
+            \item[\textbf{3.}] \highlight{倾斜} —— 拍摄角度不正\\
+                {\small 试卷变成梯形，文字变形}
+        \end{enumerate}
+
+        \column{0.48\textwidth}
+        \begin{enumerate}
+            \item[\textbf{4.}] 阴影遮挡 —— 手指或文具挡住内容\\
+                {\small 拍摄时手、笔、橡皮留下的阴影}
+            \vspace{0.2cm}
+            \item[\textbf{5.}] 分辨率不足 —— 字迹无法辨认\\
+                {\small 距离太远、像素太少，文字变成马赛克}
+        \end{enumerate}
+
+        \vspace{0.5cm}
+        \begin{alertblock}{本周目标}
+            \highlight{解决问题 1--3}：去噪、增强、几何矫正！\\
+            {\small 问题 4--5 将在后续周次中逐步解决}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Frame 3: 图像预处理流水线（TikZ流程图）
+%-----------------------------------------------------------------------------
+\begin{frame}{图像预处理流水线}
+    \textbf{一条完整的试卷图像预处理链路：}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=0.4cm,
+            box/.style={
+                rectangle, draw, rounded corners=3pt,
+                minimum width=1.6cm, minimum height=1.1cm,
+                align=center, font=\small\bfseries,
+                fill=#1
+            },
+            arrow/.style={->, thick, >=stealth},
+            label/.style={font=\tiny, text=gray!70!black}
+        ]
+            % 节点
+            \node[box=gray!15]   (input) {原图};
+            \node[box=blue!15,   right=of input]  (denoise)  {去噪};
+            \node[box=green!15,  right=of denoise] (enhance)  {增强};
+            \node[box=orange!15, right=of enhance] (binarize) {二值化};
+            \node[box=red!10,    right=of binarize](geometry) {几何矫正};
+            \node[box=gray!15,   right=of geometry](output)   {输出};
+
+            % 箭头连线
+            \draw[arrow] (input)    -- (denoise);
+            \draw[arrow] (denoise)  -- (enhance);
+            \draw[arrow] (enhance)  -- (binarize);
+            \draw[arrow] (binarize) -- (geometry);
+            \draw[arrow] (geometry) -- (output);
+
+            % 函数标注（下方）
+            \node[label, below=0.15cm of denoise]  {\code{GaussianBlur}};
+            \node[label, below=0.15cm of enhance]  {\code{CLAHE}};
+            \node[label, below=0.15cm of binarize] {\code{threshold}};
+            \node[label, below=0.15cm of geometry] {\code{warpPerspective}};
+
+            % 学时标注（上方）
+            \node[label, above=0.15cm of denoise]  {第1学时};
+            \node[label, above=0.15cm of enhance]  {第2学时};
+            \node[label, above=0.15cm of binarize] {第2学时};
+            \node[label, above=0.15cm of geometry] {第3学时};
+        \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.3cm}
+
+    \begin{columns}[t]
+        \column{0.48\textwidth}
+        \begin{block}{为什么是这个顺序？}
+            \begin{itemize}
+                \small
+                \item 先去噪，避免噪声干扰后续分析
+                \item 再增强，提升有用信息的对比度
+                \item 后二值化，将灰度图转为黑白
+                \item 最后矫正几何畸变
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{关键原则}
+            \begin{itemize}
+                \small
+                \item 每一步都是为下一步\highlight{创造更好的输入}
+                \item 流程顺序不可随意调换
+                \item 实际项目中可根据图像质量\highlight{跳过}某些步骤
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+%-----------------------------------------------------------------------------
+% Frame 4: 本周学习目标 + AI辅助提示
+%-----------------------------------------------------------------------------
+\begin{frame}{本周学习目标}
+    \begin{columns}[t]
+        \column{0.52\textwidth}
+        \textbf{学完本周，你将能够：}
+        \begin{enumerate}
+            \item 理解图像预处理的\highlight{完整流水线}
+            \item 使用 OpenCV 实现\highlight{图像去噪}（均值/高斯/中值滤波）
+            \item 使用直方图均衡化和 CLAHE 实现\highlight{图像增强}
+            \item 掌握\highlight{二值化}方法（全局阈值 / Otsu / 自适应）
+            \item 完成试卷图像的\highlight{几何矫正}（仿射/透视变换）
+        \end{enumerate}
+
+        \vspace{0.3cm}
+        \begin{block}{贯穿项目}
+            最终目标：将一张\highlight{手机拍的试卷照片}处理为\\
+            清晰、端正、适合 OCR 识别的标准图像。
+        \end{block}
+
+        \column{0.45\textwidth}
+        \textbf{学习资源：}
+        \begin{itemize}
+            \item 课堂代码演示（GUI交互）
+            \item \code{code/} 文件夹下的练习脚本
+            \item AI 辅助提问与调试
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \begin{tcolorbox}[
+            colback=blue!5,
+            colframe=blue!60!black,
+            title={\small AI 辅助提示},
+            fonttitle=\bfseries\small,
+            boxrule=0.8pt,
+            arc=2pt
+        ]
+            \small
+            你可以这样问 AI：\\[0.15cm]
+            \textit{``OpenCV 中 \code{GaussianBlur} 和 \code{medianBlur} 的区别是什么？各自适合什么场景？''}\\[0.15cm]
+            试试看，你会得到非常实用的对比分析！
+        \end{tcolorbox}
+    \end{columns}
+\end{frame}

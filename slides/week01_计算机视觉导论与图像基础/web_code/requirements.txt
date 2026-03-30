@@ -1,0 +1,8 @@
+# Week 01 计算机视觉 Web 演示系统
+# 依赖安装: pip install -r requirements.txt
+# 运行: python app.py
+
+flask==3.0.0
+opencv-python==4.8.1.78
+numpy==1.24.3
+werkzeug==3.0.1

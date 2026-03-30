@@ -153,10 +153,10 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \end{block}
 
     \pause
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
     \begin{columns}
-        \column{0.6\textwidth}
+        \column{0.58\textwidth}
         \textbf{打乱的代码块（无序号，自己判断顺序）：}
         \begin{enumerate}
             \item \texttt{blur = cv2.GaussianBlur(gray, (5, 5), 0)}
@@ -167,46 +167,60 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
             \item \texttt{img = cv2.imread('exam.jpg')}
         \end{enumerate}
 
-        \column{0.4\textwidth}
+        \column{0.42\textwidth}
         \textbf{思考提示（按空格逐步揭示）：}
         \pause
 
         \begin{uncoverenv}
             \begin{block}{提示1}
                 整段代码缺少什么第一步？
-            \end{block}\pause
+            \end{block}
+        \end{uncoverenv}
 
+        \pause
+
+        \begin{uncoverenv}
             \begin{block}{提示2}
                 哪两行用了同一个变量？
-            \end{block}\pause
-
-            \begin{block}{提示3}
-                Gray 变量是哪里来的？
-            \end{block}\pause
-
-            \begin{block}{提示4}
-                imshow 和 waitKey 谁在前？
             \end{block}
         \end{uncoverenv}
     \end{columns}
-
-    \pause
-    \vspace{0.2cm}
-
-    \begin{alertblock}{评判标准}
-        代码能正确运行，且依赖关系正确
-    \end{alertblock}
 \end{frame}
 
-\begin{frame}[fragile]{课堂互动：代码拼图挑战（第2步——揭晓答案）}
-    \begin{block}{正确顺序（按行号排列）}
+\begin{frame}{课堂互动：代码拼图挑战（第1.5步——更多提示）}
+    \begin{block}{提示（续）}
+        \pause
+
+        \begin{block}{提示3}
+            Gray 变量是哪里来的？
+        \end{block}
+
+        \pause
+
+        \begin{block}{提示4}
+            imshow 和 waitKey 谁在前？
+        \end{block}
+    \end{block}
+
+    \pause
+    \vspace{0.3cm}
+
+    \begin{uncoverenv}
+        \begin{alertblock}{评判标准}
+            代码能正确运行，且依赖关系正确
+        \end{alertblock}
+    \end{uncoverenv}
+\end{frame}
+
+\begin{frame}[fragile]{课堂互动：代码拼图挑战（第2步——揭晓顺序）}
+    \begin{block}{正确顺序（小组核对）}
         \begin{enumerate}
-            \item \texttt{img = cv2.imread('exam.jpg')} \hfill $\leftarrow$ \texttt{读图} \\
-            \item \texttt{gray = cv2.cvtColor(img, cv2.COLOR\_BGR2GRAY)} \hfill $\leftarrow$ \texttt{转灰度} \\
-            \item \texttt{blur = cv2.GaussianBlur(gray, (5, 5), 0)} \hfill $\leftarrow$ \texttt{降噪} \\
-            \item \texttt{edges = cv2.Canny(blur, 50, 150)} \hfill $\leftarrow$ \texttt{边缘检测} \\
-            \item \texttt{cv2.imshow('Edges', edges)} \hfill $\leftarrow$ \texttt{显示} \\
-            \item \texttt{cv2.waitKey(0)} \hfill $\leftarrow$ \texttt{等待}
+            \item \texttt{img = cv2.imread('exam.jpg')} \hfill \texttt{读图} \\
+            \item \texttt{gray = cv2.cvtColor(img, cv2.COLOR\_BGR2GRAY)} \hfill \texttt{转灰度} \\
+            \item \texttt{blur = cv2.GaussianBlur(gray, (5, 5), 0)} \hfill \texttt{降噪} \\
+            \item \texttt{edges = cv2.Canny(blur, 50, 150)} \hfill \texttt{边缘检测} \\
+            \item \texttt{cv2.imshow('Edges', edges)} \hfill \texttt{显示} \\
+            \item \texttt{cv2.waitKey(0)} \hfill \texttt{等待}
         \end{enumerate}
     \end{block}
 
@@ -214,18 +228,33 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \vspace{0.3cm}
 
     \begin{uncoverenv}
-        \begin{block}{为什么是这个顺序？}
-            \begin{itemize}
-                \item \texttt{imread} $\xrightarrow{}$ 提供原始数据（一切的基础）
-                \item \texttt{cvtColor} $\xrightarrow{}$ 彩色图转灰度（Canny 需求）
-                \item \texttt{GaussianBlur} $\xrightarrow{}$ 降噪（减少误检）
-                \item \texttt{Canny} $\xrightarrow{}$ 边缘检测（核心算法）
-                \item \texttt{imshow} + \texttt{waitKey} $\xrightarrow{}$ 可视化结果
-            \end{itemize}
+        \begin{block}{依赖关系（按空格逐步揭晓）}
+            \texttt{imread} 输出 $\xrightarrow{}$ \texttt{gray} 输入 \\
+            \pause
+            \texttt{gray} 输出 $\xrightarrow{}$ \texttt{blur} 输入 \\
+            \pause
+            \texttt{blur} 输出 $\xrightarrow{}$ \texttt{edges} 输入 \\
+            \pause
+            \texttt{edges} 输出 $\xrightarrow{}$ \texttt{imshow} 显示
         \end{block}
+    \end{uncoverenv}
+\end{frame}
 
-        \pause
+\begin{frame}{课堂互动：代码拼图挑战（第3步——总结）}
+    \begin{block}{为什么是这个顺序？}
+        \begin{itemize}
+            \item \texttt{imread} $\rightarrow$ 提供原始数据（一切的基础）
+            \item \texttt{cvtColor} $\rightarrow$ 彩色图转灰度（Canny 只能处理灰度图）
+            \item \texttt{GaussianBlur} $\rightarrow$ 降噪（减少误检）
+            \item \texttt{Canny} $\rightarrow$ 边缘检测（核心步骤）
+            \item \texttt{imshow} + \texttt{waitKey} $\rightarrow$ 显示结果给人类看
+        \end{itemize}
+    \end{block}
 
+    \pause
+    \vspace{0.3cm}
+
+    \begin{uncoverenv}
         \begin{alertblock}{关键经验}
             每一步的输出，是下一步的输入——检查变量的来源和去向！
         \end{alertblock}
@@ -240,14 +269,17 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
         \item 通常使用 5×5 高斯核
     \end{itemize}
 
-    \vspace{0.5cm}
+    \pause
+    \vspace{0.3cm}
 
-    \textbf{步骤2：计算梯度}
-    \begin{itemize}
-        \item 使用 Sobel 算子计算梯度
-        \item 得到梯度幅值和方向
-        \item 梯度方向垂直于边缘方向
-    \end{itemize}
+    \begin{uncoverenv}
+        \textbf{步骤2：计算梯度}
+        \begin{itemize}
+            \item 使用 Sobel 算子计算梯度
+            \item 得到梯度幅值和方向
+            \item 梯度方向垂直于边缘方向
+        \end{itemize}
+    \end{uncoverenv}
 \end{frame}
 
 \begin{frame}{Canny 算法详解（2/4）}
@@ -281,34 +313,31 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \textbf{步骤4：双阈值检测}
 
     \begin{columns}
-        \column{0.5\textwidth}
-        \textbf{两个阈值：}
+        \column{0.45\textwidth}
+        \textbf{阈值分类：}
         \begin{itemize}
-            \item \textbf{高阈值}（threshold2）：强边缘
-            \item \textbf{低阈值}（threshold1）：弱边缘
+            \item 梯度 > 高阈值 $\rightarrow$ 强边缘（保留）
+            \item 低阈值 < 梯度 < 高阈值 $\rightarrow$ 弱边缘（待定）
+            \item 梯度 < 低阈值 $\rightarrow$ 非边缘（抑制）
         \end{itemize}
 
-        \textbf{分类：}
-        \begin{itemize}
-            \item 梯度 > 高阈值 $\rightarrow$ 强边缘
-            \item 低阈值 < 梯度 < 高阈值 $\rightarrow$ 弱边缘
-            \item 梯度 < 低阈值 $\rightarrow$ 非边缘
-        \end{itemize}
-
-        \column{0.5\textwidth}
+        \column{0.55\textwidth}
         \textbf{边缘连接：}
         \begin{itemize}
             \item 强边缘直接保留
-            \item 弱边缘如果与强边缘相连则保留
-            \item 孤立的弱边缘被抑制
+            \item 弱边缘：若与强边缘相连 $\rightarrow$ 保留
+            \item 弱边缘：若孤立 $\rightarrow$ 抑制
         \end{itemize}
     \end{columns}
 
+    \pause
     \vspace{0.3cm}
 
-    \begin{block}{推荐比例}
-        高阈值 = 低阈值 × 2~3
-    \end{block}
+    \begin{uncoverenv}
+        \begin{block}{推荐比例}
+            高阈值 = 低阈值 × 2 $\sim$ 3
+        \end{block}
+    \end{uncoverenv}
 \end{frame}
 
 \begin{frame}{三个理解层级：Canny边缘检测}
@@ -318,14 +347,12 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
         \begin{itemize}
             \item 什么是Canny边缘检测？
             \item Canny的4个步骤是什么？
-            \item 为什么Canny被称为最优边缘检测算法？
         \end{itemize}
 
         \column{0.33\textwidth}
         \textbf{可视化演示：}
         \begin{itemize}
             \item 对比不同阈值的效果
-            \item 观察边缘检测结果
             \item 调整参数观察变化
         \end{itemize}
 
@@ -333,7 +360,6 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
         \textbf{扩展应用：}
         \begin{itemize}
             \item 设计自适应Canny函数
-            \item 处理不同光照的试卷
             \item 优化边缘检测效果
         \end{itemize}
     \end{columns}
@@ -394,15 +420,14 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \end{block}
 
     \pause
-    \vspace{0.4cm}
+    \vspace{0.3cm}
 
     \begin{uncoverenv}
         \begin{block}{调参策略}
             \begin{enumerate}
                 \item 先用默认值 (50, 150) 看效果
-                \item 如果噪声太多 $\Rightarrow$ 提高低阈值
-                \item 如果边缘太少 $\Rightarrow$ 降低高阈值
-                \item 反复调整直到"刚刚好"
+                \item 噪声太多 $\Rightarrow$ 提高低阈值
+                \item 边缘太少 $\Rightarrow$ 降低高阈值
             \end{enumerate}
         \end{block}
     \end{uncoverenv}

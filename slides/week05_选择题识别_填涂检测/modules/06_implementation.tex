@@ -34,8 +34,11 @@
     \end{block}
 
     \begin{block}{类定义}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请帮我创建一个ChoiceRecognizer类，包含calculate_density、recognize_all和visualize方法"
+    \end{block}
+
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 可使用AI助手完成以下代码
 class ChoiceRecognizer:
     """选择题识别器"""
 
@@ -51,12 +54,12 @@ class ChoiceRecognizer:
 
     def calculate_density(self, roi):
         """计算填涂密度"""
-        # TODO: 形态学预处理
+        # 形态学预处理
         if self.use_morphology:
             kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
             roi = cv2.morphologyEx(roi, cv2.MORPH_CLOSE, kernel)
 
-        # TODO: 二值化并统计
+        # 二值化并统计
         _, binary = cv2.threshold(roi, 127, 255, cv2.THRESH_BINARY_INV)
         non_zero = cv2.countNonZero(binary)
         total = roi.shape[0] * roi.shape[1]
@@ -119,8 +122,11 @@ class ChoiceRecognizer:
     \end{block}
 
     \begin{block}{visualize方法}
+    \begin{block}{AI辅助提示}
+        \aihint{} "请实现visualize方法，用不同颜色标注识别结果并保存图像"
+    \end{block}
+
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 可使用AI助手完成以下代码
     def visualize(self, image, results, question_groups):
         """可视化识别结果"""
         output = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
@@ -137,10 +143,13 @@ class ChoiceRecognizer:
                        0.5, (0, 255, 0), 2)
 
             # 标注选项状态
-            for (x, y, w, h) in positions:
-                # 绿色=选中, 红色=未选中
-                cv2.rectangle(output, (x, y), (x+w, y+h),
-                           (0, 255, 0), 2)
+            answer_idx = self.option_labels.index(answer) if answer else None
+            for idx, (x, y, w, h) in enumerate(positions):
+                if idx == answer_idx:
+                    color = (0, 255, 0)   # 绿色=选中
+                else:
+                    color = (0, 0, 255)   # 红色=未选中
+                cv2.rectangle(output, (x, y), (x+w, y+h), color, 2)
 
         return output
     \end{lstlisting}
@@ -186,12 +195,11 @@ cv2.imwrite("result.png", output)
 
     \begin{block}{挑战任务：从零构建识别系统}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 任务清单
 # 1. 读取答题卡图像
 image = cv2.imread("answer_card.png", cv2.IMREAD_GRAYSCALE)
 
 # 2. 定位所有选项区域
-option_groups = locate_options(image)  # 你需要实现这个函数
+option_groups = locate_options(image)
 
 # 3. 创建识别器
 recognizer = ChoiceRecognizer(threshold=0.3)
@@ -208,8 +216,8 @@ for r in results:
 output = recognizer.visualize(image, results, option_groups)
 cv2.imwrite("result.png", output)
 
-# TODO: 挑战：实现自适应阈值
-# TODO: 挑战：处理多选题情况
+# 挑战：尝试实现自适应阈值（提示：用密度均值+标准差）
+# 挑战：扩展为支持多选题
     \end{lstlisting}
     \end{block}
 \end{frame}

@@ -74,36 +74,30 @@ contours, _ = cv2.findContours(
         \end{lstlisting}
 
         \column{0.45\textwidth}
-        \textbf{错误现象：}
-        \pause
-
-        \begin{uncoverenv}
-            \begin{alertblock}{报错信息}
-                \texttt{Canny() ... argument 1}\\
-                \texttt{must be image, not cv2.Mat}
-            \end{alertblock}
-        \end{uncoverenv}
+        \begin{alertblock}{报错信息}
+            \texttt{Canny(): argument 1}\\
+            \texttt{must be image, not cv2.Mat}
+        \end{alertblock}
     \end{columns}
 
     \pause
     \vspace{0.2cm}
 
     \begin{uncoverenv}
-        \textbf{提示：} Canny 函数的输入是什么类型的图像？
+        \begin{block}{提示}
+            Canny 函数的输入图像，需要满足什么条件？
+        \end{block}
     \end{uncoverenv}
 \end{frame}
 
-\begin{frame}[fragile]{课堂互动：错误找茬（第2步——找答案）}
+\begin{frame}[fragile]{课堂互动：错误找茬（第2步——Bug定位）}
     \begin{columns}
         \column{0.5\textwidth}
         \begin{alertblock}{Bug 定位}
             \texttt{cv2.Canny(img, 50, 150)}\\
             $\uparrow$ \texttt{img} 是彩色图！\\
-            \pause
-            \texttt{Canny} 需要灰度图。
+            $\Rightarrow$ \texttt{Canny} 需要灰度图。
         \end{alertblock}
-
-        \pause
 
         \column{0.5\textwidth}
         \begin{block}{正确代码}
@@ -116,17 +110,28 @@ edges = cv2.Canny(
             \end{lstlisting}
         \end{block}
     \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{课堂互动：错误找茬（第3步——经验总结）}
+    \begin{block}{经验总结}
+        \begin{enumerate}
+            \item Canny / Sobel 等边缘检测 $\rightarrow$ 必须灰度图
+            \item 读图后立即转灰度是好习惯
+            \item 把灰度转换写在最前面，避免遗漏
+        \end{enumerate}
+    \end{block}
 
     \pause
     \vspace{0.3cm}
 
     \begin{uncoverenv}
-        \begin{block}{经验总结}
-            \begin{itemize}
-                \item Canny / Sobel 等边缘检测 $\rightarrow$ 必须灰度图
-                \item 读图后立即转灰度是好习惯
-                \item 把灰度转换写在最前面，避免遗漏
-            \end{itemize}
+        \begin{block}{类推练习}
+            以下代码有没有问题？如果有，怎么改？
+            \begin{verbatim}
+img = cv2.imread('exam.jpg')
+blur = cv2.GaussianBlur(img, (5,5), 0)
+edges = cv2.Canny(blur, 50, 150)
+            \end{verbatim}
         \end{block}
     \end{uncoverenv}
 \end{frame}
@@ -138,15 +143,13 @@ edges = cv2.Canny(
         \begin{itemize}
             \item 什么是轮廓？
             \item 轮廓与边缘的区别
-            \item findContours的4个检索模式
-            \item 层级结构的含义
+            \item findContours的检索模式
         \end{itemize}
 
         \column{0.33\textwidth}
         \textbf{可视化演示：}
         \begin{itemize}
             \item 对比不同检索模式效果
-            \item 观察轮廓层级结构
             \item 绘制不同颜色的轮廓
             \item 调整逼近精度参数
         \end{itemize}
@@ -157,7 +160,6 @@ edges = cv2.Canny(
             \item 设计轮廓筛选算法
             \item 处理复杂嵌套轮廓
             \item 实现通用形状识别
-            \item 优化轮廓检测性能
         \end{itemize}
     \end{columns}
 \end{frame}

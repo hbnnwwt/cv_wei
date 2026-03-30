@@ -39,7 +39,6 @@
 
     \begin{block}{calculate\_density函数}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 可使用AI助手完成以下代码
 def calculate_density(option_roi, threshold=127):
     """
     计算填涂密度
@@ -122,7 +121,6 @@ def calculate_density(option_roi, threshold=127):
 
     \begin{block}{recognize\_single\_choice函数}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 可使用AI助手完成以下代码
 def recognize_single_choice(question_img, option_positions):
     """识别单道选择题"""
     densities = []
@@ -175,17 +173,16 @@ def recognize_single_choice(question_img, option_positions):
 
     \begin{block}{任务：实现完整的填涂检测流程}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# TODO: 可使用AI助手完成以下代码
 def detect_bubble(roi):
     """检测单个选项是否填涂"""
-    # TODO: 形态学预处理（闭运算填充孔洞）
+    # 形态学预处理（闭运算填充孔洞）
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     processed = cv2.morphologyEx(roi, cv2.MORPH_CLOSE, kernel)
 
-    # TODO: 计算密度
+    # 计算密度
     density = calculate_density(processed)
 
-    # TODO: 判断是否填涂
+    # 判断是否填涂
     threshold = 0.3  # 或使用自适应阈值
     filled = density > threshold
 

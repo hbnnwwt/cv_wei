@@ -1,0 +1,244 @@
+%=============================================================================
+% 总结与作业
+%=============================================================================
+
+\section{本周回顾}
+
+% -----------------------------------------------------------------------------
+% 第1页：预处理流程回顾
+% -----------------------------------------------------------------------------
+
+\begin{frame}{本周知识体系：图像预处理流水线}
+    \begin{center}
+    \begin{tikzpicture}[
+        box/.style={draw, rounded corners=4pt, minimum width=2.2cm, minimum height=1cm,
+                     align=center, font=\small\bfseries, fill=#1},
+        sub/.style={font=\tiny, align=center, text=gray!80!black},
+        >=stealth
+    ]
+        % 节点 - 用绝对坐标控制间距
+        \node[box=blue!15]   (input)  at (0, 0)    {原始图像};
+        \node[box=green!20]  (denoise) at (2.8, 0)  {去噪};
+        \node[box=yellow!25] (enhance) at (5.6, 0)  {增强};
+        \node[box=orange!20] (binary)  at (8.4, 0)  {二值化};
+        \node[box=red!15]    (geo)     at (11.2, 0) {几何矫正};
+        \node[box=purple!15] (output)  at (14, 0)   {预处理\\结果};
+
+        % 箭头
+        \draw[->, thick] (input)   -- (denoise);
+        \draw[->, thick] (denoise) -- (enhance);
+        \draw[->, thick] (enhance) -- (binary);
+        \draw[->, thick] (binary)  -- (geo);
+        \draw[->, thick] (geo)     -- (output);
+
+        % 关键函数标注
+        \node[sub, below=6pt of denoise] (d_sub) {GaussianBlur\\medianBlur};
+        \node[sub, below=6pt of enhance] (e_sub) {CLAHE\\equalizeHist};
+        \node[sub, below=6pt of binary]  (b_sub) {threshold\\Otsu\\adaptive};
+        \node[sub, below=6pt of geo]     (g_sub) {warpPerspective\\warpAffine};
+
+        % Week3 虚线框（包含函数标注）
+        \node[draw=blue!60, dashed, rounded corners=6pt,
+              inner sep=8pt, fit=(denoise)(enhance)(binary)(geo)
+                                     (d_sub)(e_sub)(b_sub)(g_sub),
+              label={[blue!70, font=\small\bfseries]above:Week 3 本周所学}] {};
+    \end{tikzpicture}
+    \end{center}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{核心思想}
+        预处理的目标：将"脏"的原始试卷图像 $\longrightarrow$ "干净"的标准图像，为后续 OCR 和版面分析做准备。
+    \end{alertblock}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 第2页：核心函数回顾
+% -----------------------------------------------------------------------------
+
+\begin{frame}[fragile]{核心函数回顾：本周学到哪些API？}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{去噪函数}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 高斯滤波
+blur = cv2.GaussianBlur(
+    gray, (5, 5), 0)
+
+# 中值滤波（去椒盐噪声）
+median = cv2.medianBlur(gray, 5)
+            \end{lstlisting}
+        \end{block}
+
+        \begin{block}{增强函数}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# CLAHE自适应对比度增强
+clahe = cv2.createCLAHE(
+    clipLimit=2.0,
+    tileGridSize=(8,8))
+enhanced = clahe.apply(gray)
+            \end{lstlisting}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{二值化函数}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 全局阈值
+ret, binary = cv2.threshold(
+    blur, 127, 255,
+    cv2.THRESH_BINARY)
+
+# Otsu自动阈值
+ret, binary = cv2.threshold(
+    blur, 0, 255,
+    cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+# 自适应阈值
+binary = cv2.adaptiveThreshold(
+    blur, 255,
+    cv2.ADAPTIVE_THRESH_MEAN_C,
+    cv2.THRESH_BINARY, 11, 2)
+            \end{lstlisting}
+        \end{block}
+
+        \begin{block}{几何矫正函数}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 获取变换矩阵
+M = cv2.getPerspectiveTransform(
+    src_pts, dst_pts)
+
+# 透视变换
+result = cv2.warpPerspective(
+    img, M, (w, h))
+            \end{lstlisting}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 第3页：课后作业
+% -----------------------------------------------------------------------------
+
+\begin{frame}[fragile]{课后作业：完整试卷预处理流水线}
+    \begin{alertblock}{作业要求}
+        实现一个完整的试卷预处理流水线，处理一张倾斜、模糊、光照不均的试卷照片。
+    \end{alertblock}
+
+    \begin{columns}
+        \column{0.55\textwidth}
+        \textbf{处理流程（必须包含）：}
+        \begin{enumerate}
+            \item \highlight{去噪}：使用 GaussianBlur 或 medianBlur
+            \item \highlight{增强}：使用 CLAHE 对抗光照不均
+            \item \highlight{二值化}：使用自适应阈值或 Otsu
+            \item \highlight{几何矫正}：使用 warpPerspective 矫正倾斜
+        \end{enumerate}
+
+        \vspace{0.3cm}
+        \textbf{提交要求：}
+        \begin{itemize}
+            \item 完整代码（.py 文件）
+            \item 处理前后对比图
+            \item 简要说明每个步骤的作用
+        \end{itemize}
+
+        \column{0.45\textwidth}
+        \begin{block}{参考框架}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+import cv2
+import numpy as np
+
+def preprocess_exam(img):
+    # 1. 灰度化
+    gray = cv2.cvtColor(
+        img, cv2.COLOR_BGR2GRAY)
+
+    # 2. 去噪
+    blur = cv2.GaussianBlur(
+        gray, (5, 5), 0)
+
+    # 3. 增强
+    clahe = cv2.createCLAHE(2.0)
+    enhanced = clahe.apply(blur)
+
+    # 4. 二值化
+    binary = cv2.adaptiveThreshold(
+        enhanced, 255,
+        cv2.ADAPTIVE_THRESH_MEAN_C,
+        cv2.THRESH_BINARY, 11, 2)
+
+    # 5. 几何矫正（需要4个角点）
+    # ... warpPerspective
+
+    return binary
+            \end{lstlisting}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 第4页：知识点网络与下周预告
+% -----------------------------------------------------------------------------
+
+\begin{frame}{知识点网络与下周预告}
+    \begin{columns}
+        \column{0.55\textwidth}
+        \textbf{本周核心知识点：}
+        \begin{itemize}
+            \item \highlight{去噪}：高斯滤波、中值滤波
+            \item \highlight{对比度增强}：CLAHE 自适应直方图均衡
+            \item \highlight{二值化}：全局阈值、自适应阈值、Otsu
+            \item \highlight{几何矫正}：透视变换 warpPerspective
+            \item 完整预处理流水线
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{下周预告（Week 4）：试卷版面分析}
+        \begin{itemize}
+            \item \textbf{边缘检测}：Canny 算子
+            \item \textbf{轮廓查找}：findContours
+            \item \textbf{轮廓近似}：approxPolyDP
+            \item \textbf{定位答题卡}：利用轮廓定位答题区域
+        \end{itemize}
+
+        \column{0.45\textwidth}
+        \begin{block}{跨周链接}
+            \begin{itemize}
+                \item Week 1：图像基础
+                \item Week 2：AI辅助编程
+                \item Week 3：图像预处理 $\checkmark$
+                \item Week 4：版面分析 $\triangleright$
+                \item Week 5：选择题识别
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.3cm}
+        \begin{alertblock}{重点提示}
+            下周我们将进入\textbf{版面分析}，学会如何从整张试卷图像中\highlight{自动定位}出答题卡的位置！
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 第5页：总结与问答
+% -----------------------------------------------------------------------------
+
+\begin{frame}{总结与问答}
+    \begin{center}
+        \Huge \textbf{本周总结}
+        \vspace{0.8cm}
+
+        \begin{block}{核心收获}
+            \begin{itemize}
+                \item 学会了图像预处理的完整流水线
+                \item 掌握了去噪、增强、二值化、几何矫正四大技术
+                \item 能够处理实际中的"脏"试卷图像
+            \end{itemize}
+        \end{block}
+
+        \vspace{0.8cm}
+        \Huge \textbf{Q \& A}
+        \vspace{0.5cm}
+
+        \Large 有什么问题吗？
+    \end{center}
+\end{frame}

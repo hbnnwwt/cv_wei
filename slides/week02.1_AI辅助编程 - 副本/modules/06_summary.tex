@@ -1,0 +1,264 @@
+%=============================================================================
+% 模块六：总结与作业 (约 3 页)
+%=============================================================================
+
+\section{总结与作业}
+
+% -----------------------------------------------------------------------------
+% 1. 总结梳理
+% -----------------------------------------------------------------------------
+
+\begin{frame}{建立自己的"AI 协作 SOP"}
+	\begin{block}{什么是 SOP？}
+		\textbf{S}tandard \textbf{O}perating \textbf{P}rocedure（标准操作流程）
+
+		一套可重复、可优化的工作流程
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\begin{center}
+		\begin{tikzpicture}
+			\node[draw, fill=blue!20] (step1) at (0,0) {1. 问题定义};
+			\node[draw, fill=green!20] (step2) at (2.5,0) {2. Prompt 设计};
+			\node[draw, fill=yellow!20] (step3) at (5,0) {3. AI 生成};
+			\node[draw, fill=orange!20] (step4) at (7.5,0) {4. 审查验证};
+			\node[draw, fill=purple!20] (step5) at (10,0) {5. 迭代优化};
+
+			\draw[->, thick] (step1) -- (step2);
+			\draw[->, thick] (step2) -- (step3);
+			\draw[->, thick] (step3) -- (step4);
+			\draw[->, thick] (step4) -- (step5);
+			\draw[->, thick, dashed] (step5.south) -- ++(0,-0.5) -| (step1.south);
+		\end{tikzpicture}
+	\end{center}
+
+	\vspace{0.3cm}
+
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{1. 问题定义}
+		\begin{itemize}
+			\item 明确要解决的问题
+			\item 确定输入输出
+			\item 列出约束条件
+		\end{itemize}
+
+		\textbf{2. Prompt 设计}
+		\begin{itemize}
+			\item 应用 RTF 框架
+			\item 使用思维链
+			\item 提供 Few-shot 示例
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{3. AI 生成}
+		\begin{itemize}
+			\item 运行 Prompt
+			\item 获取初始输出
+			\item 记录生成时间
+		\end{itemize}
+
+		\textbf{4. 审查验证}
+		\begin{itemize}
+			\item 检查代码逻辑
+			\item 运行测试用例
+			\item 验证输出结果
+		\end{itemize}
+
+		\textbf{5. 迭代优化}
+		\begin{itemize}
+			\item 识别改进点
+			\item 设计优化 Prompt
+			\item 重复流程直到满意
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 2. 课后作业
+% -----------------------------------------------------------------------------
+
+\begin{frame}{课后作业：答题卡边界检测}
+	\begin{block}{作业题目}
+		用 AI 辅助实现 \textbf{答题卡边界检测} 程序
+	\end{block}
+
+	\vspace{0.3cm}
+
+	\textbf{项目关联}
+
+	这是 \textbf{AI 阅卷助手} 的第一步：
+	\begin{enumerate}
+		\item 图像采集与预处理
+		\item \textbf{答题卡定位（当前任务）}
+		\item 填涂检测与识别
+		\item 手写文字 OCR
+		\item 成绩统计与输出
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}{差异化作业：三种难度可选}
+	\begin{columns}
+		\column{0.33\textwidth}
+		\begin{block}{\textbf{基础版}}
+			\textcolor{blue}{\textbf{[观察者]}}\\适合编程基础较弱的同学
+			\begin{itemize}
+				\item 运行AI生成的代码
+				\item 观察不同参数效果
+				\item 完成基础报告
+			\end{itemize}
+			\vspace{0.2cm}
+			\textbf{要求：}
+			\begin{itemize}
+				\item AI对话至少2轮
+				\item 检测标准答题卡
+				\item 基础功能报告
+			\end{itemize}
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{\textbf{进阶版}}
+			\textcolor{orange}{\textbf{[使用者]}}\\适合有一定基础的同学
+			\begin{itemize}
+				\item 调整参数优化效果
+				\item 处理不同场景
+				\item 完成完整报告
+			\end{itemize}
+			\vspace{0.2cm}
+			\textbf{要求：}
+			\begin{itemize}
+				\item AI对话至少3轮
+				\item 处理倾斜/暗光场景
+				\item 包含参数分析
+			\end{itemize}
+		\end{block}
+
+		\column{0.33\textwidth}
+		\begin{block}{\textbf{挑战版}}
+			\textcolor{red}{\textbf{[创造者]}}\\适合基础较好的同学
+			\begin{itemize}
+				\item 实现自动检测
+				\item 处理复杂背景
+				\item 完成深度分析
+			\end{itemize}
+			\vspace{0.2cm}
+			\textbf{要求：}
+			\begin{itemize}
+				\item AI对话至少4轮
+				\item 自动找答题卡边界
+				\item 复杂场景鲁棒性
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{提交内容与评分}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{提交内容}
+
+		\vspace{0.2cm}
+
+		\begin{enumerate}
+			\item \textbf{AI 对话记录}（必交）
+			      \begin{itemize}
+				      \item 截图或复制文本
+				      \item 展示完整交互过程
+				      \item 标注关键Prompt设计
+			      \end{itemize}
+
+			\item \textbf{最终代码}（必交）
+			      \begin{itemize}
+				      \item 完整可运行代码
+				      \item 包含必要注释
+				      \item 标注AI辅助部分
+			      \end{itemize}
+
+			\item \textbf{测试结果}（必交）
+			      \begin{itemize}
+				      \item 测试用例图片
+				      \item 处理结果图片
+				      \item 标注检测边界
+			      \end{itemize}
+
+			\item \textbf{反思报告}（必交）
+			      \begin{itemize}
+				      \item Prompt设计思路
+				      \item 问题及解决过程
+				      \item AI辅助编程思考
+			      \end{itemize}
+		\end{enumerate}
+
+		\column{0.5\textwidth}
+		\textbf{评分标准}
+
+		\vspace{0.2cm}
+
+		\begin{table}
+			\centering
+			\small
+			\begin{tabular}{lc}
+				\toprule
+				\textbf{评分项} & \textbf{分值} \\
+				\midrule
+				AI对话记录 & 25分 \\
+				Prompt设计质量 & 25分 \\
+				代码完整性 & 20分 \\
+				测试结果 & 15分 \\
+				反思报告深度 & 15分 \\
+				\midrule
+				\textbf{总分} & \textbf{100分} \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+
+		\vspace{0.2cm}
+
+		\begin{block}{难度系数}
+		\begin{itemize}
+			\item 基础版：系数 1.0（最高100分）
+			\item 进阶版：系数 1.1（最高110分）
+			\item 挑战版：系数 1.2（最高120分）
+		\end{itemize}
+		\end{block}
+
+		\vspace{0.2cm}
+
+		\begin{alertblock}{评分重点}
+			\begin{itemize}
+				\item \textbf{过程 $>$ 结果}
+				\item \textbf{Prompt设计能力}
+				\item \textbf{反思与思考}
+			\end{itemize}
+		\end{alertblock}
+	\end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 3. 结束页
+% -----------------------------------------------------------------------------
+
+\begin{frame}
+	\begin{center}
+		\Huge \textbf{谢谢！}
+
+		\vspace{1cm}
+
+		\Large
+		\textbf{第3周预告：图像预处理与增强}
+
+		\vspace{0.5cm}
+
+		\normalsize
+		\textcolor{blue}{故事问题：试卷拍照模糊怎么办？}
+
+		\vspace{0.3cm}
+
+		\begin{itemize}
+			\item 图像去噪（高斯/中值滤波）
+			\item 图像二值化（全局/Otsu/自适应）
+			\item 透视矫正（透视变换）
+		\end{itemize}
+	\end{center}
+\end{frame}

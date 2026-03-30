@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 01 计算机视觉 Web 演示系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <h1>Week 01 计算机视觉教学演示</h1>
+            <p class="subtitle">实时图像处理与算法可视化</p>
+        </header>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 左侧：模块导航 -->
+            <aside class="sidebar">
+                <h2>演示模块</h2>
+                <nav id="moduleNav" class="module-nav">
+                    <p>加载中...</p>
+                </nav>
+            </aside>
+
+            <!-- 中间：图像显示区 -->
+            <main class="image-area">
+                <div class="image-container">
+                    <div class="image-box">
+                        <h3>原始图像</h3>
+                        <canvas id="originalCanvas"></canvas>
+                        <div class="image-controls">
+                            <button id="loadDefaultBtn" class="btn btn-secondary">加载默认图片</button>
+                            <label class="btn btn-secondary">
+                                <input type="file" id="uploadInput" accept="image/*" style="display: none;">
+                                上传图片
+                            </label>
+                        </div>
+                        <div class="image-controls">
+                            <select id="testImageSelect" class="select-input" style="width: 100%;">
+                                <option value="">加载测试图片...</option>
+                                <option value="bubble_test_normal">正常填涂答题卡</option>
+                                <option value="bubble_test_diagonal">对角线模式</option>
+                                <option value="bubble_test_random">随机答案</option>
+                                <option value="bubble_test_partial">部分填涂</option>
+                                <option value="bubble_sheet_blank">空白答题卡</option>
+                                <option value="omr_test_01">PyImageSearch示例</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="image-box">
+                        <h3>处理结果</h3>
+                        <canvas id="resultCanvas"></canvas>
+                        <div class="image-controls">
+                            <button id="downloadBtn" class="btn btn-secondary">下载结果</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- 右侧：参数控制与结果 -->
+            <aside class="controls">
+                <div class="control-panel">
+                    <h2>操作选择</h2>
+                    <select id="operationSelect" class="select-input">
+                        <option value="">请选择操作...</option>
+                    </select>
+                </div>
+
+                <div id="paramsPanel" class="params-panel" style="display: none;">
+                    <h2>参数调节</h2>
+                    <div id="paramsContainer"></div>
+                </div>
+
+                <div class="action-panel">
+                    <button id="processBtn" class="btn btn-primary" disabled>执行处理</button>
+                </div>
+
+                <div id="resultPanel" class="result-panel" style="display: none;">
+                    <h2>处理结果</h2>
+                    <div id="resultContent"></div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- 底部 -->
+        <footer class="footer">
+            <p>Week 01 计算机视觉导论与图像基础 | 图像处理教学演示系统</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

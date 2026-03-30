@@ -1,70 +1,242 @@
 %===========================================================
-% main.tex - 主控文件（模块化扩展版 - 60页目标）
+% main.tex - 主控文件（对齐Week01结构）
 %===========================================================
-\documentclass[aspectratio=169, 12pt]{beamer}
+\documentclass[aspectratio=169, 10pt]{beamer}
 
 % 导入配置文件
 \input{preamble.tex}
 
+% 学校信息
+\institute{%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
 \begin{document}
 
 %===========================================================
-% 模块0: 背景知识铺垫 (15页)
+% 标题页与目录
 %===========================================================
-\input{sections/00_logistics/00_title.tex}
-\input{sections/00_logistics/00_prerequisites.tex}
-\input{sections/00_logistics/05_learning_modes.tex}
-\input{sections/00_logistics/06_grouping.tex}
-\input{sections/00_logistics/07_ai_assistant.tex}
-\input{sections/00_logistics/01_intro.tex}
-\input{sections/00_logistics/02_image_basics.tex}
-\input{sections/00_logistics/03_app_scenarios.tex}
-\input{sections/00_logistics/04_pipeline.tex}
+\begin{frame}
+    \titlepage
+\end{frame}
 
 %===========================================================
-% 模块1: 图像去噪 (12页)
+% 课前预备知识
 %===========================================================
-\input{sections/01_denoising/00_noise_models.tex}
-\input{sections/01_denoising/01_convolution.tex}
-\input{sections/01_denoising/02_filters_basics.tex}
-\input{sections/01_denoising/03_advanced_filters.tex}
-\input{sections/01_denoising/04_denoising_coding.tex}
-\input{sections/01_denoising/05_denoising_compare.tex}
+\begin{frame}{课前预备知识}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{需要的预备知识：}
+        \begin{itemize}
+            \item \textbf{图像基础}
+            \begin{itemize}
+                \item 像素、通道、数据类型
+                \item 灰度图与彩色图
+            \end{itemize}
+            \item \textbf{NumPy基础}
+            \begin{itemize}
+                \item 数组索引与切片
+                \item 矩阵运算
+            \end{itemize}
+            \item \textbf{OpenCV基础}
+            \begin{itemize}
+                \item 图像读写（Week 1已学）
+                \item 颜色空间转换
+            \end{itemize}
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{预备视频链接：}
+        \begin{itemize}
+            \item NumPy基础（10分钟入门）
+            \begin{itemize}
+                \item \footnotesize \url{https://www.bilibili.com/video/BV1Wy4y1h7ii}
+            \end{itemize}
+            \item OpenCV入门（20分钟）
+            \begin{itemize}
+                \item \footnotesize \url{https://www.bilibili.com/video/BV1pv4y1Q7yR}
+            \end{itemize}
+        \end{itemize}
+
+        \vspace{0.5cm}
+        \begin{alertblock}{重要提示}
+            本周内容建立在Week 1基础上，请确保已掌握图像读写操作！
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \textbf{本周内容：}
+        \begin{itemize}
+            \item 图像处理流水线概述
+            \item 图像去噪（滤波器）
+            \item 图像增强（直方图、CLAHE）
+            \item 图像二值化（阈值方法）
+            \item 几何变换（仿射、透视）
+            \item 综合实战案例
+        \end{itemize}
+
+        \column{0.55\textwidth}
+        \textbf{在阅卷系统中的位置：}
+        \begin{enumerate}
+            \item 图像采集（Week 1 已完成）
+            \item \highlight{图像预处理（本周）}
+            \item 版面分析（Week 4）
+            \item 选择题识别（Week 5）
+            \item 判断题识别（Week 6）
+            \item OCR文字识别（Week 7-8）
+        \end{enumerate}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周时间分配（160分钟 = 3学时）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第1学时（45分钟）：}
+        \begin{itemize}
+            \item[00:00-00:10] 理论：流水线概述（10min）
+            \item[00:10-00:30] 理论+演示：图像去噪（20min）
+            \item[00:30-00:45] 实践：去噪代码实战（15min）
+        \end{itemize}
+
+        \textbf{第2学时（45分钟）：}
+        \begin{itemize}
+            \item[00:45-01:05] 理论+演示：图像增强（20min）
+            \item[01:05-01:30] 理论+演示：图像二值化（25min）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{第3学时（70分钟）：}
+        \begin{itemize}
+            \item[01:30-01:50] 理论+演示：几何变换（20min）
+            \item[01:50-02:10] 实践：综合实战（20min）
+            \item[02:10-02:30] 互动测验（20min）
+            \item[02:30-02:40] 总结与作业（10min）
+        \end{itemize}
+
+        \vspace{0.5cm}
+        \begin{alertblock}{时间控制提示}
+        如果进度落后，建议跳过"挑战任务"
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周分组策略}
+    \textbf{分组原则：}
+    \begin{itemize}
+        \item 每4人为一组
+        \item 确保不同专业背景混合
+        \item 建议包含：理工科、文科、无编程基础、有编程基础
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{角色分工：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{角色} & \textbf{职责} & \textbf{适合} \\
+            \midrule
+            组长 & 统筹协调、进度管理 & 组织能力强的 \\
+            算法实现者 & 实现图像处理代码 & 有编程基础的 \\
+            参数调优者 & 调整滤波参数、优化效果 & 细心负责的 \\
+            测试者 & 收集测试用例、报告问题 & 细心负责的 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{本周协作任务}
+        用OpenCV实现试卷图像的完整预处理流程（去噪→增强→二值化）
+    \end{block}
+\end{frame}
+
+\begin{frame}{多屏协同设计}
+    \textbf{本课程采用多屏协同教学方式：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{主屏（左侧）：理论讲解}
+        \begin{itemize}
+            \item PPT幻灯片
+            \item 概念和原理讲解
+            \item 算法对比表格
+            \item 互动测验
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{侧屏（右侧）：实时演示}
+        \begin{itemize}
+            \item OpenCV代码实时演示
+            \item 图像处理效果展示
+            \item 参数调整实时反馈
+            \item 调试过程展示
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{移动设备互动}
+        使用手机参与互动测验（问卷星）
+    \end{block}
+\end{frame}
 
 %===========================================================
-% 模块2: 图像增强 (8页) - 新增模块
+% 代码演示对应关系
 %===========================================================
-\input{sections/02_enhancement/00_histogram.tex}
-\input{sections/02_enhancement/01_clahe.tex}
-\input{sections/02_enhancement/02_gamma.tex}
-\input{sections/02_enhancement/03_sharpening.tex}
+\begin{frame}{代码演示程序对应关系}
+    \textbf{运行方式：} 在\code{code/}文件夹下运行\code{python gui\_launcher.py}，选择对应的演示程序
+
+    \vspace{0.3cm}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{5cm}l}
+            \toprule
+            \textbf{PPT页面} & \textbf{演示程序} & \textbf{可调参数} \\
+            \midrule
+            图像去噪 & gui\_01\_denoising.py & 核大小、滤波类型、Sigma \\
+            图像增强 & gui\_02\_enhancement.py & CLAHE参数、Gamma值 \\
+            图像二值化 & gui\_03\_binarization.py & 阈值方法、块大小、C值 \\
+            几何变换 & gui\_04\_geometry.py & 旋转角度、缩放、平移 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{提示}
+        每个演示程序都有交互式参数滑块，拖动即可实时观察效果变化！
+    \end{alertblock}
+\end{frame}
 
 %===========================================================
-% 模块3: 图像二值化 (12页)
+% 教学模块
 %===========================================================
-\input{sections/03_binarization/00_binary_intro.tex}
-\input{sections/03_binarization/01_global_thresh.tex}
-\input{sections/03_binarization/02_otsu.tex}
-\input{sections/03_binarization/03_adaptive.tex}
-\input{sections/03_binarization/04_histogram_analysis.tex}
-\input{sections/03_binarization/05_binary_coding.tex}
+\input{modules/01_pipeline.tex}
+\input{modules/02_denoising.tex}
+\input{modules/03_enhancement.tex}
+\input{modules/04_binarization.tex}
+\input{modules/05_geometry.tex}
+\input{modules/06_real_cases.tex}
+\input{modules/07_quiz.tex}
 
 %===========================================================
-% 模块4: 几何变换 (10页)
+% 总结与作业
 %===========================================================
-\input{sections/04_geometry/00_affine.tex}
-\input{sections/04_geometry/01_perspective.tex}
-\input{sections/04_geometry/02_auto_correct.tex}
-\input{sections/04_geometry/03_geometry_coding.tex}
-
-%===========================================================
-% 模块5: 总结与作业 (8页)
-%===========================================================
-\input{sections/05_conclusion/00_real_cases.tex}
-\input{sections/05_conclusion/01_industry_apps.tex}
-\input{sections/05_conclusion/02_quiz.tex}
-\input{sections/05_conclusion/03_summary.tex}
-\input{sections/05_conclusion/04_homework.tex}
-\input{sections/05_conclusion/05_next_week.tex}
+\input{sections/summary.tex}
 
 \end{document}

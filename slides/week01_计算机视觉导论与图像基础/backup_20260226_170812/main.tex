@@ -1,0 +1,256 @@
+%===========================================================
+% main.tex - 主控文件
+%===========================================================
+\documentclass[aspectratio=169, 12pt]{beamer}
+
+% 导入配置文件
+\input{preamble.tex}
+
+% 学校信息（已禁用logo）
+\institute{%
+    \begin{minipage}{6cm}
+        \centering
+        \textbf{北京石油化工学院}\\
+        \textit{人工智能研究院}
+    \end{minipage}
+}
+
+\begin{document}
+
+%===========================================================
+% 标题页与目录
+%===========================================================
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section*{课程概览}
+\begin{frame}{课程概览}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \textbf{本周内容：}
+        \begin{itemize}
+            \item 计算机视觉导论
+            \item 图像的数字表示
+            \item OpenCV 基础
+            \item 代码实战演练
+            \item 工业硬件知识
+        \end{itemize}
+
+        \column{0.55\textwidth}
+        \textbf{学期项目：AI阅卷助手}
+        \begin{enumerate}
+            \item 图像采集与预处理
+            \item 答题卡定位（Timing Marks）
+            \item 填涂检测与识别
+            \item 手写文字 OCR
+            \item 成绩统计与输出
+        \end{enumerate}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周时间分配（160分钟 = 3学时）}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{第1学时（45分钟）：}
+        \begin{itemize}
+            \item[00:00-00:15] 理论讲解：CV导论（15min）
+            \item[00:15-00:35] 教师演示：OpenCV基础（20min）
+            \item[00:35-00:45] 讨论与答疑（10min）
+        \end{itemize}
+
+        \textbf{第2学时（45分钟）：}
+        \begin{itemize}
+            \item[00:45-01:10] 理论讲解：图像理论（25min）
+            \item[01:10-01:30] 实践：图像滤镜（20min）
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{第3学时（70分钟）：}
+        \begin{itemize}
+            \item[01:30-01:50] 硬件知识（20min）
+            \item[01:50-02:20] 教师演示：阅卷系统（30min）
+            \item[02:20-02:35] 互动测验（15min）
+            \item[02:35-02:45] 总结与作业（10min）
+        \end{itemize}
+
+        \vspace{0.5cm}
+        \begin{alertblock}{时间控制提示}
+        如果进度落后，建议跳过"挑战任务"
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{本周分组策略}
+    \textbf{分组原则：}
+    \begin{itemize}
+        \item 每4人为一组
+        \item 确保不同专业背景混合
+        \item 建议包含：理工科、文科、无编程基础、有编程基础
+    \end{itemize}
+
+    \vspace{0.3cm}
+
+    \textbf{角色分工：}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{6cm}l}
+            \toprule
+            \textbf{角色} & \textbf{职责} & \textbf{适合} \\
+            \midrule
+            组长 & 统筹协调、进度管理 & 组织能力强的 \\
+            算法实现者 & 实现OpenCV代码、图像处理 & 有编程基础的 \\
+            参数调优者 & 调整滤波参数、优化效果 & 细心负责的 \\
+            测试者 & 收集测试用例、报告问题 & 细心负责的 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{block}{本周协作任务}
+        用OpenCV实现图像读取、显示、滤镜操作，完成图像处理器
+    \end{block}
+\end{frame}
+
+\begin{frame}{多屏协同设计}
+    \textbf{本课程采用多屏协同教学方式：}
+
+    \vspace{0.3cm}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{主屏（左侧）：理论讲解}
+        \begin{itemize}
+            \item PPT幻灯片
+            \item 概念和原理讲解
+            \item 图像和代码展示
+            \item 互动测验
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{侧屏（右侧）：实时演示}
+        \begin{itemize}
+            \item OpenCV代码实时演示
+            \item 图像处理效果展示
+            \item 参数调整实时反馈
+            \item 调试过程展示
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+
+    \begin{block}{移动设备互动}
+        使用手机参与互动测验（问卷星）
+    \end{block}
+\end{frame}
+
+%===========================================================
+% 代码演示对应关系
+%===========================================================
+\begin{frame}{代码演示程序对应关系}
+    \textbf{运行方式：} 在\code{code}文件夹下运行\code{gui_launcher.py}，选择对应的演示程序
+
+    \vspace{0.3cm}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{5cm}l}
+            \toprule
+            \textbf{PPT页面} & \textbf{演示程序} & \textbf{可调参数} \\
+            \midrule
+            NumPy数组操作 & gui\_06\_quick\_challenge.py & ROI区域位置 \\
+            像素级操作(亮度/灰度) & gui\_01\_opencv\_basics.py & 滤镜参数 \\
+            边缘检测/形态学 & gui\_02\_grading\_system.py & Canny阈值、核大小、迭代次数 \\
+            气泡检测与填涂 & gui\_03\_bubble\_detection.py & 气泡大小、填涂阈值 \\
+            图像质量检测 & gui\_04\_quality\_detection.py & 亮度、对比度、清晰度阈值 \\
+            批量处理 & gui\_05\_batch\_processing.py & 试卷数量、置信度阈值 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{提示}
+        每个演示程序都有交互式参数滑块，拖动即可实时观察效果变化！
+    \end{alertblock}
+\end{frame}
+
+%===========================================================
+% AI编程工具推荐
+%===========================================================
+\begin{frame}{AI编程工具推荐}
+    \textbf{本课程强烈推荐使用AI编程工具来提升学习效率：}
+
+    \vspace{0.3cm}
+
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lp{4cm}l}
+            \toprule
+            \textbf{工具} & \textbf{特点} & \textbf{推荐度} \\
+            \midrule
+            Cursor & AI原生IDE，Ctrl+K原地编辑 & $\star\star\star\star\star$ \\
+            ChatGPT & 对话能力强，代码生成准确 & $\star\star\star\star$ \\
+            Claude & 代码分析深入，适合代码审查 & $\star\star\star\star$ \\
+            通义千问 & 中文友好，国内可用 & $\star\star\star$ \\
+            DeepSeek & 编程能力强，开源免费 & $\star\star\star\star$ \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.3cm}
+
+    \begin{alertblock}{下周预告}
+        Week 2我们将系统学习这些AI工具的使用方法！
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{AI辅助学习：向AI提问的技巧}
+    \textbf{场景1：理解OpenCV概念}
+    \begin{exampleblock}{Prompt示例}
+        请解释OpenCV中的BGR和RGB有什么区别，为什么OpenCV默认使用BGR？
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{场景2：调试OpenCV代码}
+    \begin{exampleblock}{Prompt示例}
+        我的OpenCV代码显示的图像颜色不对。
+
+        运行环境：Windows 11, Python 3.9, OpenCV 4.8.0
+
+        相关代码：
+        \texttt{img = cv2.imread('test.jpg')}
+        \texttt{plt.imshow(img)}
+
+        请帮我分析原因并提供解决方案。
+    \end{exampleblock}
+
+    \vspace{0.3cm}
+
+    \textbf{场景3：学习OpenCV函数}
+    \begin{exampleblock}{Prompt示例}
+        请解释cv2.cvtColor()函数的用途，并给我一个代码示例演示BGR转RGB。
+    \end{exampleblock}
+\end{frame}
+
+%===========================================================
+% 教学模块
+%===========================================================
+\input{modules/01_intro.tex}
+\input{modules/02_theory.tex}
+\input{modules/03_opencv.tex}
+\input{modules/04_practice.tex}
+\input{modules/05_hardware.tex}
+\input{modules/06_quiz.tex}
+
+%===========================================================
+% 总结与作业
+%===========================================================
+\input{sections/summary.tex}
+
+\end{document}

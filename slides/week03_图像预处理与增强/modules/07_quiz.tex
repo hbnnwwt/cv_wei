@@ -1,0 +1,220 @@
+%=============================================================================
+% 模块七：互动测验
+%=============================================================================
+
+\section{互动测验}
+
+% -----------------------------------------------------------------------------
+% 第1页：快速问答（问题）
+% -----------------------------------------------------------------------------
+
+\begin{frame}[fragile]{快速问答环节 - 问题}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{问题1：高斯滤波的主要作用是？}
+        \begin{itemize}
+            \item[A] 锐化图像
+            \item[B] 去除高斯噪声
+            \item[C] 增加对比度
+            \item[D] 边缘检测
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{问题2：CLAHE 中的 "CLA" 指什么？}
+        \begin{itemize}
+            \item[A] Central Local Adaptive
+            \item[B] Contrast Limited Adaptive Histogram Equalization
+            \item[C] Classical Linear Algorithm
+            \item[D] Color Level Adjustment
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{问题3：自适应阈值适用于什么场景？}
+        \begin{itemize}
+            \item[A] 光照均匀的图像
+            \item[B] 光照不均的图像
+            \item[C] 彩色图像
+            \item[D] 视频帧
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{问题4：warpPerspective 需要几个对应点？}
+        \begin{itemize}
+            \item[A] 2个
+            \item[B] 3个
+            \item[C] 4个
+            \item[D] 任意数量
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \begin{center}
+        \Large \textit{请思考答案，下一页揭晓！}
+    \end{center}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 第2页：快速问答（答案）
+% -----------------------------------------------------------------------------
+
+\begin{frame}[fragile]{快速问答环节 - 答案}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{问题1：高斯滤波的主要作用是？}
+        \begin{itemize}
+            \item[A] 锐化图像
+            \item[B] \highlight{去除高斯噪声}（正确）
+            \item[C] 增加对比度
+            \item[D] 边缘检测
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{问题2：CLAHE 中的 "CLA" 指什么？}
+        \begin{itemize}
+            \item[A] Central Local Adaptive
+            \item[B] \highlight{Contrast Limited Adaptive Histogram Equalization}（正确）
+            \item[C] Classical Linear Algorithm
+            \item[D] Color Level Adjustment
+        \end{itemize}
+
+        \column{0.5\textwidth}
+        \textbf{问题3：自适应阈值适用于什么场景？}
+        \begin{itemize}
+            \item[A] 光照均匀的图像
+            \item[B] \highlight{光照不均的图像}（正确）
+            \item[C] 彩色图像
+            \item[D] 视频帧
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \textbf{问题4：warpPerspective 需要几个对应点？}
+        \begin{itemize}
+            \item[A] 2个
+            \item[B] 3个
+            \item[C] \highlight{4个}（正确）
+            \item[D] 任意数量
+        \end{itemize}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \begin{center}
+        \highlight{恭喜！全部正确！}
+    \end{center}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 第3页：代码找错挑战
+% -----------------------------------------------------------------------------
+
+\begin{frame}[fragile]{代码找错挑战：二值化}
+    \textbf{找出以下3段代码中的错误：}
+
+    \begin{columns}
+        \column{0.33\textwidth}
+        \begin{block}{代码段1}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 高斯模糊
+blur = cv2.GaussianBlur(
+    gray, (5, 5), 0)
+
+# 全局阈值
+ret, binary = cv2.threshold(
+    blur, 127, 255,
+    cv2.THRESH_BINARY)
+            \end{lstlisting}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{代码段2}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 自适应阈值
+binary = cv2.adaptiveThreshold(
+    gray, 255,
+    cv2.ADAPTIVE_THRESH_MEAN_C,
+    cv2.THRESH_BINARY, 11, 2)
+
+# 错误：gray是彩色图
+            \end{lstlisting}
+        \end{block}
+
+        \column{0.33\textwidth}
+        \begin{block}{代码段3}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# Otsu自动阈值
+ret, binary = cv2.threshold(
+    gray, 0, 255,
+    cv2.THRESH_BINARY +
+    cv2.THRESH_OTSU)
+
+# 错误：未先去噪
+            \end{lstlisting}
+        \end{block}
+    \end{columns}
+
+    \vspace{0.3cm}
+    \begin{alertblock}{思考提示}
+        \begin{itemize}
+            \item 代码段1：错误在缺少\highlight{灰度化步骤}
+            \item 代码段2：\highlight{输入必须是灰度图}，不能用彩色图
+            \item 代码段3：\highlight{Otsu前应先去噪}，否则噪声会被放大
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 第4页：答案揭晓
+% -----------------------------------------------------------------------------
+
+\begin{frame}[fragile]{代码找错挑战 - 答案揭晓}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{错误分析}
+            \begin{enumerate}
+                \item \textbf{代码段1：}
+                \begin{itemize}
+                    \item 错误：高斯模糊核大小为 (5, 5)，\highlight{这是正确的}
+                    \item 但缺少灰度化步骤：\texttt{gray = cv2.cvtColor(img, cv2.COLOR\_BGR2GRAY)}
+                \end{itemize}
+
+                \item \textbf{代码段2：}
+                \begin{itemize}
+                    \item \highlight{致命错误：输入是彩色图}
+                    \item 自适应阈值只能处理单通道
+                    \item 报错：\texttt{error: (-215:Assertion failed) src.type() == CV\_8UC1}
+                \end{itemize}
+
+                \item \textbf{代码段3：}
+                \begin{itemize}
+                    \item Otsu自动阈值对噪声\highlight{非常敏感}
+                    \item 应该在阈值前先高斯去噪
+                    \item 否则会将噪声点误判为前景
+                \end{itemize}
+            \end{enumerate}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{修正后的代码}
+            \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny]
+# 正确流程
+gray = cv2.cvtColor(
+    img, cv2.COLOR_BGR2GRAY)
+
+# 1. 去噪
+blur = cv2.GaussianBlur(
+    gray, (5, 5), 0)
+
+# 2. Otsu自动阈值
+ret, binary = cv2.threshold(
+    blur, 0, 255,
+    cv2.THRESH_BINARY +
+    cv2.THRESH_OTSU)
+
+# 或者使用自适应阈值
+binary = cv2.adaptiveThreshold(
+    blur, 255,
+    cv2.ADAPTIVE_THRESH_MEAN_C,
+    cv2.THRESH_BINARY, 11, 2)
+            \end{lstlisting}
+        \end{block}
+    \end{columns}
+\end{frame}

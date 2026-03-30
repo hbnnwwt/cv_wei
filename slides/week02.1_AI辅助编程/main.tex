@@ -1,0 +1,168 @@
+%=============================================================================
+% 主控文件：第2周 AI辅助编程工具实战
+%=============================================================================
+
+\documentclass[aspectratio=169, 10pt]{beamer}
+
+% 1. 导入宏包与样式
+\input{preamble.tex}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% 标题页
+% -----------------------------------------------------------------------------
+\begin{frame}
+	\titlepage
+\end{frame}
+
+%=============================================================================
+% 课前预备知识
+%=============================================================================
+\begin{frame}{课前预备知识}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{需要的预备知识：}
+		\begin{itemize}
+			\item \textbf{Python基础}
+			\begin{itemize}
+				\item 函数定义与调用
+				\item 循环与条件判断
+				\item 列表和字典操作
+			\end{itemize}
+			\item \textbf{OpenCV基础}
+			\begin{itemize}
+				\item 图像读取与显示
+				\item 基本的图像变换
+			\end{itemize}
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{预备资源：}
+		\begin{itemize}
+			\item Python基础
+			\begin{itemize}
+				\item \url{https://www.bilibili.com/video/BV1Jgf6YvE8e}
+			\end{itemize}
+			\item OpenCV入门
+			\begin{itemize}
+				\item \url{https://www.bilibili.com/video/BV1iF411T7zj}
+			\end{itemize}
+		\end{itemize}
+
+		\vspace{0.3cm}
+		\begin{alertblock}{重要提示}
+			本课重点是学习如何与AI协作编程，不要求深入的编程基础！
+		\end{alertblock}
+	\end{columns}
+\end{frame}
+
+%=============================================================================
+% 课程概览
+%=============================================================================
+\section*{课程概览}
+\begin{frame}{课程概览}
+	\begin{columns}
+		\column{0.45\textwidth}
+		\textbf{本周内容：}
+		\begin{itemize}
+			\item LLM时代的编程新范式
+			\item AI编程工具全景
+			\item Prompt工程精讲
+			\item CV领域深度实战
+			\item 调试与重构
+		\end{itemize}
+
+		\column{0.55\textwidth}
+		\textbf{核心技能：}
+		\begin{itemize}
+			\item 结构化Prompt设计（RTF）
+			\item 思维链（Chain-of-Thought）
+			\item 少样本提示（Few-shot）
+			\item 多轮迭代优化
+			\item 代码审查与验证
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
+%=============================================================================
+% 本周时间分配
+%=============================================================================
+\begin{frame}{本周时间分配（3学时）}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{第1学时（50分钟）：}
+		\begin{itemize}
+			\item[00:00-00:15] 理论：AI编程范式（15min）
+			\item[00:15-00:30] 演示：AI工具使用（15min）
+			\item[00:30-00:50] 实践：Prompt设计练习（20min）
+		\end{itemize}
+
+		\textbf{第2学时（50分钟）：}
+		\begin{itemize}
+			\item[00:50-01:20] 理论：Prompt工程精讲（30min）
+			\item[01:20-01:40] 实践：CV代码实战（20min）
+		\end{itemize}
+
+		\column{0.5\textwidth}
+		\textbf{第3学时（60分钟）：}
+		\begin{itemize}
+			\item[01:40-02:00] 互动：Prompt Quiz（20min）
+			\item[02:00-02:25] 互动：代码找错挑战（25min）
+			\item[02:25-02:40] 总结与作业（15min）
+		\end{itemize}
+
+		\vspace{0.3cm}
+		\begin{alertblock}{时间控制提示}
+			如果进度落后，可跳过代码找错挑战
+		\end{alertblock}
+	\end{columns}
+\end{frame}
+
+%=============================================================================
+% 本周分组策略
+%=============================================================================
+\begin{frame}{本周分组策略}
+	\textbf{分组原则：}
+	\begin{itemize}
+		\item 每4人为一组
+		\item 不同专业背景混合
+		\item 确保每组至少有一名有编程基础的同学
+	\end{itemize}
+
+	\vspace{0.3cm}
+
+	\textbf{角色分工：}
+	\begin{table}
+		\centering
+		\small
+		\begin{tabular}{lp{5cm}l}
+			\toprule
+			\textbf{角色} & \textbf{职责} & \textbf{适合} \\
+			\midrule
+			组长 & 协调进度，分配任务 & 组织能力强的 \\
+			技术负责人 & 把关代码质量，审核AI生成代码 & 有编程基础的 \\
+			Prompt设计师 & 负责设计高质量Prompt & 思维活跃的 \\
+			测试者 & 负责代码测试与优化 & 细心负责的 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
+	\vspace{0.3cm}
+
+	\begin{block}{本周协作任务}
+		用AI辅助实现 \textbf{答题卡边界检测}
+	\end{block}
+\end{frame}
+
+%=============================================================================
+% 教学模块
+%=============================================================================
+\input{modules/01_paradigm.tex}
+\input{modules/02_tools.tex}
+\input{modules/03_prompt.tex}
+\input{modules/04_cv_practice.tex}
+\input{modules/05_debug.tex}
+\input{modules/06_summary.tex}
+
+\end{document}

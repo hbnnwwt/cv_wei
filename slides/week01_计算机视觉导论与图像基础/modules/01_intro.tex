@@ -4,43 +4,6 @@
 
 \section{计算机视觉导论}
 
-\begin{frame}{课前预备知识}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \textbf{需要的预备知识：}
-        \begin{itemize}
-            \item \textbf{NumPy基础}
-            \begin{itemize}
-                \item 数组索引与切片
-                \item 矩阵运算
-            \end{itemize}
-            \item \textbf{Python基础}
-            \begin{itemize}
-                \item 函数定义
-                \item 循环与条件判断
-            \end{itemize}
-        \end{itemize}
-
-        \column{0.5\textwidth}
-        \textbf{预备视频链接：}
-        \begin{itemize}
-            \item NumPy基础（5分钟）
-            \begin{itemize}
-                \item \url{https://...}
-            \end{itemize}
-            \item Python基础（10分钟）
-            \begin{itemize}
-                \item \url{https://...}
-            \end{itemize}
-        \end{itemize}
-
-        \vspace{0.5cm}
-        \begin{alertblock}{重要提示}
-            如果你从未接触过Python，建议先看预备视频！
-        \end{alertblock}
-    \end{columns}
-\end{frame}
-
 \begin{frame}{选择适合你的学习路径}
     根据你的基础和兴趣，选择适合的学习路径：
 
@@ -176,8 +139,8 @@
         \column{0.5\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=0.8\textwidth]{example-image}
-            \caption{语义 vs 矩阵（请替换为实际图片）}
+            \includegraphics[width=\textwidth]{images/semantic_vs_matrix.png}
+            \caption{人类视觉（语义） vs 计算机视觉（数字矩阵）}
         \end{figure}
     \end{columns}
 \end{frame}
@@ -256,14 +219,84 @@
 \end{frame}
 
 \begin{frame}[fragile]{CV 的历史与现状}
-    \begin{itemize}
-        \item \textbf{1960s}：Larry Roberts (CV之父) 尝试让机器识别积木世界。
-        \item \textbf{1970s-1980s}：提出边缘检测、Marr 视觉计算理论。
-        \item \textbf{2012-至今}：\highlight{深度学习爆发}，AlexNet 在 ImageNet 竞赛中夺冠。
-    \end{itemize}
-    \begin{block}{核心任务演变}
-        分类 (是什么?) $\to$ 检测 (在哪儿?) $\to$ 分割 (形状如何?) $\to$ 生成 (画一个出来)
-    \end{block}
+    \begin{columns}
+        \column{0.55\textwidth}
+        \textbf{发展历程：}
+        \begin{itemize}
+            \item \textbf{1960s}：Larry Roberts (CV之父) 尝试让机器识别积木世界。
+            \item \textbf{1970s-1980s}：提出边缘检测、Marr 视觉计算理论。
+            \item \textbf{1999}：SIFT特征提取算法的诞生
+            \item \textbf{2012}：\highlight{深度学习爆发}，AlexNet 在 ImageNet 竞赛中夺冠。
+        \end{itemize}
+
+        \vspace{0.3cm}
+        \begin{block}{核心任务演变}
+            分类 $\to$ 检测 $\to$ 分割 $\to$ 生成
+        \end{block}
+
+        \column{0.45\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{images/cv_history_timeline.png}
+        \end{figure}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{深度学习的突破：ImageNet 竞赛}
+    \begin{columns}
+        \column{0.45\textwidth}
+        \begin{block}{传统方法 (2011)}
+            手工设计特征 \\
+            SIFT / HOG + SVM/随机森林
+            \vspace{0.3cm}
+            \centering
+            \huge \textbf{72\%}
+        \end{block}
+
+        \column{0.1\textwidth}
+        \centering
+        \textbf{→}
+
+        \column{0.45\textwidth}
+        \begin{alertblock}{AlexNet (2012)}
+            深度学习 \\
+            卷积神经网络(CNN)端到端
+            \vspace{0.3cm}
+            \centering
+            \huge \textbf{84\%}
+        \end{alertblock}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{center}
+        \LARGE \highlight{提升幅度：+12\%} \\
+        \textit{这是计算机视觉领域的"AlphaGo时刻"！}
+    \end{center}
+
+    \vspace{0.3cm}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth]{images/alexnet_comparison.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{ImageNet 竞赛：准确率飙升}
+    \begin{columns}
+        \column{0.55\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{images/imagenet_trend.png}
+        \end{figure}
+
+        \column{0.45\textwidth}
+        \begin{block}{关键启示}
+            \begin{itemize}
+                \item \textbf{2012年前}：传统方法停滞
+                \item \textbf{2012年后}：深度学习爆发
+                \item \textbf{现在}：超越人类
+            \end{itemize}
+        \end{block}
+    \end{columns}
 \end{frame}
 
 \begin{frame}[fragile]{贯穿本学期的项目：AI 阅卷助手}
@@ -332,10 +365,10 @@
 \end{frame}
 
 % -----------------------------------------------------------------------------
-% 答题卡定位锚点（Timing Marks）
+% 答题卡定位锚点（Timing Marks）—— 进阶内容
 % -----------------------------------------------------------------------------
 
-\begin{frame}[fragile]{项目深度：答题卡的"定位锚点" (Timing Marks)}
+\begin{frame}[fragile]{🎓 进阶：答题卡的"定位锚点" (Timing Marks)}
     \textbf{问题：}如果试卷皱了或者拍摄角度极度倾斜，如何准确定位答题卡？
 
     \begin{columns}
@@ -383,7 +416,7 @@
     \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{定位锚点检测：从轮廓到坐标}
+\begin{frame}[fragile]{🎓 进阶：定位锚点检测——从轮廓到坐标}
     \textbf{核心思路：}检测黑色方块 $\to$ 计算中心 $\to$ 透视变换
 
     \begin{columns}

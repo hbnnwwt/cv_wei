@@ -1,5 +1,5 @@
 %===========================================================
-% preamble.tex - Beamer 配置文件
+% preamble.tex - Beamer 配置文件（对齐Week01）
 %===========================================================
 
 % 中文支持
@@ -27,7 +27,7 @@
 % 颜色与图形
 \usepackage{xcolor}
 \usepackage{tikz}
-\usetikzlibrary{shapes, arrows, positioning}
+\usetikzlibrary{shapes, arrows, positioning, calc, fit}
 
 % 数学公式
 \usepackage{amsmath}
@@ -36,12 +36,23 @@
 % 超链接
 \usepackage{hyperref}
 
+% tcolorbox for colored boxes
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
 %===========================================================
 % 主题设置
 %===========================================================
 \usetheme{Madrid}
 \usecolortheme{whale}
 \usefonttheme{professionalfonts}
+
+%===========================================================
+% 页面边距设置（预留页脚空间）
+%===========================================================
+\setbeamersize{text margin left=0.5cm, text margin right=0.5cm}
+% \setbeamersize{text margin bottom=1cm}   % Beamer不支持此选项
+% \setbeamersize{text margin top=0.5cm}    % Beamer不支持此选项
 
 %===========================================================
 % 课程信息
@@ -55,4 +66,7 @@
 %===========================================================
 % 自定义命令
 %===========================================================
-% 预留自定义命令位置
+% 高亮命令
+\newcommand{\highlight}[1]{\textcolor{red}{\textbf{#1}}}
+% 行内代码命令
+\newcommand{\code}[1]{\texttt{#1}}

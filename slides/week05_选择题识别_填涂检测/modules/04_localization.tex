@@ -28,8 +28,7 @@
 
     \begin{block}{实现}
     \begin{lstlisting}
-# TODO: 可使用AI助手完成以下代码
-# 预定义的选项位置 (x, y, width, height)
+# 示例：预定义的选项位置 (x, y, width, height)
 option_positions = [
     [(100, 200, 30, 30), (150, 200, 30, 30), ...],  # 第1题
     [(100, 250, 30, 30), (150, 250, 30, 30), ...],  # 第2题
@@ -68,11 +67,9 @@ roi = image[y:y+h, x:x+w]
 
     \begin{block}{OpenCV轮廓查找}
     \begin{lstlisting}
-# TODO: 可使用AI助手完成以下代码
-# 二值化
+# 示例：二值化并查找轮廓
 _, binary = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY_INV)
 
-# 查找轮廓
 contours, hierarchy = cv2.findContours(
     binary,
     cv2.RETR_EXTERNAL,  # 只检测外轮廓
@@ -91,7 +88,8 @@ print(f"找到 {len(contours)} 个轮廓")
 
     \begin{block}{常用轮廓特征}
     \begin{lstlisting}
-# TODO: 可使用AI助手完成以下代码
+# 示例：提取轮廓特征并筛选气泡
+bubbles = []
 for contour in contours:
     # 外接矩形
     x, y, w, h = cv2.boundingRect(contour)
@@ -102,7 +100,7 @@ for contour in contours:
     # 周长
     perimeter = cv2.arcLength(contour, closed=True)
 
-    # TODO: 筛选气泡状的轮廓（可使用AI助手完成）
+    # 筛选气泡状轮廓：面积适中、接近圆形
     if 500 < area < 5000 and 0.7 < w/h < 1.3:
         bubbles.append((x, y, w, h))
     \end{lstlisting}
@@ -121,25 +119,24 @@ def locate_options(image_path):
     # 读取图像
     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-    # TODO: 二值化
+    # 二值化
     _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
 
-    # TODO: 查找轮廓
+    # 查找轮廓
     contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # TODO: 筛选气泡
+    # 筛选气泡
     options = []
     for cnt in contours:
         x, y, w, h = cv2.boundingRect(cnt)
         area = cv2.contourArea(cnt)
 
-        # 筛选条件：面积、形状
+        # 筛选条件：面积适中、接近圆形
         if 500 < area < 5000 and 0.7 < w/h < 1.3:
             options.append((x, y, w, h))
 
-    # TODO: 按位置分组（同一题的选项在一组）
+    # 按位置分组（按Y坐标排序，相近的为同一题）
     options.sort(key=lambda b: b[1])  # 按Y排序
-    # TODO: 返回分组后的选项位置
     return options
     \end{lstlisting}
     \end{block}

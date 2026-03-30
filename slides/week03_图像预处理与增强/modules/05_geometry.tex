@@ -1,0 +1,276 @@
+%===========================================================
+% 05_geometry.tex - 几何变换
+%===========================================================
+
+\section{几何变换}
+
+%-----------------------------------------------------------
+% Frame 1: 仿射变换基础
+%-----------------------------------------------------------
+\begin{frame}{仿射变换基础}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{定义}
+            \begin{itemize}
+                \item 保持\textbf{平行性}的变换
+                \item 直线变换后仍是直线
+                \item 平行线保持平行
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{包含操作}
+            \begin{itemize}
+                \item 平移 (Translation)
+                \item 旋转 (Rotation)
+                \item 缩放 (Scale)
+                \item 倾斜 (Shear)
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{block}{变换矩阵}
+            $$M = \begin{bmatrix}
+            a_{11} & a_{12} & b_x \\
+            a_{21} & a_{22} & b_y
+            \end{bmatrix}$$
+
+            \begin{itemize}
+                \item 2×3 矩阵
+                \item 6 个参数确定
+                \item 用 \code{cv2.warpAffine()}
+            \end{itemize}
+        \end{block}
+    \end{columns}
+
+    \begin{alertblock}{重要特性}
+        仿射变换只需要\textbf{3个点}确定（6个方程）
+    \end{alertblock}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 2: 仿射变换代码
+%-----------------------------------------------------------
+\begin{frame}[fragile]{仿射变换代码}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+# 读取图像
+img = cv2.imread('exam.jpg')
+h, w = img.shape[:2]
+
+# 1. 平移变换
+M_trans = np.float32([
+    [1, 0, 50],    # x 方向平移 50
+    [0, 1, 30]     # y 方向平移 30
+])
+translated = cv2.warpAffine(img, M_trans, (w, h))
+
+# 2. 旋转变换
+center = (w // 2, h // 2)
+angle = 45
+scale = 1.0
+M_rot = cv2.getRotationMatrix2D(center, angle, scale)
+rotated = cv2.warpAffine(img, M_rot, (w, h))
+
+# 3. 组合变换
+M = np.float32([
+    [1.2, 0.2, 0],
+    [0, 1.1, 0]
+])
+scaled = cv2.warpAffine(img, M, (w, h))
+        \end{lstlisting}
+
+        \column{0.5\textwidth}
+        \begin{block}{常用函数}
+            \begin{itemize}
+                \item \code{cv2.warpAffine()}：应用变换
+                \item \code{cv2.getRotationMatrix2D()}：获取旋转矩阵
+                \item \code{cv2.getAffineTransform()}：从3点计算矩阵
+            \end{itemize}
+        \end{block}
+
+        \begin{alertblock}{TODO 任务}
+            实现一个函数：\\
+            输入图像 + 角度，返回旋转后的图像
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 3: 透视变换
+%-----------------------------------------------------------
+\begin{frame}[fragile]{透视变换}
+    \textbf{原理：} 4点对应变换，可以矫正倾斜的矩形
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{变换矩阵}
+            \begin{itemize}
+                \item 需要 \highlight{4个点}确定
+                \item 3×3 变换矩阵
+                \item 用 \code{cv2.getPerspectiveTransform()}
+                \item 用 \code{cv2.warpPerspective()}
+            \end{itemize}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+# 原图上的4个点（顺时针）
+pts1 = np.float32([
+    [100, 50],     # 左上
+    [400, 50],     # 右上
+    [400, 300],    # 右下
+    [100, 300]     # 左下
+])
+
+# 希望变换到的位置
+pts2 = np.float32([
+    [0, 0],
+    [300, 0],
+    [300, 250],
+    [0, 250]
+])
+
+# 计算透视变换矩阵
+M = cv2.getPerspectiveTransform(pts1, pts2)
+
+# 应用变换
+h, w = 300, 300
+result = cv2.warpPerspective(img, M, (w, h))
+
+# 显示
+cv2.imshow('Perspective', result)
+cv2.waitKey(0)
+        \end{lstlisting}
+    \end{columns}
+
+    \begin{alertblock}{应用场景}
+        试卷倾斜矫正、文档扫描、透视畸变校正
+    \end{alertblock}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 4: 自动矫正实战
+%-----------------------------------------------------------
+\begin{frame}[fragile]{自动矫正实战：试卷倾斜矫正}
+	\begin{alertblock}{GUI演示程序：\code{gui\_04\_geometry.py}}
+		运行 \code{python gui\_launcher.py} 选择“几何变换演示”，可交互调节旋转角度、缩放和平移参数
+	\end{alertblock}
+
+    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+def correct_perspective(image_path):
+    """
+    试卷倾斜矫正完整流程
+    """
+    # Step 1: 读取图像
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Step 2: 边缘检测
+    edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+
+    # Step 3: 霍夫变换检测直线
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100,
+                            minLineLength=100, maxLineGap=10)
+
+    # Step 4: 计算角度
+    angles = []
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        angle = np.arctan2(y2-y1, x2-x1) * 180.0 / np.pi
+        angles.append(angle)
+
+    # Step 5: 取中位数角度
+    median_angle = np.median(angles)
+
+    # Step 6: 旋转矫正
+    h, w = img.shape[:2]
+    center = (w // 2, h // 2)
+    M = cv2.getRotationMatrix2D(center, median_angle, 1.0)
+    corrected = cv2.warpAffine(img, M, (w, h),
+                               flags=cv2.INTER_CUBIC)
+
+    return corrected
+
+# 测试
+result = correct_perspective('exam.jpg')
+cv2.imshow('Corrected', result)
+cv2.waitKey(0)
+    \end{lstlisting}
+
+    \begin{alertblock}{关键步骤}
+        \begin{enumerate}
+            \item 边缘检测找轮廓
+            \item 霍夫变换检测直线
+            \item 计算倾斜角度
+            \item 旋转变换矫正
+        \end{enumerate}
+    \end{alertblock}
+\end{frame}
+
+%-----------------------------------------------------------
+% Frame 5: 挑战任务
+%-----------------------------------------------------------
+\begin{frame}[fragile]{挑战任务：智能裁剪答题卡}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{任务描述}
+            实现一个函数，输入试卷图片，自动找到答题卡区域并裁剪
+
+            \begin{enumerate}
+                \item 检测最大轮廓（可能是答题卡）
+                \item 获取4个角点
+                \item 透视变换裁剪
+                \item 返回裁剪后的图像
+            \end{enumerate}
+        \end{block}
+
+        \column{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+import cv2
+import numpy as np
+
+def crop_answer_card(image_path):
+    """智能裁剪答题卡"""
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # TODO Step 1: 二值化
+    # ...
+
+    # TODO Step 2: 找轮廓
+    # contours, _ = cv2.findContours(...)
+
+    # TODO Step 3: 找最大四边形
+    # hint: cv2.approxPolyDP
+
+    # TODO Step 4: 透视变换裁剪
+    # ...
+
+    return cropped
+
+# 测试
+result = crop_answer_card('exam.jpg')
+cv2.imshow('Cropped', result)
+cv2.waitKey(0)
+        \end{lstlisting}
+    \end{columns}
+
+    \begin{alertblock}{提示}
+        \begin{itemize}
+            \item 先用 Canny 边缘检测
+            \item 用 \code{cv2.findContours} 找轮廓
+            \item 用 \code{cv2.approxPolyDP} 近似多边形
+            \item 保留有4个顶点的轮廓
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
