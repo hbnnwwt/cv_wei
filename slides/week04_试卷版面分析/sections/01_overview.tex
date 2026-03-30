@@ -59,25 +59,70 @@
 
 \begin{frame}{版面分析完整流程}
     \begin{center}
-        \begin{tikzpicture}[node distance=1.2cm and 1.8cm, auto,
-            block/.style={draw, rectangle, rounded corners=4pt, fill=blue!10,
-                minimum height=1cm, minimum width=2.2cm, font=\small, align=center},
-            arrow/.style={->, thick, >=stealth}]
+        \begin{tikzpicture}[
+            pblock/.style={draw, rectangle, rounded corners=5pt,
+                minimum height=1.1cm, minimum width=2.4cm,
+                font=\small, align=center, line width=0.6pt},
+            arr/.style={->, thick, >=stealth, gray!70},
+            note/.style={font=\ttfamily\tiny, color=gray!55}
+        ]
+            % Top row (steps 1-4)
+            \node[pblock, fill=blue!8] (input) at (0, 1.0)
+                {\textbf{输入图像}\\[-1pt]{\itshape 试卷照片}};
+            \node[pblock, fill=yellow!12] (pre) at (3.1, 1.0)
+                {\textbf{预处理}\\[-1pt]{\itshape 灰度 + 降噪}};
+            \node[pblock, fill=green!10] (edge) at (6.2, 1.0)
+                {\textbf{边缘检测}\\[-1pt]{\itshape Canny}};
+            \node[pblock, fill=red!8] (contour) at (9.3, 1.0)
+                {\textbf{轮廓检测}\\[-1pt]{\itshape findContours}};
 
-            \node[block, fill=gray!15] (input) {输入图像\\{\itshape 试卷照片}};
-            \node[block, right of=input, fill=yellow!15] (pre) {预处理\\{\itshape 灰度+降噪}};
-            \node[block, right of=pre, fill=green!15] (edge) {边缘检测\\{\itshape Canny}};
-            \node[block, right of=edge, fill=red!15] (contour) {轮廓检测\\{\itshape findContours}};
-            \node[block, below of=contour, fill=purple!15] (filter) {轮廓筛选\\{\itshape 面积+形状}};
-            \node[block, left of=filter, fill=orange!15] (layout) {版面分析\\{\itshape 投影法}};
-            \node[block, left of=layout, fill=cyan!15] (output) {区域输出\\{\itshape 题目定位}};
+            % Bottom row (steps 5-7)
+            \node[pblock, fill=orange!10] (filter) at (9.3, -0.9)
+                {\textbf{轮廓筛选}\\[-1pt]{\itshape 面积 + 形状}};
+            \node[pblock, fill=violet!10] (layout) at (6.2, -0.9)
+                {\textbf{版面分析}\\[-1pt]{\itshape 投影法}};
+            \node[pblock, fill=cyan!12] (output) at (3.1, -0.9)
+                {\textbf{区域输出}\\[-1pt]{\itshape 题目定位}};
 
-            \draw[arrow] (input) -- (pre);
-            \draw[arrow] (pre) -- (edge);
-            \draw[arrow] (edge) -- (contour);
-            \draw[arrow] (contour) -- (filter);
-            \draw[arrow] (filter) -- (layout);
-            \draw[arrow] (layout) -- (output);
+            % Step badges
+            \node[circle, fill=blue!50, text=white, font=\tiny\bfseries,
+                inner sep=1.5pt, minimum size=11pt]
+                at ([shift={(-0.6, 0.4)}]input.north west)   {1};
+            \node[circle, fill=yellow!60, text=white, font=\tiny\bfseries,
+                inner sep=1.5pt, minimum size=11pt]
+                at ([shift={(-0.6, 0.4)}]pre.north west)     {2};
+            \node[circle, fill=green!50, text=white, font=\tiny\bfseries,
+                inner sep=1.5pt, minimum size=11pt]
+                at ([shift={(-0.6, 0.4)}]edge.north west)    {3};
+            \node[circle, fill=red!40, text=white, font=\tiny\bfseries,
+                inner sep=1.5pt, minimum size=11pt]
+                at ([shift={(-0.6, 0.4)}]contour.north west) {4};
+            \node[circle, fill=orange!50, text=white, font=\tiny\bfseries,
+                inner sep=1.5pt, minimum size=11pt]
+                at ([shift={(-0.6, 0.4)}]filter.north west) {5};
+            \node[circle, fill=violet!50, text=white, font=\tiny\bfseries,
+                inner sep=1.5pt, minimum size=11pt]
+                at ([shift={(-0.6, 0.4)}]layout.north west) {6};
+            \node[circle, fill=cyan!50, text=white, font=\tiny\bfseries,
+                inner sep=1.5pt, minimum size=11pt]
+                at ([shift={(-0.6, 0.4)}]output.north west) {7};
+
+            % Function annotations
+            \node[note] at ([yshift=-1mm]input.south)   {imread()};
+            \node[note] at ([yshift=-1mm]pre.south)     {cvtColor + Blur};
+            \node[note] at ([yshift=-1mm]edge.south)   {cv2.Canny()};
+            \node[note] at ([yshift=-1mm]contour.south){findContours()};
+            \node[note] at ([yshift=1mm]filter.north)  {approxPolyDP};
+            \node[note] at ([yshift=1mm]layout.north)   {np.sum(axis=1)};
+            \node[note] at ([yshift=1mm]output.north)   {connectedComponents};
+
+            % Arrows
+            \draw[arr] (input)    -- (pre);
+            \draw[arr] (pre)     -- (edge);
+            \draw[arr] (edge)    -- (contour);
+            \draw[arr] (contour) -- (filter);
+            \draw[arr] (filter)  -- (layout);
+            \draw[arr] (layout)  -- (output);
         \end{tikzpicture}
     \end{center}
 \end{frame}
