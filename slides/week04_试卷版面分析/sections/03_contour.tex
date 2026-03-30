@@ -54,18 +54,17 @@
     \end{alertblock}
 \end{frame}
 
-\begin{frame}{课堂互动：错误找茬}
+\begin{frame}[fragile]{课堂互动：错误找茬}
     \begin{block}{题目（集体讨论，3分钟）}
         以下代码运行时出错，请找出错误原因并修正。
     \end{block}
 
-    \vspace{0.2cm}
+    \vspace{0.15cm}
 
     \begin{columns}
-        \column{0.55\textwidth}
+        \column{0.52\textwidth}
         \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 import cv2
-
 img = cv2.imread('exam.jpg')
 edges = cv2.Canny(img, 50, 150)
 contours, _ = cv2.findContours(
@@ -73,24 +72,15 @@ contours, _ = cv2.findContours(
     cv2.CHAIN_APPROX_SIMPLE)
         \end{lstlisting}
 
-        \column{0.45\textwidth}
-        \begin{alertblock}{Bug 所在行}
-            \texttt{edges = cv2.Canny(img, 50, 150)}
+        \column{0.48\textwidth}
+        \begin{alertblock}{Bug}
+            \texttt{Canny(img, ...)} 用了彩色图！
         \end{alertblock}
 
-        \vspace{0.2cm}
-
-        \begin{block}{错误原因}
-            \texttt{img} 是彩色图，BGR 三通道 \\
-            \texttt{Canny} 需要灰度图输入！
-        \end{block}
-
-        \vspace{0.2cm}
-
-        \begin{block}{修正方法}
+        \begin{block}{修正}
             \texttt{gray = cv2.cvtColor(img,} \\
-            \texttt{~~~~~~~~~ cv2.COLOR\_BGR2GRAY)} \\
-            \texttt{edges = cv2.Canny(gray, 50, 150)}
+            \texttt{~~~~~ cv2.COLOR\_BGR2GRAY)} \\
+            \texttt{edges = cv2.Canny(gray, ...)}
         \end{block}
     \end{columns}
 \end{frame}
@@ -300,7 +290,7 @@ cv2.waitKey(0)
     \end{lstlisting}
 \end{frame}
 
-\begin{frame}{AI辅助学习：向AI提问的技巧}
+\begin{frame}{AI辅助学习：向AI提问的技巧（一）}
     \textbf{场景1：理解Canny算法}
     \begin{exampleblock}{Prompt示例}
         请解释Canny边缘检测算法的4个步骤，并用简单的比喻帮助我理解。
@@ -310,30 +300,33 @@ cv2.waitKey(0)
 
     \textbf{场景2：调试边缘检测代码}
     \begin{exampleblock}{Prompt示例}
-        我的Canny边缘检测代码报错了，错误信息是：[错误信息]
-
-        运行环境：Windows 11, Python 3.9.7, OpenCV 4.8.0
-
-        相关代码：[粘贴代码]
-
+        我的Canny边缘检测代码报错了：[错误信息] \\
+        运行环境：Python 3.9, OpenCV 4.8, Windows 11 \\
+        相关代码：[粘贴代码] \\
         请帮我分析原因并提供解决方案。
-    \end{exampleblock}
-
-    \vspace{0.3cm}
-
-    \textbf{场景3：优化轮廓检测}
-    \begin{exampleblock}{Prompt示例}
-        我用findContours检测到了很多轮廓，但想找到试卷轮廓。
-
-        筛选条件：
-        1. 面积应该是图像的50%-80%
-        2. 应该是四边形
-
-        请帮我编写筛选代码。
     \end{exampleblock}
 \end{frame}
 
-\begin{frame}{轮廓筛选技巧}
+\begin{frame}{AI辅助学习：向AI提问的技巧（二）}
+    \textbf{场景3：优化轮廓检测}
+    \begin{exampleblock}{Prompt示例}
+        我用findContours检测到了很多轮廓，但想找到试卷轮廓。筛选条件：\\
+        1. 面积是图像的50%-80\%  2. 是四边形
+    \end{exampleblock}
+
+    \vspace{0.4cm}
+
+    \begin{block}{提问技巧总结}
+        \begin{itemize}
+            \item 说明环境和版本
+            \item 粘贴完整代码
+            \item 描述期望结果 vs 实际结果
+            \item 明确说明编程语言和库版本
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{轮廓筛选技巧（一）}
     \textbf{按面积筛选：}
     \begin{itemize}
         \item 排除过小的轮廓（噪声）
@@ -345,11 +338,19 @@ cv2.waitKey(0)
         \item 只保留图像中心区域
         \item 排除边缘区域的轮廓
     \end{itemize}
+\end{frame}
 
+\begin{frame}{轮廓筛选技巧（二）}
     \textbf{按形状筛选：}
     \begin{itemize}
         \item 按长宽比筛选
-        \item 按纵横比筛选
         \item 按凸包面积比筛选
+        \item 按顶点数筛选（四边形=试卷）
     \end{itemize}
+
+    \vspace{0.4cm}
+
+    \begin{block}{组合策略}
+        面积筛选 + 位置筛选 + 形状筛选 = 精准定位试卷
+    \end{block}
 \end{frame}

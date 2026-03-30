@@ -42,30 +42,24 @@
 % 页面2：分组策略
 %===========================================================
 \begin{frame}{本周分组策略}
-    \textbf{分组原则：}
-    \begin{itemize}
-        \item 每4人为一组
-        \item 确保不同专业背景混合
-        \item 建议包含：理工科、文科、无编程基础、有编程基础
-    \end{itemize}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \textbf{分组原则：}
+        \begin{itemize}
+            \item 每4人为一组
+            \item 确保不同专业背景混合
+            \item 含：理工科、文科、有/无编程基础
+        \end{itemize}
 
-    \vspace{0.3cm}
-
-    \textbf{角色分工：}
-    \begin{table}
-        \centering
-        \small
-        \begin{tabular}{lp{6cm}l}
-            \toprule
-            \textbf{角色} & \textbf{职责} & \textbf{适合} \\
-            \midrule
-            组长 & 统筹协调、进度管理 & 组织能力强的 \\
-            算法实现者 & 实现边缘检测、轮廓检测 & 有编程基础的 \\
-            参数调优者 & 调整Canny阈值、轮廓筛选参数 & 细心负责的 \\
-            测试者 & 收集测试用例、报告问题 & 细心负责的 \\
-            \bottomrule
-        \end{tabular}
-    \end{table}
+        \column{0.5\textwidth}
+        \textbf{角色分工：}
+        \begin{itemize}
+            \item \textbf{组长}：统筹协调、进度管理
+            \item \textbf{算法实现者}：边缘检测、轮廓检测
+            \item \textbf{参数调优者}：Canny阈值、筛选参数
+            \item \textbf{测试者}：收集用例、报告问题
+        \end{itemize}
+    \end{columns}
 
     \vspace{0.3cm}
 
@@ -108,7 +102,7 @@
 %===========================================================
 % 页面4：并行学习路径
 %===========================================================
-\begin{frame}{并行学习路径}
+\begin{frame}{并行学习路径（一）}
     \textbf{观察者路径：}
     \begin{itemize}
         \item 理解版面分析原理
@@ -116,7 +110,7 @@
         \item 完成基础任务：运行示例代码
     \end{itemize}
 
-    \vspace{0.3cm}
+    \vspace{0.4cm}
 
     \textbf{使用者路径：}
     \begin{itemize}
@@ -124,15 +118,21 @@
         \item 调整Canny阈值、轮廓筛选参数
         \item 完成核心任务：标注三种题型区域
     \end{itemize}
+\end{frame}
 
-    \vspace{0.3cm}
-
+\begin{frame}{并行学习路径（二）}
     \textbf{创造者路径：}
     \begin{itemize}
         \item 设计自己的版面分析算法
         \item 处理复杂版式的试卷
         \item 完成挑战任务：实现自适应版面分析
     \end{itemize}
+
+    \vspace{0.5cm}
+
+    \begin{alertblock}{选择建议}
+        根据个人基础选择路径，可逐步进阶：观察者 $\rightarrow$ 使用者 $\rightarrow$ 创造者
+    \end{alertblock}
 \end{frame}
 
 %===========================================================

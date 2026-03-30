@@ -140,17 +140,17 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
         将 Canny 边缘检测代码打乱成5块，小组协作复原完整代码并成功运行。
     \end{block}
 
-    \vspace{0.3cm}
+    \vspace{0.2cm}
 
     \begin{columns}
         \column{0.5\textwidth}
         \textbf{打乱的代码块：}
         \begin{enumerate}
-            \item \texttt{blur = cv2.GaussianBlur(...)}
-            \item \texttt{edges = cv2.Canny(blur, 50, 150)}
-            \item \texttt{gray = cv2.cvtColor(img, ...)}
-            \item \texttt{cv2.waitKey(0)}
-            \item \texttt{cv2.imshow('Edges', edges)}
+            \item \texttt{blur = GaussianBlur(...)}
+            \item \texttt{edges = Canny(blur, 50, 150)}
+            \item \texttt{gray = cvtColor(img, ...)}
+            \item \texttt{waitKey(0)}
+            \item \texttt{cv2.imshow(...)}
         \end{enumerate}
 
         \column{0.5\textwidth}
@@ -161,10 +161,10 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
             \item 最后显示结果
         \end{itemize}
 
-        \vspace{0.3cm}
+        \vspace{0.2cm}
 
         \begin{alertblock}{评判标准}
-            代码能正确运行 + 运行结果有边缘图像
+            代码能正确运行
         \end{alertblock}
     \end{columns}
 \end{frame}
@@ -278,15 +278,15 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
 
 \begin{frame}{课堂互动：参数调试挑战}
     \begin{columns}
-        \column{0.55\textwidth}
+        \column{0.52\textwidth}
         \textbf{任务（限时5分钟）}
         \begin{enumerate}
             \item 打开示例图像
-            \item 调整 Canny 低阈值和高阈值
-            \item 目标：边缘检测"刚刚好"
+            \item 调整 Canny 低/高阈值
+            \item 目标：边缘"刚刚好"
         \end{enumerate}
 
-        \vspace{0.3cm}
+        \vspace{0.2cm}
 
         \textbf{评判标准（举手抢答）：}
         \begin{itemize}
@@ -295,20 +295,18 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
             \item 主要内容结构完整
         \end{itemize}
 
-        \column{0.45\textwidth}
-        \begin{block}{调参口诀}
+        \column{0.48\textwidth}
+        \begin{block}{\normalsize 调参口诀}
             \centering
-            \Large
-            低阈值$\uparrow$ $\rightarrow$ 减少噪声 \\
-            高阈值$\uparrow$ $\rightarrow$ 只留强边缘 \\
-            高/低 $\approx$ 2$\sim$3 倍
+            \texttt{低阈值↑ → 减少噪声} \\
+            \texttt{高阈值↑ → 只留强边缘} \\
+            \texttt{高/低 ≈ 2$\sim$3 倍}
         \end{block}
 
-        \vspace{0.2cm}
+        \vspace{0.15cm}
 
         \begin{alertblock}{提示}
-            推荐起始值：\\
-            (50, 150) $\rightarrow$ 微调观察
+            推荐起始值：(50, 150)
         \end{alertblock}
     \end{columns}
 \end{frame}
