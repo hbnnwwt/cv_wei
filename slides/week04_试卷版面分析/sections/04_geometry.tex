@@ -145,29 +145,17 @@ defects = cv2.convexityDefects(contour, hull_idx)
 \end{frame}
 
 \begin{frame}[fragile]{找到试卷轮廓}
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
 def find_paper_contour(contours, image_area):
-    """
-    Find paper contour from list
-    """
     for contour in contours:
         area = cv2.contourArea(contour)
-
-        # area filter: should be a fraction of image
         if area > image_area * 0.5:
-            # compute perimeter
             peri = cv2.arcLength(contour, True)
-
-            # polygon approximation
             approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
-
-            # if quadrilateral
             if len(approx) == 4:
                 return approx
-
     return None
 
-# usage
 image_area = gray.shape[0] * gray.shape[1]
 paper_contour = find_paper_contour(contours, image_area)
     \end{lstlisting}

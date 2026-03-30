@@ -143,15 +143,7 @@ plt.show()
 \begin{frame}[fragile]{找到分隔线}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def find_divider_lines(proj, threshold=10, min_length=5):
-    """
-    Find divider lines (valleys)
-    proj: projection array
-    threshold: valley threshold
-    min_length: min consecutive length (noise filter)
-    """
-    dividers = []
-    current_start = None
-
+    dividers, current_start = [], None
     for i, value in enumerate(proj):
         if value < threshold:
             if current_start is None:
@@ -162,10 +154,7 @@ def find_divider_lines(proj, threshold=10, min_length=5):
                 if length >= min_length:
                     dividers.append((current_start, i))
                 current_start = None
-
     return dividers
-
-# usage
 dividers = find_divider_lines(h_proj, threshold=10)
     \end{lstlisting}
 \end{frame}
@@ -173,31 +162,17 @@ dividers = find_divider_lines(h_proj, threshold=10)
 \begin{frame}[fragile]{投影法实战}
     \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 def layout_analysis(binary):
-    """
-    Layout analysis: find question dividers
-    """
-    # horizontal projection
     h_proj = np.sum(binary // 255, axis=1)
-
-    # find divider lines
-    threshold = np.mean(h_proj) * 0.1  # adaptive threshold
+    threshold = np.mean(h_proj) * 0.1
     dividers = find_divider_lines(h_proj, threshold)
-
-    # compute question regions
-    regions = []
-    prev_end = 0
+    regions, prev_end = [], 0
     for start, end in dividers:
         if start > prev_end:
             regions.append((prev_end, start))
         prev_end = end
-
-    # last region
     if prev_end < binary.shape[0]:
         regions.append((prev_end, binary.shape[0]))
-
     return regions
-
-# usage
 regions = layout_analysis(binary)
 print(f"Found {len(regions)} regions")
     \end{lstlisting}
@@ -226,24 +201,13 @@ print(f"Found {len(regions)} regions")
 \end{frame}
 
 \begin{frame}[fragile]{连通域检测}
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# connected components
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
 num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
-    binary,      # input (binary, 0=bg, >0=fg)
-    connectivity=8  # 8-connectivity
-)
-
-# stats: [x, y, width, height, area]
-# centroids: [cx, cy]
-
-# iterate all components (skip bg label=0)
+    binary, connectivity=8)
 for i in range(1, num_labels):
     x, y, w, h, area = stats[i]
-    cx, cy = centroids[i]
-
-    # filter: area within range
     if 100 < area < 10000:
-        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
     \end{lstlisting}
 \end{frame}
 
@@ -255,8 +219,6 @@ for i in range(1, num_labels):
         \item \textbf{连通域分析}：识别填涂区域
         \item \textbf{区域标注}：绘制识别结果
     \end{enumerate}
-
-    \vspace{0.3cm}
 
     \begin{block}{组合策略}
         轮廓检测 + 投影法 + 连通域分析 = 完整版面分析

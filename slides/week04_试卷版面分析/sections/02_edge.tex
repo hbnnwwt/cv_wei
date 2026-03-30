@@ -41,42 +41,22 @@
         边缘是图像中像素值发生\textbf{什么变化}的位置？
     \end{alertblock}
 
-    \pause
-    \vspace{0.2cm}
-
     \begin{columns}
         \column{0.33\textwidth}
-        \begin{block}{A}
-            剧烈变化
-        \end{block}
-
+        \begin{block}{A}剧烈变化\end{block}
         \column{0.33\textwidth}
-        \begin{block}{B}
-            缓慢变化
-        \end{block}
-
+        \begin{block}{B}缓慢变化\end{block}
         \column{0.33\textwidth}
-        \begin{block}{C}
-            无变化
-        \end{block}
+        \begin{block}{C}无变化\end{block}
     \end{columns}
 
-    \pause
-    \vspace{0.3cm}
-
-    \begin{uncoverenv}
-        \begin{alertblock}{揭晓答案}
-            \textbf{正确答案：A}（阶跃边缘处梯度幅值最大）
-        \end{alertblock}
-
-        \pause
-
-        \begin{block}{为什么？}
-            梯度 = 像素值变化的剧烈程度 \\
-            边缘 = 梯度局部最大值的位置 \\
-            $\Rightarrow$ 剧烈变化处 $\Rightarrow$ 边缘
-        \end{block}
-    \end{uncoverenv}
+    \only<2->{
+    \begin{alertblock}{揭晓答案}
+        \textbf{正确答案：A}（阶跃边缘处梯度幅值最大）
+    \end{alertblock}
+    \begin{block}{为什么？}
+        梯度 = 变化剧烈程度，边缘 = 梯度局部最大值
+    \end{block}}
 \end{frame}
 
 \begin{frame}{梯度与边缘}
@@ -88,12 +68,8 @@
     \textbf{梯度幅值：}
     $$|\nabla f| = \sqrt{(\frac{\partial f}{\partial x})^2 + (\frac{\partial f}{\partial y})^2}$$
 
-    \vspace{0.2cm}
-
     \textbf{梯度方向：}
     $$\theta = \arctan(\frac{\partial f}{\partial y} / \frac{\partial f}{\partial x})$$
-
-    \vspace{0.3cm}
 
     \begin{block}{核心思想}
         边缘处梯度幅值最大！
@@ -148,68 +124,34 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
 \end{frame}
 
 \begin{frame}{课堂互动：代码拼图挑战（第1步——动手拼）}
-    \begin{block}{任务（小组竞赛，5分钟）}
-        将 Canny 边缘检测的 6 行代码打乱，小组协作复原正确顺序。
-    \end{block}
+    \textbf{任务（小组竞赛，5分钟）：}将 Canny 边缘检测的 6 行代码打乱，小组协作复原正确顺序。
 
-    \pause
-    \vspace{0.2cm}
+    \begin{columns}[t]
+        \column{0.6\textwidth}
+        \fontsize{9pt}{10pt}\selectfont
+        1. blur = cv2.GaussianBlur(gray, (5,5), 0)\\
+        2. edges = cv2.Canny(blur, 50, 150)\\
+        3. gray = cv2.cvtColor(img, cv2.COLOR\_BGR2GRAY)\\
+        4. cv2.imshow('Edges', edges)\\
+        5. cv2.waitKey(0)\\
+        6. img = cv2.imread('exam.jpg')
 
-    \begin{columns}
-        \column{0.58\textwidth}
-        \textbf{打乱的代码块（无序号，自己判断顺序）：}
-        \begin{enumerate}
-            \item \texttt{blur = cv2.GaussianBlur(gray, (5, 5), 0)}
-            \item \texttt{edges = cv2.Canny(blur, 50, 150)}
-            \item \texttt{gray = cv2.cvtColor(img, cv2.COLOR\_BGR2GRAY)}
-            \item \texttt{cv2.imshow('Edges', edges)}
-            \item \texttt{cv2.waitKey(0)}
-            \item \texttt{img = cv2.imread('exam.jpg')}
-        \end{enumerate}
-
-        \column{0.42\textwidth}
-        \textbf{思考提示（按空格逐步揭示）：}
-        \pause
-
-        \begin{uncoverenv}
-            \begin{block}{提示1}
-                整段代码缺少什么第一步？
-            \end{block}
-        \end{uncoverenv}
-
-        \pause
-
-        \begin{uncoverenv}
-            \begin{block}{提示2}
-                哪两行用了同一个变量？
-            \end{block}
-        \end{uncoverenv}
+        \column{0.4\textwidth}
+        \fontsize{9pt}{10pt}\selectfont
+        提示1：缺少第一步？\\[4pt]
+        提示2：同变量在哪？
     \end{columns}
 \end{frame}
 
 \begin{frame}{课堂互动：代码拼图挑战（第1.5步——更多提示）}
-    \begin{block}{提示（续）}
-        \pause
+    \fontsize{9pt}{10pt}\selectfont
+    提示3：Gray 变量是哪里来的？\\[4pt]
+    提示4：imshow 和 waitKey 谁在前？\\[6pt]
 
-        \begin{block}{提示3}
-            Gray 变量是哪里来的？
-        \end{block}
-
-        \pause
-
-        \begin{block}{提示4}
-            imshow 和 waitKey 谁在前？
-        \end{block}
-    \end{block}
-
-    \pause
-    \vspace{0.3cm}
-
-    \begin{uncoverenv}
-        \begin{alertblock}{评判标准}
-            代码能正确运行，且依赖关系正确
-        \end{alertblock}
-    \end{uncoverenv}
+    \only<2->{
+    \begin{alertblock}{评判标准}
+        代码能正确运行，且依赖关系正确
+    \end{alertblock}}
 \end{frame}
 
 \begin{frame}[fragile]{课堂互动：代码拼图挑战（第2步——揭晓顺序）}
@@ -225,17 +167,10 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \end{block}
 
     \pause
-    \vspace{0.3cm}
 
     \begin{uncoverenv}
-        \begin{block}{依赖关系（按空格逐步揭晓）}
-            \texttt{imread} 输出 $\xrightarrow{}$ \texttt{gray} 输入 \\
-            \pause
-            \texttt{gray} 输出 $\xrightarrow{}$ \texttt{blur} 输入 \\
-            \pause
-            \texttt{blur} 输出 $\xrightarrow{}$ \texttt{edges} 输入 \\
-            \pause
-            \texttt{edges} 输出 $\xrightarrow{}$ \texttt{imshow} 显示
+        \begin{block}{依赖关系}
+            \texttt{imread} $\xrightarrow{}$ \texttt{gray} $\xrightarrow{}$ \texttt{blur} $\xrightarrow{}$ \texttt{edges} $\xrightarrow{}$ \texttt{imshow}
         \end{block}
     \end{uncoverenv}
 \end{frame}
@@ -383,26 +318,20 @@ sobel = np.sqrt(sobel_x**2 + sobel_y**2)
         \begin{block}{\centering 优秀}
             试卷边界清晰
         \end{block}
-
         \column{0.3\textwidth}
         \begin{block}{\centering 良好}
             无明显噪声
         \end{block}
-
         \column{0.3\textwidth}
         \begin{block}{\centering 及格}
             结构完整
         \end{block}
     \end{columns}
 
-    \pause
-    \vspace{0.2cm}
-
-    \begin{uncoverenv}
-        \begin{alertblock}{揭晓}
-            推荐参数：(50, 150) 或 (75, 200)
-        \end{alertblock}
-    \end{uncoverenv}
+    \only<2->{
+    \begin{alertblock}{揭晓}
+        推荐参数：(50, 150) 或 (75, 200)
+    \end{alertblock}}
 \end{frame}
 
 \begin{frame}{课堂互动：参数调试挑战（第2步——调参口诀）}
@@ -487,27 +416,15 @@ cv2.waitKey(0)
 \begin{frame}[fragile]{自动阈值选择}
     \textbf{问题：} 手动调参太繁琐
 
-    \vspace{0.2cm}
-
     \textbf{解决方案：} 基于图像中值自动计算
 
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
 def auto_canny(gray, sigma=0.33):
-    """
-    Auto-compute Canny thresholds
-    sigma: controls threshold range, typically 0.33
-    """
-    # compute image median
     v = np.median(gray)
-
-    # compute thresholds
     lower = int(max(0, (1.0 - sigma) * v))
     upper = int(min(255, (1.0 + sigma) * v))
-
-    # apply Canny
     return cv2.Canny(gray, lower, upper)
 
-# usage
 edges = auto_canny(blur)
     \end{lstlisting}
 \end{frame}

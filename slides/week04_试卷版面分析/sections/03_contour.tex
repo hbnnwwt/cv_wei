@@ -219,14 +219,7 @@ contours, hierarchy = cv2.findContours(
 \end{frame}
 
 \begin{frame}{层级结构（hierarchy）}
-    \textbf{什么是层级？}
-    \begin{itemize}
-        \item 轮廓之间的包含关系
-        \item 外轮廓 vs 内轮廓（孔洞）
-        \item 用树形结构表示
-    \end{itemize}
-
-    \vspace{0.3cm}
+    \textbf{什么是层级？}轮廓之间的包含关系（外轮廓 vs 内轮廓）
 
     \textbf{hierarchy 数组格式：}
     $$
@@ -245,7 +238,7 @@ contours, hierarchy = cv2.findContours(
     \begin{columns}
         \column{0.4\textwidth}
         \centering
-        \begin{tikzpicture}
+        \begin{tikzpicture}[scale=0.85]
             \draw[thick] (0,0) rectangle (3,3);
             \draw[thick] (0.5,0.5) rectangle (1.5,1.5);
             \draw[thick] (2,1) rectangle (2.8,2);
@@ -270,68 +263,39 @@ contours, hierarchy = cv2.findContours(
             \end{tabular}
         \end{table}
 
-        \small
-        \begin{itemize}
+        \begin{itemize}\small\itemsep=0pt
             \item 轮廓0：外轮廓（无父级）
-            \item 轮廓1：内轮廓（父级=0）
-            \item 轮廓2：内轮廓（父级=0）
+            \item 轮廓1、2：内轮廓（父级=0）
         \end{itemize}
     \end{columns}
 \end{frame}
 
 \begin{frame}[fragile]{绘制轮廓}
     \textbf{drawContours 函数：}
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# draw all contours
-output = cv2.drawContours(
-    image.copy(),    # target image (modifies original)
-    contours,        # contour list
-    -1,              # -1=all contours, 0=first contour
-    (0, 255, 0),     # color (BGR)
-    2                # line width
-)
-
-# draw specific contour
-output = cv2.drawContours(
-    image.copy(), contours, 0, (0, 0, 255), 3
-)
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
+# 绘制所有轮廓
+output = cv2.drawContours(image.copy(), contours, -1, (0,255,0), 2)
+# 绘制第1个轮廓
+output = cv2.drawContours(image.copy(), contours, 0, (0,0,255), 3)
     \end{lstlisting}
 
-    \vspace{0.2cm}
-
-    \textbf{填充轮廓：}
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
-# thickness=-1 means fill
-output = cv2.drawContours(
-    image.copy(), contours, -1, (0, 255, 0), -1
-)
+    \textbf{填充轮廓（thickness=-1）：}
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
+output = cv2.drawContours(image.copy(), contours, -1, (0,255,0), -1)
     \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{轮廓检测完整示例}
-    \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+    \begin{lstlisting}[basicstyle=\ttfamily\small]
 import cv2
-import numpy as np
-
-# read image
 img = cv2.imread('exam.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-# preprocessing
 blur = cv2.GaussianBlur(gray, (5, 5), 0)
 edges = cv2.Canny(blur, 50, 150)
-
-# find contours
-contours, hierarchy = cv2.findContours(
-    edges,
-    cv2.RETR_EXTERNAL,
-    cv2.CHAIN_APPROX_SIMPLE
-)
-
-# draw contours
+contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL,
+                                 cv2.CHAIN_APPROX_SIMPLE)
 output = img.copy()
 cv2.drawContours(output, contours, -1, (0, 255, 0), 2)
-
 print(f"Found {len(contours)} contours")
 cv2.imshow('Contours', output)
 cv2.waitKey(0)
