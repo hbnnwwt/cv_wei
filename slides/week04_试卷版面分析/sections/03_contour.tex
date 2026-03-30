@@ -60,7 +60,6 @@
     \end{block}
 
     \pause
-    \vspace{0.2cm}
 
     \begin{columns}
         \column{0.55\textwidth}
@@ -81,13 +80,14 @@ contours, _ = cv2.findContours(
     \end{columns}
 
     \pause
-    \vspace{0.2cm}
 
     \begin{uncoverenv}
         \begin{block}{提示}
             Canny 函数的输入图像，需要满足什么条件？
         \end{block}
     \end{uncoverenv}
+
+\codesrc{code/contour\_detection.py :: detect\_contours()}
 \end{frame}
 
 \begin{frame}[fragile]{课堂互动：错误找茬（第2步——Bug定位）}
@@ -110,6 +110,8 @@ edges = cv2.Canny(
             \end{lstlisting}
         \end{block}
     \end{columns}
+
+\codesrc{code/contour\_detection.py :: detect\_contours()}
 \end{frame}
 
 \begin{frame}[fragile]{课堂互动：错误找茬（第3步——经验总结）}
@@ -175,6 +177,8 @@ contours, hierarchy = cv2.findContours(
     \end{lstlisting}
 
     \textbf{轮廓检索模式（mode）：}
+
+\codesrc{code/contour\_detection.py :: detect\_contours()}
     \begin{table}
         \centering
         \small
@@ -216,6 +220,8 @@ contours, hierarchy = cv2.findContours(
     \end{lstlisting}
 
     \textbf{推荐：} RETR\_EXTERNAL + CHAIN\_APPROX\_SIMPLE
+
+\codesrc{code/contour\_detection.py}
 \end{frame}
 
 \begin{frame}{层级结构（hierarchy）}
@@ -283,6 +289,8 @@ output = cv2.drawContours(image.copy(), contours, 0, (0,0,255), 3)
     \begin{lstlisting}[basicstyle=\ttfamily\small]
 output = cv2.drawContours(image.copy(), contours, -1, (0,255,0), -1)
     \end{lstlisting}
+
+\codesrc{code/contour\_detection.py :: draw\_contours()}
 \end{frame}
 
 \begin{frame}[fragile]{轮廓检测完整示例}
@@ -300,6 +308,8 @@ print(f"Found {len(contours)} contours")
 cv2.imshow('Contours', output)
 cv2.waitKey(0)
     \end{lstlisting}
+
+\codesrc{code/contour\_detection.py :: contour\_detection\_pipeline()}
 \end{frame}
 
 \begin{frame}{AI辅助学习：向AI提问的技巧（一）}

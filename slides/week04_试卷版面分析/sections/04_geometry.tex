@@ -46,6 +46,8 @@ if 0.1 < area_ratio < 0.8:
     \vspace{0.2cm}
 
     \textbf{应用：} 根据面积筛选目标轮廓
+
+\codesrc{code/geometry\_features.py :: compute\_contour\_features()}
 \end{frame}
 
 \begin{frame}[fragile]{边界矩形}
@@ -68,6 +70,8 @@ box = np.int0(box)
 # draw rotated rectangle
 cv2.drawContours(img, [box], 0, (0, 0, 255), 2)
     \end{lstlisting}
+
+\codesrc{code/geometry\_features.py :: compute\_contour\_features()}
 \end{frame}
 
 \begin{frame}{多边形逼近}
@@ -117,6 +121,8 @@ print(f"vertices: {num_vertices}")
 # draw approximation result
 cv2.drawContours(img, [approx], 0, (0, 255, 0), 2)
     \end{lstlisting}
+
+\codesrc{code/geometry\_features.py :: polygon\_approximation()}
 \end{frame}
 
 \begin{frame}[fragile]{凸包与凸缺陷}
@@ -142,6 +148,8 @@ hull = cv2.convexHull(contour)
 hull_idx = cv2.convexHull(contour, returnPoints=False)
 defects = cv2.convexityDefects(contour, hull_idx)
     \end{lstlisting}
+
+\codesrc{code/geometry\_features.py :: compute\_convex\_hull()}
 \end{frame}
 
 \begin{frame}[fragile]{找到试卷轮廓}
@@ -159,6 +167,8 @@ def find_paper_contour(contours, image_area):
 image_area = gray.shape[0] * gray.shape[1]
 paper_contour = find_paper_contour(contours, image_area)
     \end{lstlisting}
+
+\codesrc{code/geometry\_features.py :: find\_paper\_contour()}
 \end{frame}
 
 \begin{frame}[fragile]{形状匹配}
@@ -183,4 +193,6 @@ match = cv2.matchShapes(
     \end{lstlisting}
 
     \textbf{应用：} 识别标准形状（圆形、方形等）
+
+\codesrc{code/geometry\_features.py :: match\_shapes()}
 \end{frame}

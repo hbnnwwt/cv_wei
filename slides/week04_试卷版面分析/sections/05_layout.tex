@@ -84,6 +84,8 @@ binary = cv2.adaptiveThreshold(gray, 255,
     cv2.THRESH_BINARY_INV, 11, 2)
 h_proj = horizontal_projection(binary)
     \end{lstlisting}
+
+\codesrc{code/layout\_analysis.py :: horizontal\_projection()}
 \end{frame}
 
 \begin{frame}[fragile]{垂直投影}
@@ -106,6 +108,8 @@ plt.plot(v_proj)
 plt.title('Vertical Projection')
 plt.show()
     \end{lstlisting}
+
+\codesrc{code/layout\_analysis.py :: vertical\_projection()}
 \end{frame}
 
 \begin{frame}{投影波形分析}
@@ -157,6 +161,8 @@ def find_divider_lines(proj, threshold=10, min_length=5):
     return dividers
 dividers = find_divider_lines(h_proj, threshold=10)
     \end{lstlisting}
+
+\codesrc{code/layout\_analysis.py :: find\_divider\_lines()}
 \end{frame}
 
 \begin{frame}[fragile]{投影法实战}
@@ -176,6 +182,8 @@ def layout_analysis(binary):
 regions = layout_analysis(binary)
 print(f"Found {len(regions)} regions")
     \end{lstlisting}
+
+\codesrc{code/layout\_analysis.py :: layout\_analysis()}
 \end{frame}
 
 \begin{frame}{连通域分析}
@@ -209,6 +217,8 @@ for i in range(1, num_labels):
     if 100 < area < 10000:
         cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
     \end{lstlisting}
+
+\codesrc{code/layout\_analysis.py :: connected\_components\_analysis()}
 \end{frame}
 
 \begin{frame}{区域定位完整流程}

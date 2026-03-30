@@ -101,6 +101,8 @@ sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
 sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
 sobel = np.sqrt(sobel_x**2 + sobel_y**2)
     \end{lstlisting}
+
+\codesrc{code/edge\_detection.py → sobel\_edge\_detection()}
 \end{frame}
 
 \begin{frame}{Canny 边缘检测}
@@ -386,6 +388,8 @@ edges = cv2.Canny(blur, 50, 150)
 cv2.imshow('Edges', edges)
 cv2.waitKey(0)
     \end{lstlisting}
+
+\codesrc{code/edge\_detection.py → canny\_edge\_detection()}
 \end{frame}
 
 \begin{frame}[fragile]{Canny 参数调优}
@@ -427,4 +431,6 @@ def auto_canny(gray, sigma=0.33):
 
 edges = auto_canny(blur)
     \end{lstlisting}
+
+\codesrc{code/edge\_detection.py → auto\_canny()}
 \end{frame}
