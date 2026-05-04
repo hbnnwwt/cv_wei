@@ -20,19 +20,8 @@ Thumbs.db
 # Output (保留目录结构，不跟踪生成结果)
 data/output/*.xlsx
 
-# LLM 配置（含 API Key，不入库）
-config/llm_config.json
+# API Key（敏感信息，不入库）
+config/api_keys.json
 
 # Portable Python (太大，不应入库)
 python_portable/
-
-# ── 学生需自行实现的代码（教学仓库不跟踪） ──
-app.py
-main.py
-run.bat
-run_gui.bat
-run_tests.bat
-run_tests.sh
-setup.bat
-modules/*.py
-!modules/__init__.py
