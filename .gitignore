@@ -29,3 +29,14 @@ Thumbs.db
 # 备份文件
 *_backup.*
 *~*
+
+# ── auto_grading_system 实现代码（教学仓库不跟踪，学生自行实现） ──
+docs/auto_grading_system/app.py
+docs/auto_grading_system/main.py
+docs/auto_grading_system/run.bat
+docs/auto_grading_system/run_gui.bat
+docs/auto_grading_system/run_tests.bat
+docs/auto_grading_system/run_tests.sh
+docs/auto_grading_system/setup.bat
+docs/auto_grading_system/modules/*.py
+!docs/auto_grading_system/modules/__init__.py
