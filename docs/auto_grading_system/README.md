@@ -127,33 +127,34 @@ requests>=2.28
 
 | 编号 | 文件 | 问题 | 说明 |
 |------|------|------|------|
-| P1 | `main.py` | 缺少 LLM 评分、错题标注、配置加载、OCR 引擎选择 | CLI 版本严重落后于 GUI，缺少 `LLMEssayGrader`、`marker.mark_and_save`、`config` 加载、OCR 引擎选择功能 |
-| P2 | `main.py` / `pipeline.py` | CLI 默认阈值 0.5，GUI 使用 0.06 | `main.py` 调用 `recognize_choices/judges` 时未传 `threshold`，使用 `pipeline.py` 默认值 0.5，导致几乎无法识别填涂气泡 |
-| P3 | `README.md` | ~~引用不存在的 `config/llm_config.json`~~ | 已修复：更新为 `model_config.json` + `api_keys.json` |
-| P4 | `essay_recognizer.py:10` | 无条件 `import torch`，未安装 torch 时崩溃 | 应像 `paddleocr` 一样用 `try/except` 包装 |
-| P5 | `essay_recognizer.py:211-215` | `recognize()` 吞掉所有异常，返回空字符串 | 调用方无法区分"无文字"和"引擎崩溃"，应返回结构化结果 |
+| P1 | `choice_recognizer.py` / `judge_recognizer.py` | **未检测多选情况** | 多个气泡超过阈值时只取密度最高的一个返回，应检测多选并返回 `None`（判 0 分）。空白未填涂已正确处理（返回 `None` → 0 分） |
+| P2 | `main.py` | 缺少 LLM 评分、错题标注、配置加载、OCR 引擎选择 | CLI 版本严重落后于 GUI，缺少 `LLMEssayGrader`、`marker.mark_and_save`、`config` 加载、OCR 引擎选择功能 |
+| P3 | `main.py` / `pipeline.py` | CLI 默认阈值 0.5，GUI 使用 0.06 | `main.py` 调用 `recognize_choices/judges` 时未传 `threshold`，使用 `pipeline.py` 默认值 0.5，导致几乎无法识别填涂气泡 |
+| P4 | `README.md` | ~~引用不存在的 `config/llm_config.json`~~ | 已修复：更新为 `model_config.json` + `api_keys.json` |
+| P5 | `essay_recognizer.py:10` | 无条件 `import torch`，未安装 torch 时崩溃 | 应像 `paddleocr` 一样用 `try/except` 包装 |
+| P6 | `essay_recognizer.py:211-215` | `recognize()` 吞掉所有异常，返回空字符串 | 调用方无法区分"无文字"和"引擎崩溃"，应返回结构化结果 |
 
 ### 中优先级
 
 | 编号 | 文件 | 问题 | 说明 |
 |------|------|------|------|
-| P6 | `llm_essay_grader.py:111-112` | API 失败时静默评 0 分 | 暂时性错误（超时、限流）导致学生得 0 分，应加重试或"不确定"状态 |
-| P7 | `pipeline.py:22-69` | 未验证 `regions` 字典格式/类型 | `regions['student_id']` 若非 4 元组会抛 `TypeError`，应加 `isinstance` 检查 |
-| P8 | `marker.py:37,95,105,113` | 未验证 `region` 是否为 4 元组 | 解包前缺少格式校验，异常 region 会崩溃 |
-| P9 | `grading.py:93,102` | 题目范围硬编码 1-20、21-30 | 应从答案键动态获取范围，否则增减题目数会出错 |
-| P10 | `student_id_recognizer.py:86-88` | "第三大轮廓"启发式检测脆弱 | 扫描噪声、印章等可导致选错区域，已有 `xfail` 测试承认此问题 |
-| P11 | `tests/` | 缺少 `test_pipeline.py` 和 `test_marker.py` | pipeline 是核心编排层，marker 负责输出，两者无测试覆盖 |
-| P12 | `grading.py:95-97` | `None == None` 可能误判满分 | 未答题且答案键缺条目时 `given == correct` 为 `True`，应显式检查 |
-| P13 | `main.py:124` | `save_result_xlsx(output_path, output_path, ...)` | 模板路径和输出路径相同，文件不存在时崩溃 |
-| P14 | `config/api_keys.json` | 真实 API Key 可能入库 | `.gitignore` 已排除，但应确认历史中无泄露，并提供 `.example` 模板 |
+| P7 | `llm_essay_grader.py:111-112` | API 失败时静默评 0 分 | 暂时性错误（超时、限流）导致学生得 0 分，应加重试或"不确定"状态 |
+| P8 | `pipeline.py:22-69` | 未验证 `regions` 字典格式/类型 | `regions['student_id']` 若非 4 元组会抛 `TypeError`，应加 `isinstance` 检查 |
+| P9 | `marker.py:37,95,105,113` | 未验证 `region` 是否为 4 元组 | 解包前缺少格式校验，异常 region 会崩溃 |
+| P10 | `grading.py:93,102` | 题目范围硬编码 1-20、21-30 | 应从答案键动态获取范围，否则增减题目数会出错 |
+| P11 | `student_id_recognizer.py:86-88` | "第三大轮廓"启发式检测脆弱 | 扫描噪声、印章等可导致选错区域，已有 `xfail` 测试承认此问题 |
+| P12 | `tests/` | 缺少 `test_pipeline.py` 和 `test_marker.py` | pipeline 是核心编排层，marker 负责输出，两者无测试覆盖 |
+| P13 | `grading.py:95-97` | `None == None` 可能误判满分 | 未答题且答案键缺条目时 `given == correct` 为 `True`，应显式检查 |
+| P14 | `main.py:124` | `save_result_xlsx(output_path, output_path, ...)` | 模板路径和输出路径相同，文件不存在时崩溃 |
+| P15 | `config/api_keys.json` | 真实 API Key 可能入库 | `.gitignore` 已排除，但应确认历史中无泄露，并提供 `.example` 模板 |
 
 ### 低优先级
 
 | 编号 | 文件 | 问题 | 说明 |
 |------|------|------|------|
-| P15 | `main.py:63-74` | 无 `--threshold` CLI 参数 | 应添加与 GUI slider 等价的命令行参数 |
-| P16 | `app.py:560-561` | 重复注释行 | `# ── 4b: 选择题识别 ──` 出现两次，删除多余行 |
-| P17 | `essay_recognizer.py:164-166` | MIME 类型不匹配 | PNG 编码但 `data:image/jpeg` 前缀，应统一 |
-| P18 | `pipeline.py:72-99` | `process_student_pair` 未被使用 | 与 `main.py` 的 `process_student` 重复，应统一 |
-| P19 | `main.py:128-159` | `single_process` 未使用 pipeline 函数 | 直接调底层模块，与 `batch_process` 路径不一致 |
-| P20 | `test_essay_recognizer.py` | 缺少 online OCR 引擎测试 | 4 种引擎中 online 路径无测试覆盖 |
+| P16 | `main.py:63-74` | 无 `--threshold` CLI 参数 | 应添加与 GUI slider 等价的命令行参数 |
+| P17 | `app.py:560-561` | 重复注释行 | `# ── 4b: 选择题识别 ──` 出现两次，删除多余行 |
+| P18 | `essay_recognizer.py:164-166` | MIME 类型不匹配 | PNG 编码但 `data:image/jpeg` 前缀，应统一 |
+| P19 | `pipeline.py:72-99` | `process_student_pair` 未被使用 | 与 `main.py` 的 `process_student` 重复，应统一 |
+| P20 | `main.py:128-159` | `single_process` 未使用 pipeline 函数 | 直接调底层模块，与 `batch_process` 路径不一致 |
+| P21 | `test_essay_recognizer.py` | 缺少 online OCR 引擎测试 | 4 种引擎中 online 路径无测试覆盖 |
