@@ -187,3 +187,58 @@ requests>=2.28
 | P19 | `pipeline.py` | `process_student_pair` 未被使用 | main.py 统一使用 pipeline 函数 |
 | P20 | `main.py` | `single_process` 未使用 pipeline 函数 | 重写后统一使用 `preprocess_and_analyze` |
 | P21 | `test_essay_recognizer.py` | 缺少 online OCR 引擎测试 | 添加 `check_engine_available` 和 online 模式 mock 测试 |
+
+---
+
+## 硬编码分析
+
+以下列出需要集中管理的硬编码值，按严重程度排序。
+
+### 关键架构问题（跨文件重复、无单一配置源）
+
+| 编号 | 问题 | 涉及文件 | 说明 |
+|------|------|----------|------|
+| H127 | **填涂阈值默认值不一致** | pipeline(0.5) vs ChoiceRecognizer(0.06) vs StudentIdRecognizer(0.2) vs extract_student_id(0.3) | 无单一真实来源，pipeline 默认 0.5 远高于实际可用值 |
+| H128 | **API URL/模型名重复 5+ 处** | `llm_essay_grader.py` ×3, `essay_recognizer.py` ×1, `main.py` ×1, `app.py` ×3 | 应统一从 `model_config.json` 读取，不散落各处 |
+| H129 | **简答题题号 `31` 硬编码 6 处** | `pipeline.py`, `main.py` ×2, `app.py` ×2 | 应从答案键推断 |
+| H130 | **题目范围/网格维度重复 6 处** | `5x4` 选择、`3x4` 判断、`1-20`/`21-30` 散落 6 个文件 | 应集中在一份答题卡布局配置中 |
+| H57 | **版面 fallback 比率硬编码** | `layout.py` PAGE1/2_FALLBACK `(0.06, 0.26)` 等 | 不同答题卡模板会失效 |
+
+### 评分与分值
+
+| 编号 | 问题 | 文件 | 说明 |
+|------|------|------|------|
+| H89 | 每题分值 `3/2/20` 硬编码为默认值 | `grading.py:22` | 构造器可覆盖但默认值散落 |
+| H90-H91 | `save_result_xlsx` 内用字面量 `3`/`2` 而非 `self.choice_score` | `grading.py:201,206` | 与构造器默认值不同步风险 |
+| H92-H93 | UI 显示 "20分" 硬编码 | `app.py:755,1011` | 应读 `svc.essay_max_score` |
+
+### 布局与网格
+
+| 编号 | 问题 | 文件 | 说明 |
+|------|------|------|------|
+| H58 | 选择题网格 `5x4` 硬编码 | `choice_recognizer.py:258` | 题目数变化时需改代码 |
+| H60 | 判断题题号映射 `[21..30]` 和 `3x4` 硬编码 | `judge_recognizer.py:244-246` | 同上 |
+| H65-H66 | pipeline 中 `question_count=20/10` 硬编码 | `pipeline.py:48,63` | 不从配置读取 |
+| H79 | `grading.py` 中 `<=20`/`<=30` 划分题型 | `grading.py:70-75` | 题型边界硬编码 |
+
+### 图像处理参数
+
+| 编号 | 问题 | 文件 | 说明 |
+|------|------|------|------|
+| H30 | Canny 阈值 `50, 150` 硬编码 | `student_id_recognizer.py:48` | 不同扫描质量需不同阈值 |
+| H15/H96 | 形态学核大小 `(3,3)` 散落多处 | choice/judge/student_id | 统一或参数化 |
+| H16/H24 | 水平投影密度阈值 `0.02` 重复 | choice/judge recognizer | 应提取为常量或参数 |
+| H19/H27 | 气泡检测尺寸约束 `0.08/0.30/0.40` 重复 | choice/judge recognizer | 同上 |
+| H34 | 在线 OCR 图片尺寸上限 `2048` | `essay_recognizer.py:162` | 不同模型限制不同 |
+| H45 | 批量上限 `50` 对学生 | `app.py:837` | 无警告静默截断 |
+
+### API 与模型
+
+| 编号 | 问题 | 文件 | 说明 |
+|------|------|------|------|
+| H36 | LLM max_tokens `256` | `llm_essay_grader.py:78` | 长答案可能被截断 |
+| H37 | LLM temperature `0.3` | `llm_essay_grader.py:79` | 应可调 |
+| H84 | OCR max_tokens `1024` | `essay_recognizer.py:184` | 长文识别可能截断 |
+| H106 | LLM 评分提示词硬编码 | `llm_essay_grader.py:52-65` | 不同科目需不同评分标准 |
+| H110 | OCR 提示词硬编码 | `essay_recognizer.py:182` | 不同场景需不同提示 |
+| H107 | LLM 返回解析正则硬编码 | `llm_essay_grader.py:89` | 与提示词耦合，改提示词需同步改正则 |
