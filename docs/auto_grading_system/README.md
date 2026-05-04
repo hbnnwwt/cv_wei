@@ -198,7 +198,7 @@ requests>=2.28
 
 | 编号 | 问题 | 涉及文件 | 说明 |
 |------|------|----------|------|
-| H127 | **填涂阈值默认值不一致** | pipeline(0.5) vs ChoiceRecognizer(0.06) vs StudentIdRecognizer(0.2) vs extract_student_id(0.3) | 无单一真实来源，pipeline 默认 0.5 远高于实际可用值 |
+| H127 | **pipeline 默认阈值 0.5 与识别器 0.06 不一致** | `pipeline.py:32,47` | 已修复：统一为 0.06，与 GUI slider 默认值一致 |
 | H128 | **API URL/模型名重复 5+ 处** | `llm_essay_grader.py` ×3, `essay_recognizer.py` ×1, `main.py` ×1, `app.py` ×3 | 应统一从 `model_config.json` 读取，不散落各处 |
 | H129 | **简答题题号 `31` 硬编码 6 处** | `pipeline.py`, `main.py` ×2, `app.py` ×2 | 应从答案键推断 |
 | H130 | **题目范围/网格维度重复 6 处** | `5x4` 选择、`3x4` 判断、`1-20`/`21-30` 散落 6 个文件 | 应集中在一份答题卡布局配置中 |
@@ -209,8 +209,8 @@ requests>=2.28
 | 编号 | 问题 | 文件 | 说明 |
 |------|------|------|------|
 | H89 | 每题分值 `3/2/20` 硬编码为默认值 | `grading.py:22` | 构造器可覆盖但默认值散落 |
-| H90-H91 | `save_result_xlsx` 内用字面量 `3`/`2` 而非 `self.choice_score` | `grading.py:201,206` | 与构造器默认值不同步风险 |
-| H92-H93 | UI 显示 "20分" 硬编码 | `app.py:755,1011` | 应读 `svc.essay_max_score` |
+| H90-H91 | `save_result_xlsx` 内用字面量 `3`/`2` 而非 `self.choice_score` | `grading.py:201,206` | 已修复：使用 `self.choice_score`/`self.judge_score` |
+| H92-H93 | UI 显示 "20分" 硬编码 | `app.py:755,1011` | 已修复：改为 `svc.essay_max_score` 动态读取 |
 
 ### 布局与网格
 
