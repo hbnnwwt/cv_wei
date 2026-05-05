@@ -125,9 +125,7 @@ requests>=2.28
 
 ### 高优先级
 
-| 编号 | 文件 | 问题 | 说明 |
-|------|------|------|------|
-| P1 | `choice_recognizer.py` / `judge_recognizer.py` | **未检测多选情况** | 多个气泡超过阈值时只取密度最高的一个返回，应检测多选并返回 `None`（判 0 分）。空白未填涂已正确处理（返回 `None` → 0 分）。需实际答题卡数据验证 |
+（暂无）
 
 ---
 
@@ -137,6 +135,7 @@ requests>=2.28
 
 | 编号 | 文件 | 问题 | 修复内容 |
 |------|------|------|----------|
+| P1 | `choice_recognizer.py` / `judge_recognizer.py` | **未检测多选情况** | 双阈值法：`BubbleRecognizerBase` 新增 `multi_threshold` 参数，统计超过该阈值的选项数，`>= 2` 判多选返回 `None`（0 分）。选择题默认 `0.12`，判断题默认 `0.10`（气泡更宽，正常填涂密度偏低）。可视化中多选 zone 用黄色标记 |
 | P2 | `main.py` | 缺少 LLM 评分、错题标注、配置加载、OCR 引擎选择 | 新增 `_build_essay_grader()` 从 `config/` 加载 API 密钥和模型配置构建 LLM 评分器；新增 `_build_ocr_config()` 构建 OCR API 配置；添加 `--llm`（启用 LLM 评分）、`--ocr-engine`（选择引擎）、`--threshold`（填涂阈值）、`--no-mark`（跳过标注）CLI 参数；`batch_process()` 中调用 `mark_and_save()` 生成错题标注图 |
 | P3 | `main.py` / `pipeline.py` | CLI 默认阈值 0.5，GUI 使用 0.06 | `--threshold` 参数默认值改为 `0.06`，与 GUI slider 默认值一致；`pipeline.py` 中 `recognize_choices()`/`recognize_judges()` 的 threshold 参数默认值也统一为 `0.06` |
 | P4 | `README.md` | 引用不存在的 `config/llm_config.json` | 将文档中所有 `llm_config.json` 引用更正为实际使用的 `model_config.json`（Base URL、模型名称）+ `api_keys.json`（API 密钥，不入库） |
