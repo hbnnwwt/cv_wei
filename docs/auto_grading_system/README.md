@@ -128,6 +128,8 @@ requests>=2.28
 | 编号 | 文件 | 问题 | 说明 |
 |------|------|------|------|
 | P1 | `choice_recognizer.py` / `judge_recognizer.py` | **未检测多选情况** | 多个气泡超过阈值时只取密度最高的一个返回，应检测多选并返回 `None`（判 0 分）。空白未填涂已正确处理（返回 `None` → 0 分）。需实际答题卡数据验证 |
+| P37 | `main.py:266-290` | **XLSX 导出题号范围硬编码** | `_save_results_xlsx()` 中 `range(1, 31)` / `range(1, 21)` / `range(21, 31)` 未从 LAYOUT 配置读取，若修改 `sheet_layout.json` 的 `question_start`/`question_count`，导出的 xlsx 表头和分数行不会同步变化 |
+| P38 | `judge_recognizer.py:60` | **默认 question_count 计算含硬编码 9** | `question_start + 9` 假设判断题固定 10 题（`9 = question_count - 1`），未从 LAYOUT 读取 `judge.question_count`，且整行表达式 `rows_n * cols_n - (rows_n * cols_n - (...))` 逻辑冗余可简化 |
 
 ---
 
