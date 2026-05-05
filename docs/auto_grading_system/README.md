@@ -210,34 +210,34 @@ requests>=2.28
 
 ### 评分与分值
 
-| 编号 | 问题 | 文件 | 说明 |
+| 编号 | 问题 | 文件 | 状态 |
 |------|------|------|------|
-| H89 | 每题分值 `3/2/20` 硬编码为默认值 | `grading.py:38` | `GradingService.__init__` 的 `choice_score=3`/`judge_score=2`/`essay_max_score=20` 作为默认参数可被覆盖（如 `GradingService(answer_key, choice_score=5)`），但默认值本身仍硬编码在函数签名中。**修复方案**：将默认值移入 `sheet_layout.json` 新增 `scoring` 字段（`{"choice_score": 3, "judge_score": 2, "essay_max_score": 20}`），`GradingService` 构造时从配置读取 |
+| H89 | 每题分值 `3/2/20` 从 `sheet_layout.json` scoring 字段读取 | `grading.py` | ✅ 已修复 |
 
 ### 布局与网格
 
-| 编号 | 问题 | 文件 | 说明 |
+| 编号 | 问题 | 文件 | 状态 |
 |------|------|------|------|
-| H58 | 选择题网格 `5x4` 硬编码 | `choice_recognizer.py` | pipeline 层已从 `LAYOUT` 配置读取 `question_count`/`question_start`，但识别器内部的 `recognize_all_with_viz()` 仍按固定行列数切分网格、逐格扫描气泡。**修复方案**：将 `rows`/`cols` 也加入 `sheet_layout.json` 的 `choice` 字段，pipeline 传参时一并传入识别器，识别器内部用传入参数替代硬编码 |
-| H60 | 判断题题号映射 `[21..30]` 和 `3x4` 硬编码 | `judge_recognizer.py:215-217` | `cell_mapping = [21, 22, ..., 30]` 和 `self._detect_cells_fixed(gray_fill, 3, 4, cell_mapping)` 中行列数和题号列表直接写在函数体内。**修复方案**：同 H58，从 `sheet_layout.json` 的 `judge` 字段读取 `rows`/`cols`/`question_start`/`question_count`，动态生成 `cell_mapping` 列表 |
+| H58 | 选择题网格 `5x4` 从 LAYOUT 传入 `fixed_grid` 参数 | `choice_recognizer.py` | ✅ 已修复 |
+| H60 | 判断题题号映射和 `3x4` 从 LAYOUT 传入 `rows_n/cols_n` 参数 | `judge_recognizer.py` | ✅ 已修复 |
 
 ### 图像处理参数
 
-| 编号 | 问题 | 文件 | 说明 |
+| 编号 | 问题 | 文件 | 状态 |
 |------|------|------|------|
-| H30 | Canny 阈值 `50, 150` 硬编码 | `student_id_recognizer.py:49` | `cv2.Canny(gray_roi, 50, 150)` 固定阈值，低对比度扫描件边缘检测不足。**修复方案**：将 `canny_low`/`canny_high` 作为 `StudentIdRecognizer.__init__()` 参数（默认 `50`/`150`），或改为中值自适应阈值 `median * 0.5` / `median * 1.5` |
-| H15/H96 | 形态学核大小 `(3,3)` 散落 9 处 | choice/judge/student_id | `cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))` 在 `choice_recognizer.py`（3处）、`judge_recognizer.py`（3处）、`student_id_recognizer.py`（2处）重复出现。**修复方案**：在 `sheet_layout.json` 新增 `morphology.kernel_size` 字段，各识别器初始化时从配置读取，或至少在 `defaults.py` 中定义 `MORPH_KERNEL_SIZE = (3, 3)` 常量统一导入 |
-| H16/H24 | 水平投影密度阈值 `0.02` 重复 2 处 | `choice_recognizer.py:128`、`judge_recognizer.py:115` | `_detect_fill_start()` 中 `threshold = 0.02` 判断内容频带起始行，两个识别器各自硬编码相同值。**修复方案**：提取为 `defaults.py` 常量 `FILL_START_THRESHOLD = 0.02`，或作为识别器构造器参数 |
-| H19/H27 | 气泡检测尺寸约束 `0.08/0.30/0.40` 重复 | `choice_recognizer.py:179-181` | `min_bw = cell_w * 0.08`、`max_bw = cell_w * 0.30`、`min_bh = cell_h * 0.40` 用于过滤连通域面积，仅出现在选择题识别器。**修复方案**：提取为命名常量 `BUBBLE_MIN_W_RATIO`/`BUBBLE_MAX_W_RATIO`/`BUBBLE_MIN_H_RATIO`，放入 `defaults.py` 或作为构造器参数 |
-| H34 | 在线 OCR 图片尺寸上限 `2048` | `essay_recognizer.py:168` | `max_side = 2048` 用于缩放大图后 base64 编码上传，不同 VL 模型支持的最大分辨率不同（Qwen-VL 支持 4096）。**修复方案**：将 `max_side` 作为 `EssayRecognizer.__init__()` 参数（默认 `2048`），或从 `model_config.json` 新增 `ocr_max_image_size` 字段读取 |
+| H30 | Canny 阈值 `50, 150` 参数化为 `canny_low/canny_high` 构造器参数 | `student_id_recognizer.py` | ✅ 已修复 |
+| H15/H96 | 形态学核 `(3,3)` 统一到 `defaults.py` 的 `MORPH_KERNEL` 常量 | 基类 + 识别器 | ✅ 已修复 |
+| H16/H24 | 水平投影密度 `0.02` 统一到 `defaults.py` 的 `FILL_BAND_THRESHOLD` 常量 | 基类 | ✅ 已修复 |
+| H19/H27 | 气泡尺寸约束 `0.08/0.30/0.40` 参数化为构造器属性 | `choice_recognizer.py` | ✅ 已修复 |
+| H34 | 在线 OCR 图片尺寸 `2048` 参数化为 `max_image_side` 构造器参数 | `essay_recognizer.py` | ✅ 已修复 |
 
 ### API 与模型
 
-| 编号 | 问题 | 文件 | 说明 |
+| 编号 | 问题 | 文件 | 状态 |
 |------|------|------|------|
-| H36 | LLM max_tokens `256` | `llm_essay_grader.py:78` | `_call_api()` 中 `"max_tokens": 256` 限制 LLM 输出长度，详细评语可能被截断。**修复方案**：将 `max_tokens` 作为 `LLMEssayGrader.__init__()` 参数（默认 `256`），或从 `model_config.json` 新增 `llm_max_tokens` 字段读取 |
-| H37 | LLM temperature `0.3` | `llm_essay_grader.py:79` | `"temperature": 0.3` 控制评分一致性，不同场景可能需要不同值。**修复方案**：同 H36，作为构造器参数或从配置文件读取 |
-| H84 | OCR max_tokens `1024` | `essay_recognizer.py:191` | 在线 OCR payload 中 `"max_tokens": 1024` 限制识别输出，长手写答案可能截断。**修复方案**：从 `model_config.json` 新增 `ocr_max_tokens` 字段读取，或作为 `EssayRecognizer` 构造器参数 |
-| H106 | LLM 评分提示词硬编码 | `llm_essay_grader.py:52-65` | `_build_prompt()` 中评分提示词直接写在代码中（"你是一个阅卷助手..."），不同科目/评分标准无法定制。**修复方案**：将提示词模板移入 `config/` 目录（如 `config/llm_prompt.txt`），支持 `{reference}`/`{student_answer}`/`{max_score}` 占位符替换，`_build_prompt()` 从文件加载模板 |
-| H110 | OCR 提示词硬编码 | `essay_recognizer.py:188` | 在线 OCR 的用户提示为 `"请逐行识别图片中的所有文字内容，只输出文字，不要添加解释。"`，不同场景可能需要不同指令。**修复方案**：将 OCR 提示词移入 `model_config.json` 新增 `ocr_prompt` 字段，`_recognize_online()` 从配置读取 |
-| H107 | LLM 返回解析正则硬编码 | `llm_essay_grader.py:90-91` | `_parse_response()` 用 `re.search(r"得分[：:]\s*(\d+(?:\.\d+)?)", text)` 解析分数，与 H106 的提示词格式强耦合——改提示词格式就必须同步改正则。**修复方案**：提示词和正则配对存放在同一配置源中（如 `model_config.json` 的 `llm_score_pattern` 字段），或改用 JSON mode 输出让 LLM 返回结构化数据，彻底消除正则依赖 |
+| H36 | LLM max_tokens 从 `model_config.json` 的 `llm_max_tokens` 字段读取 | `llm_essay_grader.py` | ✅ 已修复 |
+| H37 | LLM temperature 从 `model_config.json` 的 `llm_temperature` 字段读取 | `llm_essay_grader.py` | ✅ 已修复 |
+| H84 | OCR max_tokens 从 `model_config.json` 的 `ocr_max_tokens` 字段读取 | `essay_recognizer.py` | ✅ 已修复 |
+| H106 | LLM 评分提示词外部化到 `config/llm_grading_prompt.txt` | `llm_essay_grader.py` | ✅ 已修复 |
+| H110 | OCR 提示词从 `model_config.json` 的 `ocr_prompt` 字段读取 | `essay_recognizer.py` | ✅ 已修复 |
+| H107 | LLM 返回解析正则 `r"得分[：:]\s*(\d+(?:\.\d+)?)"` 硬编码，与 H106 提示词格式耦合 | `llm_essay_grader.py` | ❌ 待修复 |
