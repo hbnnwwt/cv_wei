@@ -128,8 +128,6 @@ requests>=2.28
 | 编号 | 文件 | 问题 | 说明 |
 |------|------|------|------|
 | P1 | `choice_recognizer.py` / `judge_recognizer.py` | **未检测多选情况** | 多个气泡超过阈值时只取密度最高的一个返回，应检测多选并返回 `None`（判 0 分）。空白未填涂已正确处理（返回 `None` → 0 分）。需实际答题卡数据验证 |
-| P37 | `main.py:266-290` | **XLSX 导出题号范围硬编码** | `_save_results_xlsx()` 中 `range(1, 31)` / `range(1, 21)` / `range(21, 31)` 未从 LAYOUT 配置读取，若修改 `sheet_layout.json` 的 `question_start`/`question_count`，导出的 xlsx 表头和分数行不会同步变化 |
-| P38 | `judge_recognizer.py:60` | **默认 question_count 计算含硬编码 9** | `question_start + 9` 假设判断题固定 10 题（`9 = question_count - 1`），未从 LAYOUT 读取 `judge.question_count`，且整行表达式 `rows_n * cols_n - (rows_n * cols_n - (...))` 逻辑冗余可简化 |
 
 ---
 
@@ -185,6 +183,8 @@ requests>=2.28
 | P32 | `student_id_recognizer.py:190` | 学号数字全部填满无歧义警告 | 添加 `self.ambiguity_warnings` 列表属性，每个数字列中若最高填充率与次高之差 `< 0.05`，追加警告信息，供 GUI 展示提醒用户 |
 | P35 | `app.py` | 单次模式不清理临时文件 | 流程结束后用 `glob("tmp_*.png")` 匹配所有临时文件并逐一 `os.remove()` 清理 |
 | P36 | `essay_recognizer.py` | 在线 OCR 无批量取消机制 | `recognize()` 方法新增 `cancel_check` 回调参数（可调用对象），每次 API 调用前检查 `cancel_check()` 返回值，为 `True` 时提前终止并返回已识别内容 |
+| P37 | `main.py:256-297` | XLSX 导出题号范围硬编码 `range(1,31)` | `_save_results_xlsx()` 从 LAYOUT 读取 `choice.question_start/question_count` 和 `judge.*` 动态构建表头和分数行；简答题列用 `get_essay_questions(service.answer_key)` 动态获取题号 |
+| P38 | `judge_recognizer.py:60` | 默认 question_count 含 `question_start+9` 硬编码 | 删除冗余的 `rows_n*cols_n - (rows_n*cols_n - (...))` 表达式，简化为 `question_count = rows_n * cols_n`（pipeline 调用时已从 LAYOUT 传入正确的 question_count） |
 
 ---
 
