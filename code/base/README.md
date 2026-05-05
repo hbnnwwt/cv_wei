@@ -41,7 +41,6 @@ code/base/
 ├── modules/
 │   # ===== 以下模块已完整提供，直接使用 =====
 │   ├── defaults.py             # 常量与路径（无需修改）
-│   ├── bubble_base.py          # 气泡识别基类（填充率分析工具，供你调用）
 │   ├── pipeline.py             # 管线编排（连接各模块的胶水代码）
 │   ├── marker.py               # 错题可视化标注（红色 × 标记错题）
 │   ├── llm_essay_grader.py    # LLM 评分（加分项，已有完整实现）
@@ -49,6 +48,7 @@ code/base/
 │   # ===== 以下模块需要你实现 =====
 │   ├── preprocess.py           # 图像预处理
 │   ├── layout.py               # 版面分析
+│   ├── bubble_base.py          # 气泡识别基类（供你调用）
 │   ├── student_id_recognizer.py  # 学号识别
 │   ├── choice_recognizer.py      # 选择题识别
 │   ├── judge_recognizer.py       # 判断题识别
