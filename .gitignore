@@ -38,5 +38,10 @@ docs/auto_grading_system/run_gui.bat
 docs/auto_grading_system/run_tests.bat
 docs/auto_grading_system/run_tests.sh
 docs/auto_grading_system/setup.bat
-docs/auto_grading_system/modules/*.py
-!docs/auto_grading_system/modules/__init__.py
+docs/auto_grading_system/modules/
+docs/auto_grading_system/tests/
+docs/auto_grading_system/requirements.txt
+docs/auto_grading_system/config/model_config.json
+docs/auto_grading_system/config/sheet_layout.json
+docs/auto_grading_system/config/llm_grading_prompt.txt
+docs/auto_grading_system/config/.gitkeep
